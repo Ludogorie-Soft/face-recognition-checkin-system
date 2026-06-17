@@ -1,0 +1,11 @@
+.git
+.gitignore
+.wolf
+.claude
+.env
+.env.example
+*.md
+target/
+.idea/
+.vscode/
+.DS_Store

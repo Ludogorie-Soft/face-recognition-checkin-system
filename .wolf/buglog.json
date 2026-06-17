@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "bugs": [
+    {
+      "id": "bug-001",
+      "timestamp": "2026-06-17T00:00:00",
+      "error_message": "UnsatisfiedDependencyException: Failed to instantiate PushService — Index 0 out of bounds for length 0",
+      "file": "src/main/java/org/example/garant/config/WebPushConfig.java",
+      "root_cause": "@ConditionalOnProperty matches when property value is empty string \"\". application.yml sets vapid.public-key=${VAPID_PUBLIC_KEY:} which defaults to \"\", so the condition is always true. PushService tries to Base64-decode empty key → ArrayIndexOutOfBoundsException.",
+      "fix": "Replaced @ConditionalOnProperty(name=\"vapid.public-key\") with @ConditionalOnExpression(\"T(org.springframework.util.StringUtils).hasText('${vapid.public-key:}')\") — only creates PushService bean when key is actually non-blank.",
+      "tags": ["webpush", "vapid", "startup", "conditional-bean", "spring"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T00:00:00"
+    }
+  ,
+    {
+      "id": "bug-002",
+      "timestamp": "2026-06-17T00:00:00",
+      "error_message": "Login succeeds but no redirect — user stays on login page, no error shown",
+      "file": "frontend/lib/auth.ts",
+      "root_cause": "decodeToken() used atob() directly on JWT payload. JWT uses Base64URL encoding (- and _ chars), but atob() requires standard Base64 (+ and /). atob() throws → catch returns null → login page checks 'if (payload)' which is false → router.push never called.",
+      "fix": "Convert Base64URL to Base64 before atob(): replace - with + and _ with /, then add = padding to make length a multiple of 4.",
+      "tags": ["auth", "jwt", "base64url", "redirect", "login"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T00:00:00"
+    },
+    {
+      "id": "bug-003",
+      "timestamp": "2026-06-17T00:00:00",
+      "error_message": "Login succeeds (200) but no redirect — stays on login page",
+      "file": "src/main/java/org/example/garant/auth/JwtTokenProvider.java",
+      "root_cause": "generateToken() never added 'role' claim to the JWT. Payload only had sub/iat/exp. Frontend decodeToken() read payload.role = undefined → getDashboardPath() returned /${locale}/login → router.push sent user back to login.",
+      "fix": "Added claims.put(\"role\", user.getRole().name()) using pattern matching instanceof to cast UserDetails to User before building the JWT.",
+      "tags": ["auth", "jwt", "role", "login", "redirect"],
+      "related_bugs": ["bug-002"],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T00:00:00"
+    }
+  ]
+}
