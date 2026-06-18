@@ -295,10 +295,17 @@ function AttendanceTable({
                 </a>
               </TableCell>
               <TableCell>
-                {row.locationValid
-                  ? <CheckCircle2 size={16} className="text-green-500" />
-                  : <XCircle size={16} className="text-amber-500" />
-                }
+                {row.locationValid ? (
+                  <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400 text-sm font-medium">
+                    <CheckCircle2 size={15} />
+                    В зоната
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-sm font-medium">
+                    <XCircle size={15} />
+                    Извън зоната
+                  </span>
+                )}
               </TableCell>
               <TableCell className="text-sm">
                 {row.manualOverride ? (

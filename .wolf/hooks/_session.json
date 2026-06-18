@@ -28,8 +28,8 @@
       "first_read": "2026-06-18T09:56:07.545Z"
     },
     "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSites.ts": {
-      "count": 1,
-      "tokens": 0,
+      "count": 2,
+      "tokens": 728,
       "first_read": "2026-06-18T09:56:07.635Z"
     },
     "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx": {
@@ -96,6 +96,31 @@
       "count": 1,
       "tokens": 206,
       "first_read": "2026-06-18T10:31:34.675Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T13:21:24.526Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/components/sites/SiteAssignModal.tsx": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T13:33:04.956Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/dashboard/page.tsx": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T13:33:05.048Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useDashboard.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T13:33:11.501Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/sites/page.tsx": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T13:46:55.648Z"
     }
   },
   "files_written": [
@@ -194,6 +219,24 @@
       "action": "edit",
       "tokens": 11,
       "at": "2026-06-18T10:31:38.423Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "action": "edit",
+      "tokens": 162,
+      "at": "2026-06-18T13:24:10.518Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSites.ts",
+      "action": "edit",
+      "tokens": 200,
+      "at": "2026-06-18T13:33:22.626Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSites.ts",
+      "action": "edit",
+      "tokens": 347,
+      "at": "2026-06-18T13:47:25.356Z"
     }
   ],
   "edit_counts": {
@@ -206,11 +249,13 @@
     "nginx.conf": 1,
     ".gitignore": 1,
     "README.md": 1,
-    "DEPLOY.md": 1
+    "DEPLOY.md": 1,
+    "frontend/app/[locale]/(admin)/reports/page.tsx": 1,
+    "frontend/hooks/useSites.ts": 2
   },
   "anatomy_hits": 7,
-  "anatomy_misses": 9,
-  "repeated_reads_warned": 2,
+  "anatomy_misses": 13,
+  "repeated_reads_warned": 3,
   "cerebrum_warnings": 0,
-  "stop_count": 16
+  "stop_count": 21
 }

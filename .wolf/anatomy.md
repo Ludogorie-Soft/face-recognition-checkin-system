@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T10:31:38.410Z
-> Files: 41 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T13:47:25.329Z
+> Files: 43 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -36,6 +36,10 @@
 
 - `page.tsx` — LocalePage (~61 tok)
 
+## frontend/app/[locale]/(admin)/reports/
+
+- `page.tsx` — today — renders table (~3486 tok)
+
 ## frontend/app/[locale]/(admin)/workers/
 
 - `page.tsx` — ROLE_VARIANT — renders table (~2517 tok)
@@ -63,6 +67,7 @@
 ## frontend/hooks/
 
 - `useFaceApi.ts` — Exports FaceApiState, useFaceApi (~556 tok)
+- `useSites.ts` — API routes: GET, DELETE, POST (7 endpoints) (~718 tok)
 
 ## frontend/lib/
 
