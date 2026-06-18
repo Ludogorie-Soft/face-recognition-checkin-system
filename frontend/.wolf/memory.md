@@ -1,0 +1,1 @@
+| 14:13 | designqc: captured 16 screenshots (119KB, ~40000 tok) | /, /page, /[locale], /[locale]/(admin)/dashboard, /[locale]/(admin)/reports, /[locale]/(admin)/sites, /[locale]/(admin)/workers, /[locale]/(auth)/login, /[locale]/(manager)/verify | ready for eval | ~0 |
