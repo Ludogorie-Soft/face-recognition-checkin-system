@@ -1,10 +1,10 @@
-package org.example.garant.auth;
+package org.example.attendTrack.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.example.garant.auth.dto.AuthResponse;
-import org.example.garant.auth.dto.LoginRequest;
-import org.example.garant.user.User;
-import org.example.garant.user.UserRepository;
+import org.example.attendTrack.auth.dto.AuthResponse;
+import org.example.attendTrack.auth.dto.LoginRequest;
+import org.example.attendTrack.user.User;
+import org.example.attendTrack.user.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

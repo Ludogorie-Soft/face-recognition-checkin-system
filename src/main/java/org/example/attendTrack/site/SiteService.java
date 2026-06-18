@@ -1,15 +1,15 @@
-package org.example.garant.site;
+package org.example.attendTrack.site;
 
 import lombok.RequiredArgsConstructor;
-import org.example.garant.common.exception.ApiException;
-import org.example.garant.common.exception.ErrorCode;
-import org.example.garant.site.dto.SiteRequest;
-import org.example.garant.site.dto.SiteResponse;
-import org.example.garant.user.FaceDescriptorRepository;
-import org.example.garant.user.Role;
-import org.example.garant.user.User;
-import org.example.garant.user.UserRepository;
-import org.example.garant.user.dto.UserResponse;
+import org.example.attendTrack.common.exception.ApiException;
+import org.example.attendTrack.common.exception.ErrorCode;
+import org.example.attendTrack.site.dto.SiteRequest;
+import org.example.attendTrack.site.dto.SiteResponse;
+import org.example.attendTrack.user.FaceDescriptorRepository;
+import org.example.attendTrack.user.Role;
+import org.example.attendTrack.user.User;
+import org.example.attendTrack.user.UserRepository;
+import org.example.attendTrack.user.dto.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

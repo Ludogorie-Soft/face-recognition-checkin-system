@@ -1,13 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-17
-> Files: 20 tracked
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T10:31:38.410Z
+> Files: 41 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `.gitignore` — Git ignore rules (~133 tok)
+- `.gitignore` — Git ignore rules (~152 tok)
 - `CLAUDE.md` — OpenWolf entry point (~57 tok)
+- `DEPLOY.md` — Деплой на AWS EC2 с HTTPS (без домейн) (~1404 tok)
+- `docker-compose.prod.yml` — Docker Compose: 5 services (~352 tok)
+- `docker-compose.yml` — Docker Compose services (~320 tok)
+- `nginx.conf` (~302 tok)
 - `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
+- `README.md` — Project documentation (~2597 tok)
 
 ## .claude/
 
@@ -16,6 +21,60 @@
 ## .claude/rules/
 
 - `openwolf.md` — OpenWolf rules (~313 tok)
+
+## frontend/
+
+- `Dockerfile` — Docker container definition (~207 tok)
+- `next.config.ts` — Declares withNextIntl (~305 tok)
+- `package.json` — Node.js package manifest (~425 tok)
+
+## frontend/app/
+
+- `globals.css` — Styles: 5 rules, 61 vars (~976 tok)
+
+## frontend/app/[locale]/
+
+- `page.tsx` — LocalePage (~61 tok)
+
+## frontend/app/[locale]/(admin)/workers/
+
+- `page.tsx` — ROLE_VARIANT — renders table (~2517 tok)
+
+## frontend/app/[locale]/(auth)/login/
+
+- `page.tsx` — LoginPage — renders form (~1233 tok)
+
+## frontend/app/[locale]/(manager)/verify/
+
+- `page.tsx` — VerifyPage (~2182 tok)
+
+## frontend/app/api/[...path]/
+
+- `route.ts` — Next.js API route (~354 tok)
+
+## frontend/components/layout/
+
+- `ThemeToggle.tsx` — ThemeToggle (~197 tok)
+
+## frontend/components/sites/
+
+- `MapPicker.tsx` — DEFAULT_CENTER (~756 tok)
+
+## frontend/hooks/
+
+- `useFaceApi.ts` — Exports FaceApiState, useFaceApi (~556 tok)
+
+## frontend/lib/
+
+- `axios.ts` — Declares api (~267 tok)
+
+## src/main/java/org/example/ (legacy)
+
+- `Main.java` — IntelliJ placeholder, unused (~50 tok)
+
+## src/main/java/org/example/attendTrack/config/
+
+- `CorsConfig.java` — ", config); (~342 tok)
 
 ## src/main/java/org/example/garant/
 
@@ -29,19 +88,19 @@
 
 ## src/main/java/org/example/garant/auth/dto/
 
-- `LoginRequest.java` — Record: email + password with validation (~20 tok)
 - `AuthResponse.java` — Record: token, type, userId, name, email, role (~30 tok)
-
-## src/main/java/org/example/garant/config/
-
-- `DataSourceConfig.java` — Creates DB if not exists (connects to postgres admin DB first), then returns DataSource (~80 tok)
-- `SecurityConfig.java` — Spring Security 6 stateless JWT config, @EnableMethodSecurity (~90 tok)
-- `JwtAuthenticationFilter.java` — OncePerRequestFilter that validates JWT per request (~70 tok)
+- `LoginRequest.java` — Record: email + password with validation (~20 tok)
 
 ## src/main/java/org/example/garant/common/exception/
 
 - `ApiError.java` — Record: status, message, timestamp — standard error response (~25 tok)
 - `GlobalExceptionHandler.java` — @RestControllerAdvice handles 400/401/403/500 (~70 tok)
+
+## src/main/java/org/example/garant/config/
+
+- `DataSourceConfig.java` — Creates DB if not exists (connects to postgres admin DB first), then returns DataSource (~80 tok)
+- `JwtAuthenticationFilter.java` — OncePerRequestFilter that validates JWT per request (~70 tok)
+- `SecurityConfig.java` — Spring Security 6 stateless JWT config, @EnableMethodSecurity (~90 tok)
 
 ## src/main/java/org/example/garant/user/
 
@@ -49,17 +108,9 @@
 - `User.java` — JPA entity + UserDetails, UUID PK, Lombok @Builder (~100 tok)
 - `UserRepository.java` — findByEmail, existsByEmail (~20 tok)
 
-## src/main/java/org/example/ (legacy)
-
-- `Main.java` — IntelliJ placeholder, unused (~50 tok)
-
 ## src/main/resources/
 
-- `application.yml` — DB, JPA, Flyway, JWT, Mail config — all env-variable driven (~80 tok)
-
-## frontend/app/[locale]/(manager)/verify/
-
-- `page.tsx` — F5 orchestration: site select → sync → VerifyCamera; writes db.pending on onRecord, sonner toast (~180 tok)
+- `application.yml` (~434 tok)
 
 ## src/main/resources/db/migration/
 

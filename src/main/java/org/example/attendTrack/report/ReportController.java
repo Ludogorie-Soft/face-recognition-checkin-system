@@ -1,8 +1,8 @@
-package org.example.garant.report;
+package org.example.attendTrack.report;
 
 import lombok.RequiredArgsConstructor;
-import org.example.garant.report.dto.AttendanceReportRow;
-import org.example.garant.report.dto.MissingWorkerReport;
+import org.example.attendTrack.report.dto.AttendanceReportRow;
+import org.example.attendTrack.report.dto.MissingWorkerReport;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

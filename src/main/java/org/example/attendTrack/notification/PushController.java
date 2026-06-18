@@ -1,9 +1,9 @@
-package org.example.garant.notification;
+package org.example.attendTrack.notification;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.garant.notification.dto.PushSubscriptionRequest;
-import org.example.garant.user.User;
+import org.example.attendTrack.notification.dto.PushSubscriptionRequest;
+import org.example.attendTrack.user.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

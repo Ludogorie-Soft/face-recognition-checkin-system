@@ -1,4 +1,4 @@
-package org.example.garant.attendance;
+package org.example.attendTrack.attendance;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

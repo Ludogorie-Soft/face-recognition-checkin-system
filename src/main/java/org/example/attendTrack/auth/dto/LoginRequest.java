@@ -1,4 +1,4 @@
-package org.example.garant.auth.dto;
+package org.example.attendTrack.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

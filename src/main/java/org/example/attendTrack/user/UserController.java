@@ -1,15 +1,14 @@
-package org.example.garant.user;
+package org.example.attendTrack.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.garant.site.SiteService;
-import org.example.garant.site.dto.SiteResponse;
-import org.example.garant.user.dto.UserRequest;
-import org.example.garant.user.dto.UserResponse;
+import org.example.attendTrack.site.SiteService;
+import org.example.attendTrack.site.dto.SiteResponse;
+import org.example.attendTrack.user.dto.UserRequest;
+import org.example.attendTrack.user.dto.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

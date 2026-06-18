@@ -1,7 +1,7 @@
-package org.example.garant.user.dto;
+package org.example.attendTrack.user.dto;
 
-import org.example.garant.user.Role;
-import org.example.garant.user.User;
+import org.example.attendTrack.user.Role;
+import org.example.attendTrack.user.User;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

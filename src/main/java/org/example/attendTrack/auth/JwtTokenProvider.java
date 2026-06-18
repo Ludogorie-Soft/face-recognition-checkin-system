@@ -1,4 +1,4 @@
-package org.example.garant.auth;
+package org.example.attendTrack.auth;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -21,7 +21,7 @@ public class JwtTokenProvider {
 
     public String generateToken(UserDetails userDetails) {
         var claims = new java.util.HashMap<String, Object>();
-        if (userDetails instanceof org.example.garant.user.User user) {
+        if (userDetails instanceof org.example.attendTrack.user.User user) {
             claims.put("role", user.getRole().name());
         }
         return Jwts.builder()

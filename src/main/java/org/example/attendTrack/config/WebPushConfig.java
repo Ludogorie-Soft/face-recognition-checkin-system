@@ -1,4 +1,4 @@
-package org.example.garant.config;
+package org.example.attendTrack.config;
 
 import nl.martijndwars.webpush.PushService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;

@@ -1,4 +1,4 @@
-package org.example.garant.attendance;
+package org.example.attendTrack.attendance;
 
 public enum AttendanceType {
     CHECK_IN,

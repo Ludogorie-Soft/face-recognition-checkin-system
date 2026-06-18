@@ -1,6 +1,6 @@
-package org.example.garant.auth.dto;
+package org.example.attendTrack.auth.dto;
 
-import org.example.garant.user.Role;
+import org.example.attendTrack.user.Role;
 
 import java.util.UUID;
 

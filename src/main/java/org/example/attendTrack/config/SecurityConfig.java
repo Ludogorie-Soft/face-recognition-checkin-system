@@ -1,4 +1,4 @@
-package org.example.garant.config;
+package org.example.attendTrack.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

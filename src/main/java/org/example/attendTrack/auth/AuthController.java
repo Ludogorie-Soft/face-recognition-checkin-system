@@ -1,10 +1,10 @@
-package org.example.garant.auth;
+package org.example.attendTrack.auth;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.garant.auth.dto.AuthResponse;
-import org.example.garant.auth.dto.LoginRequest;
-import org.example.garant.user.User;
+import org.example.attendTrack.auth.dto.AuthResponse;
+import org.example.attendTrack.auth.dto.LoginRequest;
+import org.example.attendTrack.user.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

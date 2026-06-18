@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Circle, useMapEvents, useMap } from 'react-leaflet'
 import { divIcon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -12,7 +12,7 @@ interface Props {
   onChange: (lat: number, lng: number) => void
 }
 
-// Bulgaria center — default when no coordinates are set
+// Bulgaria center — fallback if geolocation is unavailable
 const DEFAULT_CENTER: [number, number] = [42.7339, 25.4858]
 
 // Blue dot marker — avoids the broken default Leaflet icon in webpack
@@ -39,7 +39,7 @@ function Interactions({ onChange }: { onChange: (lat: number, lng: number) => vo
   return null
 }
 
-// Re-centers map when coordinates are first set
+// Re-centers map when coordinates change
 function Recenter({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
   useEffect(() => {
@@ -50,12 +50,22 @@ function Recenter({ lat, lng }: { lat: number; lng: number }) {
 
 export function MapPicker({ lat, lng, radius, onChange }: Props) {
   const hasCoords = lat != null && lng != null && lat !== 0 && lng !== 0
-  const center: [number, number] = hasCoords ? [lat!, lng!] : DEFAULT_CENTER
+  const [geoCenter, setGeoCenter] = useState<[number, number]>(DEFAULT_CENTER)
+
+  useEffect(() => {
+    if (hasCoords) return
+    navigator.geolocation?.getCurrentPosition(
+      (pos) => setGeoCenter([pos.coords.latitude, pos.coords.longitude]),
+      () => {} // silently fall back to Bulgaria center
+    )
+  }, [hasCoords])
+
+  const center: [number, number] = hasCoords ? [lat!, lng!] : geoCenter
 
   return (
     <MapContainer
       center={center}
-      zoom={13}
+      zoom={11}
       style={{ height: '280px', width: '100%', borderRadius: '8px' }}
       className="z-0"
     >
@@ -64,9 +74,9 @@ export function MapPicker({ lat, lng, radius, onChange }: Props) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       />
       <Interactions onChange={onChange} />
+      <Recenter lat={center[0]} lng={center[1]} />
       {hasCoords && (
         <>
-          <Recenter lat={lat!} lng={lng!} />
           <Marker position={[lat!, lng!]} icon={markerIcon} />
           <Circle
             center={[lat!, lng!]}

@@ -1,4 +1,4 @@
-package org.example.garant.sync.dto;
+package org.example.attendTrack.sync.dto;
 
 import java.util.UUID;
 

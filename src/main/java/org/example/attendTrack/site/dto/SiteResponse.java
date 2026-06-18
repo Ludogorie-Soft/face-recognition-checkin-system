@@ -1,7 +1,7 @@
-package org.example.garant.site.dto;
+package org.example.attendTrack.site.dto;
 
-import org.example.garant.site.Site;
-import org.example.garant.user.dto.UserResponse;
+import org.example.attendTrack.site.Site;
+import org.example.attendTrack.user.dto.UserResponse;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

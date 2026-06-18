@@ -1,8 +1,8 @@
-package org.example.garant.user;
+package org.example.attendTrack.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.garant.user.dto.FaceDescriptorRequest;
+import org.example.attendTrack.user.dto.FaceDescriptorRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

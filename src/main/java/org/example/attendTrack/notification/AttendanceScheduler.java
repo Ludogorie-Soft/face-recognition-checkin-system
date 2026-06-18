@@ -1,14 +1,13 @@
-package org.example.garant.notification;
+package org.example.attendTrack.notification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.garant.attendance.Attendance;
-import org.example.garant.attendance.AttendanceRepository;
-import org.example.garant.attendance.AttendanceType;
-import org.example.garant.site.Site;
-import org.example.garant.site.SiteRepository;
-import org.example.garant.site.SiteWorkerRepository;
-import org.example.garant.user.User;
+import org.example.attendTrack.attendance.AttendanceRepository;
+import org.example.attendTrack.attendance.AttendanceType;
+import org.example.attendTrack.site.Site;
+import org.example.attendTrack.site.SiteRepository;
+import org.example.attendTrack.site.SiteWorkerRepository;
+import org.example.attendTrack.user.User;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

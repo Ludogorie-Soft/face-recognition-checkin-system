@@ -1,4 +1,4 @@
-package org.example.garant.user.dto;
+package org.example.attendTrack.user.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

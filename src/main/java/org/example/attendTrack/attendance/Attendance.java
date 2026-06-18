@@ -1,9 +1,9 @@
-package org.example.garant.attendance;
+package org.example.attendTrack.attendance;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.garant.site.Site;
-import org.example.garant.user.User;
+import org.example.attendTrack.site.Site;
+import org.example.attendTrack.user.User;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

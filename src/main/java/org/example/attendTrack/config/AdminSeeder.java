@@ -1,10 +1,10 @@
-package org.example.garant.config;
+package org.example.attendTrack.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.garant.user.Role;
-import org.example.garant.user.User;
-import org.example.garant.user.UserRepository;
+import org.example.attendTrack.user.Role;
+import org.example.attendTrack.user.User;
+import org.example.attendTrack.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

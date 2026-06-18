@@ -1,10 +1,10 @@
-package org.example.garant.dashboard;
+package org.example.attendTrack.dashboard;
 
 import lombok.RequiredArgsConstructor;
-import org.example.garant.attendance.AttendanceRepository;
-import org.example.garant.site.SiteRepository;
-import org.example.garant.user.Role;
-import org.example.garant.user.UserRepository;
+import org.example.attendTrack.attendance.AttendanceRepository;
+import org.example.attendTrack.site.SiteRepository;
+import org.example.attendTrack.user.Role;
+import org.example.attendTrack.user.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

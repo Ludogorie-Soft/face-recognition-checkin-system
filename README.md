@@ -16,7 +16,58 @@ Built with **Spring Boot 3.3**, **Java 21**, **PostgreSQL**, and **Flyway**.
 
 ---
 
-## Local Setup
+## Docker Setup (Frontend + Backend)
+
+Both projects build automatically from a single command — no manual steps needed.
+
+**What gets built:**
+- `Dockerfile` — Spring Boot multi-stage build (Maven compiles the `.jar`, final image is JRE only, ~200 MB)
+- `frontend/Dockerfile` — Next.js multi-stage build (`npm ci` + `next build`, final image is Node.js + compiled output, ~150 MB)
+
+### Local
+
+```bash
+# 1. Create your env file
+cp .env.prod.example .env
+# Edit .env and fill in DB_USERNAME, DB_PASSWORD, JWT_SECRET, etc.
+
+# 2. Build and start everything
+docker compose up --build
+
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:8080
+```
+
+### Production (AWS EC2)
+
+```bash
+# 1. Create your production env file
+cp .env.prod.example .env.prod
+# Edit .env.prod — use strong passwords and a real JWT_SECRET
+
+# 2. Obtain an SSL certificate (required for camera access on mobile)
+mkdir certs
+certbot certonly --standalone -d your-domain.com
+cp /etc/letsencrypt/live/your-domain.com/fullchain.pem certs/
+cp /etc/letsencrypt/live/your-domain.com/privkey.pem certs/
+
+# 3. Build and start in detached mode
+docker compose -f docker-compose.prod.yml up --build -d
+```
+
+> **AWS ALB alternative:** If you use an Application Load Balancer for SSL termination, skip the `certs/` step.
+> In `nginx.conf` change `listen 443 ssl` → `listen 80` and remove the `ssl_*` lines.
+
+**Traffic flow in production:**
+```
+Internet → nginx (443) → frontend:3000
+                       → backend:8080  (internal only, not exposed)
+postgres               (internal only, not exposed)
+```
+
+---
+
+## Local Setup (without Docker)
 
 ### 1. Create the database
 
@@ -51,6 +102,51 @@ JAVA_HOME=/usr/local/Cellar/openjdk@21/21.0.7/libexec/openjdk.jdk/Contents/Home 
 ```
 
 The API is available at `http://localhost:8080`.
+
+---
+
+## Running on a Mobile Device (Local Network)
+
+To access the app from your phone, both devices must be on the **same Wi-Fi network**.
+
+### 1. Find your computer's local IP address
+
+**macOS / Linux:**
+```bash
+ipconfig getifaddr en0
+```
+
+**Windows:**
+```bash
+ipconfig
+# Look for "IPv4 Address" under your Wi-Fi adapter
+```
+
+The IP will look something like `192.168.x.x`.
+
+### 2. Start the backend
+
+```bash
+./mvnw spring-boot:run
+```
+
+### 3. Start the frontend
+
+```bash
+cd frontend
+npm run build && npm run start -- -H 0.0.0.0
+```
+
+This builds the app and starts the production server, accessible from all network interfaces.
+
+### 4. Open on your phone
+
+Open `http://192.168.x.x:3000` in your phone's browser (replace with your actual IP from step 1).
+
+> **Note:** By default, the backend allows requests from any origin (`*`), which is suitable for local development. In production, set `CORS_ALLOWED_ORIGINS` to your actual frontend URL:
+> ```bash
+> CORS_ALLOWED_ORIGINS=https://your-domain.com ./mvnw spring-boot:run
+> ```
 
 On first startup:
 - Flyway runs all database migrations automatically

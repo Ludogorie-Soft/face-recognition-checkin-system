@@ -1,4 +1,4 @@
-package org.example.garant.user;
+package org.example.attendTrack.user;
 
 import jakarta.persistence.*;
 import lombok.*;

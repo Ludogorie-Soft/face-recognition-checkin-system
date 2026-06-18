@@ -1,4 +1,4 @@
-package org.example.garant.site.dto;
+package org.example.attendTrack.site.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

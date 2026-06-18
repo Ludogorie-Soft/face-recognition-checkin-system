@@ -40,3 +40,7 @@ build/
 
 ### Environment ###
 .env
+.env.prod
+
+### SSL certificates ###
+certs/

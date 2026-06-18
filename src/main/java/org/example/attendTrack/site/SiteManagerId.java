@@ -1,4 +1,4 @@
-package org.example.garant.site;
+package org.example.attendTrack.site;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

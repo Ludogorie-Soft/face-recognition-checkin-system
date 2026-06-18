@@ -1,9 +1,9 @@
-package org.example.garant.site;
+package org.example.attendTrack.site;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.garant.user.User;
+import org.example.attendTrack.user.User;
 
 import java.time.LocalDateTime;
 

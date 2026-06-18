@@ -1,10 +1,10 @@
-package org.example.garant.attendance;
+package org.example.attendTrack.attendance;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.garant.attendance.dto.AttendanceSyncRequest;
-import org.example.garant.attendance.dto.AttendanceSyncResponse;
-import org.example.garant.user.User;
+import org.example.attendTrack.attendance.dto.AttendanceSyncRequest;
+import org.example.attendTrack.attendance.dto.AttendanceSyncResponse;
+import org.example.attendTrack.user.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

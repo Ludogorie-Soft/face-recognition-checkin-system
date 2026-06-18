@@ -1,4 +1,4 @@
-package org.example.garant.common.exception;
+package org.example.attendTrack.common.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

@@ -1,10 +1,10 @@
-package org.example.garant.user;
+package org.example.attendTrack.user;
 
 import lombok.RequiredArgsConstructor;
-import org.example.garant.common.exception.ApiException;
-import org.example.garant.common.exception.ErrorCode;
-import org.example.garant.user.dto.UserRequest;
-import org.example.garant.user.dto.UserResponse;
+import org.example.attendTrack.common.exception.ApiException;
+import org.example.attendTrack.common.exception.ErrorCode;
+import org.example.attendTrack.user.dto.UserRequest;
+import org.example.attendTrack.user.dto.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

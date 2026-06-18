@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Loader2, MapPin, RefreshCw, ChevronLeft } from 'lucide-react'
@@ -11,13 +11,14 @@ import { db } from '@/lib/db'
 import { toLocalISOString } from '@/lib/utils'
 import api from '@/lib/axios'
 import type { SiteInfo, WorkerRecord } from '@/lib/db'
+import type { SiteResponse } from '@/types/site'
 
 type Phase = 'select' | 'syncing' | 'camera'
 
 export default function VerifyPage() {
   const t = useTranslations('verify')
   const tn = useTranslations('nav')
-  const { data: sites = [], isLoading: sitesLoading } = useSites()
+  const { data: apiSites, isLoading: sitesLoading, isError: sitesError } = useSites()
   const { sync } = useSiteSync()
 
   const [phase, setPhase] = useState<Phase>('select')
@@ -25,6 +26,27 @@ export default function VerifyPage() {
   const [workers, setWorkers] = useState<WorkerRecord[]>([])
   const [resyncing, setResyncing] = useState(false)
   const [sessionLog, setSessionLog] = useState<Map<string, 'CHECK_IN' | 'CHECK_OUT'>>(new Map())
+  const [cachedSites, setCachedSites] = useState<SiteResponse[]>([])
+
+  // When offline and API fails, fall back to IndexedDB
+  useEffect(() => {
+    if ((sitesError || (!sitesLoading && !apiSites?.length)) && !navigator.onLine) {
+      db.siteInfo.toArray().then((rows) =>
+        setCachedSites(
+          rows.map((s) => ({
+            ...s,
+            address: null,
+            active: true,
+            createdAt: '',
+            managers: [],
+            workers: [],
+          }))
+        )
+      )
+    }
+  }, [sitesError, sitesLoading, apiSites])
+
+  const sites: SiteResponse[] = apiSites?.length ? apiSites : cachedSites
 
   // ── Site selection ──────────────────────────────────────────────────────────
 
@@ -45,13 +67,17 @@ export default function VerifyPage() {
       setSite(syncResult.value.site)
       setWorkers(syncResult.value.workers)
 
+      // Build sessionLog from API (synced records) + db.pending (unsynced records)
+      const initial = new Map<string, 'CHECK_IN' | 'CHECK_OUT'>()
       if (todayRes.status === 'fulfilled') {
-        const initial = new Map<string, 'CHECK_IN' | 'CHECK_OUT'>()
         Object.entries(todayRes.value.data).forEach(([id, type]) => {
           initial.set(id, type as 'CHECK_IN' | 'CHECK_OUT')
         })
-        setSessionLog(initial)
       }
+      // Pending records are newer — they override the API data
+      const pending = await db.pending.where('siteId').equals(siteId).sortBy('recordedAt')
+      pending.forEach((r) => initial.set(r.workerId, r.type))
+      setSessionLog(initial)
 
       setPhase('camera')
     } catch {

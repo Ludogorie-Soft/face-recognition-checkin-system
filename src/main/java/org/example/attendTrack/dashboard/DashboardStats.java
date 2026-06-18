@@ -1,4 +1,4 @@
-package org.example.garant.dashboard;
+package org.example.attendTrack.dashboard;
 
 public record DashboardStats(
         long totalSites,

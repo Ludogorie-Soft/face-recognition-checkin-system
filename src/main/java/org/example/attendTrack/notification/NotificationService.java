@@ -1,14 +1,14 @@
-package org.example.garant.notification;
+package org.example.attendTrack.notification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
-import org.example.garant.site.Site;
-import org.example.garant.site.SiteManagerRepository;
-import org.example.garant.user.Role;
-import org.example.garant.user.User;
-import org.example.garant.user.UserRepository;
+import org.example.attendTrack.site.Site;
+import org.example.attendTrack.site.SiteManagerRepository;
+import org.example.attendTrack.user.Role;
+import org.example.attendTrack.user.User;
+import org.example.attendTrack.user.UserRepository;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;

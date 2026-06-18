@@ -23,7 +23,10 @@ export function useFaceApi() {
       ])
       loaded.current = true
       setState('ready')
-    }).catch(() => setState('error'))
+    }).catch((err) => {
+      console.error('[useFaceApi] failed to load:', err)
+      setState('error')
+    })
   }, [])
 
   // Detect a single face descriptor from a video element

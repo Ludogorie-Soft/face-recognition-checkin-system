@@ -11,6 +11,9 @@
   --card: 0 0% 100%;               /* #FFFFFF */
   --card-foreground: 215 28% 17%;
 
+  --popover: 0 0% 100%;            /* #FFFFFF */
+  --popover-foreground: 215 28% 17%;
+
   --primary: 221 83% 53%;          /* #2563EB blue-600 */
   --primary-foreground: 0 0% 100%;
 
@@ -41,6 +44,9 @@
   --card: 215 28% 17%;             /* #1E293B slate-800 */
   --card-foreground: 213 33% 96%;
 
+  --popover: 222 47% 14%;          /* slightly lighter than bg */
+  --popover-foreground: 213 33% 96%;
+
   --primary: 217 91% 60%;          /* #3B82F6 blue-500 */
   --primary-foreground: 0 0% 100%;
 
@@ -66,6 +72,8 @@
   --color-foreground: hsl(var(--foreground));
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
   --color-secondary: hsl(var(--secondary));

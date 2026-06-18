@@ -1,6 +1,6 @@
-package org.example.garant.report.dto;
+package org.example.attendTrack.report.dto;
 
-import org.example.garant.attendance.AttendanceType;
+import org.example.attendTrack.attendance.AttendanceType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

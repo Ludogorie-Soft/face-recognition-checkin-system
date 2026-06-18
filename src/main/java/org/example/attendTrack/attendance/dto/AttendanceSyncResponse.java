@@ -1,4 +1,4 @@
-package org.example.garant.attendance.dto;
+package org.example.attendTrack.attendance.dto;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
-package org.example.garant.sync;
+package org.example.attendTrack.sync;
 
 import lombok.RequiredArgsConstructor;
-import org.example.garant.sync.dto.SiteSyncResponse;
-import org.example.garant.user.User;
+import org.example.attendTrack.sync.dto.SiteSyncResponse;
+import org.example.attendTrack.user.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -8,12 +8,17 @@
       "file": "src/main/java/org/example/garant/config/WebPushConfig.java",
       "root_cause": "@ConditionalOnProperty matches when property value is empty string \"\". application.yml sets vapid.public-key=${VAPID_PUBLIC_KEY:} which defaults to \"\", so the condition is always true. PushService tries to Base64-decode empty key → ArrayIndexOutOfBoundsException.",
       "fix": "Replaced @ConditionalOnProperty(name=\"vapid.public-key\") with @ConditionalOnExpression(\"T(org.springframework.util.StringUtils).hasText('${vapid.public-key:}')\") — only creates PushService bean when key is actually non-blank.",
-      "tags": ["webpush", "vapid", "startup", "conditional-bean", "spring"],
+      "tags": [
+        "webpush",
+        "vapid",
+        "startup",
+        "conditional-bean",
+        "spring"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-17T00:00:00"
-    }
-  ,
+    },
     {
       "id": "bug-002",
       "timestamp": "2026-06-17T00:00:00",
@@ -21,7 +26,13 @@
       "file": "frontend/lib/auth.ts",
       "root_cause": "decodeToken() used atob() directly on JWT payload. JWT uses Base64URL encoding (- and _ chars), but atob() requires standard Base64 (+ and /). atob() throws → catch returns null → login page checks 'if (payload)' which is false → router.push never called.",
       "fix": "Convert Base64URL to Base64 before atob(): replace - with + and _ with /, then add = padding to make length a multiple of 4.",
-      "tags": ["auth", "jwt", "base64url", "redirect", "login"],
+      "tags": [
+        "auth",
+        "jwt",
+        "base64url",
+        "redirect",
+        "login"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-17T00:00:00"
@@ -33,10 +44,194 @@
       "file": "src/main/java/org/example/garant/auth/JwtTokenProvider.java",
       "root_cause": "generateToken() never added 'role' claim to the JWT. Payload only had sub/iat/exp. Frontend decodeToken() read payload.role = undefined → getDashboardPath() returned /${locale}/login → router.push sent user back to login.",
       "fix": "Added claims.put(\"role\", user.getRole().name()) using pattern matching instanceof to cast UserDetails to User before building the JWT.",
-      "tags": ["auth", "jwt", "role", "login", "redirect"],
-      "related_bugs": ["bug-002"],
+      "tags": [
+        "auth",
+        "jwt",
+        "role",
+        "login",
+        "redirect"
+      ],
+      "related_bugs": [
+        "bug-002"
+      ],
       "occurrences": 1,
       "last_seen": "2026-06-17T00:00:00"
+    },
+    {
+      "id": "bug-004",
+      "timestamp": "2026-06-18T08:37:32.510Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/next.config.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T08:37:32.510Z"
+    },
+    {
+      "id": "bug-005",
+      "timestamp": "2026-06-18T08:38:54.712Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/next.config.ts",
+      "root_cause": "8 lines replaced/restructured",
+      "fix": "Rewrote 12→4 lines (8 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T08:38:54.712Z"
+    },
+    {
+      "id": "bug-006",
+      "timestamp": "2026-06-18T08:41:35.529Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/package.json",
+      "root_cause": "Had \"next dev\"",
+      "fix": "Changed to \"next dev --no-turbopack\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-18T08:42:57.750Z"
+    },
+    {
+      "id": "bug-007",
+      "timestamp": "2026-06-18T09:28:05.411Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/components/sites/MapPicker.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T09:28:05.411Z"
+    },
+    {
+      "id": "bug-008",
+      "timestamp": "2026-06-18T09:37:06.282Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/layout/ThemeToggle.tsx",
+      "root_cause": "Had \"p-2 rounded-lg text-muted-foreground hover:text-f",
+      "fix": "Changed to \"p-2 rounded-lg text-foreground/70 hover:text-fore",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T09:37:06.282Z"
+    },
+    {
+      "id": "bug-009",
+      "timestamp": "2026-06-18T09:40:25.482Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(auth)/login/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T09:40:25.482Z"
+    },
+    {
+      "id": "bug-010",
+      "timestamp": "2026-06-18T09:43:28.699Z",
+      "error_message": "Missing error handling in function",
+      "file": "frontend/app/api/[...path]/route.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T09:43:28.699Z"
+    },
+    {
+      "id": "bug-011",
+      "timestamp": "2026-06-18T10:03:11.574Z",
+      "error_message": "Wrong reference: 86400000 should be 604800000",
+      "file": "src/main/resources/application.yml",
+      "root_cause": "Used \"86400000\" instead of \"604800000\"",
+      "fix": "Changed 86400000 → 604800000",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "yml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:03:11.574Z"
+    },
+    {
+      "id": "bug-012",
+      "timestamp": "2026-06-18T10:03:37.776Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(manager)/verify/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:03:37.776Z"
+    },
+    {
+      "id": "bug-013",
+      "timestamp": "2026-06-18T10:04:07.621Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/app/[locale]/(manager)/verify/page.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 10→21 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:04:07.621Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-06-18T10:16:32.638Z",
+      "error_message": "Missing await",
+      "file": "frontend/app/[locale]/(manager)/verify/page.tsx",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:16:32.638Z"
     }
   ]
 }

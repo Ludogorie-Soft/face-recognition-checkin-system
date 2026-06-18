@@ -1,8 +1,8 @@
-package org.example.garant.user;
+package org.example.attendTrack.user;
 
 import lombok.RequiredArgsConstructor;
-import org.example.garant.common.exception.ApiException;
-import org.example.garant.common.exception.ErrorCode;
+import org.example.attendTrack.common.exception.ApiException;
+import org.example.attendTrack.common.exception.ErrorCode;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;

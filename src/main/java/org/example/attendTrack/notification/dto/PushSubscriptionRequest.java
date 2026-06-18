@@ -1,4 +1,4 @@
-package org.example.garant.notification.dto;
+package org.example.attendTrack.notification.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

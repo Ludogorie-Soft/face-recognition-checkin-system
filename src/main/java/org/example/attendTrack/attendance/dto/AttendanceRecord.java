@@ -1,7 +1,7 @@
-package org.example.garant.attendance.dto;
+package org.example.attendTrack.attendance.dto;
 
 import jakarta.validation.constraints.NotNull;
-import org.example.garant.attendance.AttendanceType;
+import org.example.attendTrack.attendance.AttendanceType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

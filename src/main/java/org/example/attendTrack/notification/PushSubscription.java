@@ -1,8 +1,8 @@
-package org.example.garant.notification;
+package org.example.attendTrack.notification;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.garant.user.User;
+import org.example.attendTrack.user.User;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

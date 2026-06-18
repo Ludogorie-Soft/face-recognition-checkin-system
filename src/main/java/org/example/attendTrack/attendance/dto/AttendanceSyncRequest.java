@@ -1,4 +1,4 @@
-package org.example.garant.attendance.dto;
+package org.example.attendTrack.attendance.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

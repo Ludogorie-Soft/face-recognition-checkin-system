@@ -1,9 +1,9 @@
-package org.example.garant.user.dto;
+package org.example.attendTrack.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.example.garant.user.Role;
+import org.example.attendTrack.user.Role;
 
 public record UserRequest(
         @NotBlank

@@ -1,4 +1,4 @@
-package org.example.garant.common.exception;
+package org.example.attendTrack.common.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

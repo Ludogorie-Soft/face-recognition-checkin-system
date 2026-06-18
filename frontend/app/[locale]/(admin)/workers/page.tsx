@@ -138,27 +138,29 @@ export default function WorkersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      {/* Register / delete face */}
-                      {user.faceRegistered ? (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                          title={t('deleteFace')}
-                          onClick={() => setDeleteFaceConfirm(user)}
-                        >
-                          <ScanFace size={15} />
-                        </Button>
-                      ) : (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-muted-foreground hover:text-primary"
-                          title={t('registerFace')}
-                          onClick={() => setFaceModal(user)}
-                        >
-                          <Camera size={15} />
-                        </Button>
+                      {/* Register / delete face — only for WORKER role */}
+                      {user.role === 'WORKER' && (
+                        user.faceRegistered ? (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            title={t('deleteFace')}
+                            onClick={() => setDeleteFaceConfirm(user)}
+                          >
+                            <ScanFace size={15} />
+                          </Button>
+                        ) : (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                            title={t('registerFace')}
+                            onClick={() => setFaceModal(user)}
+                          >
+                            <Camera size={15} />
+                          </Button>
+                        )
                       )}
                       {/* Edit */}
                       <Button
