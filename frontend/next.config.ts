@@ -14,11 +14,30 @@ const pwaConfig = withPWA({
     disableDevLogs: true,
     runtimeCaching: [
       {
+        // ONNX models + MediaPipe face_landmarker.task (2 files, ~17MB)
         urlPattern: /\/models\/.*/,
         handler: 'CacheFirst',
         options: {
           cacheName: 'face-models',
-          expiration: { maxAgeSeconds: 30 * 24 * 60 * 60 },
+          expiration: { maxEntries: 10, maxAgeSeconds: 30 * 24 * 60 * 60 },
+        },
+      },
+      {
+        // MediaPipe WASM + JS glue (6 files, served from /mediapipe/)
+        urlPattern: /\/mediapipe\/.*/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'mediapipe-wasm',
+          expiration: { maxEntries: 20, maxAgeSeconds: 30 * 24 * 60 * 60 },
+        },
+      },
+      {
+        // ONNX Runtime WASM + MJS glue files (4 files, served from /)
+        urlPattern: /\/ort-wasm-simd-threaded.*\.(wasm|mjs)$/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'ort-wasm',
+          expiration: { maxEntries: 10, maxAgeSeconds: 30 * 24 * 60 * 60 },
         },
       },
     ],
@@ -28,7 +47,19 @@ const pwaConfig = withPWA({
 const nextConfig: NextConfig = {
   output: 'standalone',
   reactStrictMode: true,
-  serverExternalPackages: ['canvas'],
+  serverExternalPackages: ['canvas', 'onnxruntime-node'],
+  async headers() {
+    return [
+      {
+        source: '/(.*)\\.wasm',
+        headers: [{ key: 'Content-Type', value: 'application/wasm' }],
+      },
+      {
+        source: '/ort-wasm-simd-threaded(.*)\\.mjs',
+        headers: [{ key: 'Content-Type', value: 'text/javascript' }],
+      },
+    ]
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -36,6 +67,11 @@ const nextConfig: NextConfig = {
         fs: false,
         encoding: false,
       }
+      // Prevent onnxruntime-node (Node.js native) from being bundled in browser
+      config.externals = [
+        ...(Array.isArray(config.externals) ? config.externals : []),
+        { 'onnxruntime-node': 'commonjs onnxruntime-node' },
+      ]
     }
     return config
   },

@@ -1,14 +1,22 @@
 'use client'
 
+import { useEffect } from 'react'
 import { SyncBanner } from '@/components/offline/SyncBanner'
 import { useAuth } from '@/hooks/useAuth'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { LanguageToggle } from '@/components/layout/LanguageToggle'
 import { LogOut, ClipboardCheck } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
+import { prefetchModels } from '@/lib/prefetchModels'
 
 export default function ManagerLayout({ children }: { children: React.ReactNode }) {
   const { ready, logout } = useAuth('MANAGER')
+
+  // Warm the Service Worker cache with all face recognition assets as soon
+  // as the manager is authenticated — enables full offline use from then on.
+  useEffect(() => {
+    if (ready) prefetchModels()
+  }, [ready])
 
   if (!ready) {
     return (

@@ -44,3 +44,10 @@ build/
 
 ### SSL certificates ###
 certs/
+
+### ML models and WASM binaries (downloaded at build time via postinstall) ###
+frontend/public/models/face_landmarker.task
+frontend/public/models/mobilefacenet.onnx
+frontend/public/mediapipe/
+frontend/public/ort-wasm*.wasm
+frontend/public/ort-wasm*.mjs

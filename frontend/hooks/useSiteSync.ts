@@ -57,7 +57,7 @@ export function useSiteSync() {
         // Persist to IndexedDB
         await db.siteInfo.put(siteInfo)
         await db.workers.where('siteId').equals(siteId).delete()
-        await db.workers.bulkAdd(workers)
+        await db.workers.bulkPut(workers)
 
         setStatus('done')
         return { site: siteInfo, workers }

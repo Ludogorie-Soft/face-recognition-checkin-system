@@ -51,6 +51,21 @@ class GarantDB extends Dexie {
       siteInfo: 'id',
       pending: '++id, siteId, status, recordedAt',
     })
+
+    // v3: drop workers — IndexedDB cannot change primary key in-place.
+    this.version(3).stores({
+      workers: null,
+      siteInfo: 'id',
+      pending: '++id, siteId, status, recordedAt',
+    })
+
+    // v4: recreate workers with compound primary key [id+siteId] so a worker
+    // assigned to multiple sites gets one entry per site (no BulkError).
+    this.version(4).stores({
+      workers: '[id+siteId], siteId, name',
+      siteInfo: 'id',
+      pending: '++id, siteId, status, recordedAt',
+    })
   }
 }
 

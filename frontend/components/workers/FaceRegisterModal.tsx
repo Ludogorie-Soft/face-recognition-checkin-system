@@ -29,6 +29,7 @@ export function FaceRegisterModal({ open, onClose, worker }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const detectingRef = useRef(false)
 
   const [capturing, setCapturing] = useState(false)
   const [detected, setDetected] = useState(false)
@@ -48,7 +49,7 @@ export function FaceRegisterModal({ open, onClose, worker }: Props) {
       }
       setCapturing(true)
     } catch {
-      toast.error('Камерата не може да бъде стартирана')
+      toast.error(t('cameraError'))
     }
   }, [])
 
@@ -64,9 +65,16 @@ export function FaceRegisterModal({ open, onClose, worker }: Props) {
   useEffect(() => {
     if (!capturing || faceApiState !== 'ready') return
     intervalRef.current = setInterval(async () => {
-      if (!videoRef.current) return
-      const descriptor = await detectDescriptor(videoRef.current)
-      setDetected(!!descriptor)
+      if (!videoRef.current || detectingRef.current) return
+      detectingRef.current = true
+      try {
+        const descriptor = await detectDescriptor(videoRef.current)
+        setDetected(!!descriptor)
+      } catch {
+        // inference error — next interval will retry
+      } finally {
+        detectingRef.current = false
+      }
     }, 500)
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [capturing, faceApiState, detectDescriptor])
@@ -138,12 +146,12 @@ export function FaceRegisterModal({ open, onClose, worker }: Props) {
           {faceApiState === 'loading' && (
             <p className="text-sm text-muted-foreground flex items-center gap-2">
               <Loader2 size={14} className="animate-spin" />
-              Зареждане на моделите...
+              {t('modelsLoading')}
             </p>
           )}
           {faceApiState === 'error' && (
             <p className="text-sm text-destructive">
-              Моделите не могат да бъдат заредени. Проверете /public/models/.
+              {t('modelsError')}
             </p>
           )}
 

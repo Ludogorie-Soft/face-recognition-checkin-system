@@ -3,6 +3,8 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 
+| 15:00 | Fixed: deactivate() now deletes face descriptor — soft-delete left orphan face_descriptors blocking re-registration | UserService.java | fixed | ~800 |
+
 | 17:00 | Responsive design audit — all pages/components reviewed | all | complete | ~4000 |
 | 17:05 | Mobile nav: added hamburger + drawer to AdminLayout, onClose prop to AdminSidebar | AdminSidebar.tsx, layout.tsx | complete | ~200 |
 | 17:06 | Table overflow: overflow-x-auto + min-w on sites, workers, reports tables | sites/page.tsx, workers/page.tsx, reports/page.tsx | complete | ~60 |
@@ -133,3 +135,136 @@
 | 16:33 | Session end: 18 writes across 11 files (application.yml, next.config.ts, page.tsx, Dockerfile, docker-compose.yml) | 23 reads | ~10054 tok |
 | 16:47 | Edited frontend/hooks/useSites.ts | modified useAssignManager() | ~347 |
 | 16:47 | Session end: 19 writes across 11 files (application.yml, next.config.ts, page.tsx, Dockerfile, docker-compose.yml) | 24 reads | ~11129 tok |
+| 16:53 | Session end: 19 writes across 11 files (application.yml, next.config.ts, page.tsx, Dockerfile, docker-compose.yml) | 24 reads | ~11129 tok |
+
+## Session: 2026-06-21 15:27
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:45 | Created FACE_RECOGNITION_V2.md | — | ~804 |
+| 15:48 | Edited frontend/next.config.ts | modified headers() | ~261 |
+| 15:51 | Edited FACE_RECOGNITION_V2.md | 10→10 lines | ~137 |
+| 15:52 | Created frontend/lib/faceAlignment.ts | — | ~1008 |
+| 15:52 | Created frontend/lib/faceMatcher.ts | — | ~538 |
+| 15:52 | Created frontend/hooks/useFaceApi.ts | — | ~1278 |
+| 15:53 | Edited frontend/lib/faceMatcher.ts | match() → similarity() | ~68 |
+| 15:53 | Edited frontend/lib/faceMatcher.ts | modified if() | ~71 |
+| 15:53 | Created src/main/resources/db/migration/V2__clear_face_descriptors.sql | — | ~43 |
+| 15:53 | Edited src/main/java/org/example/attendTrack/user/FaceDescriptorService.java | euclideanDistance() → cosineSimilarity() | ~484 |
+| 15:55 | Edited FACE_RECOGNITION_V2.md | 17→17 lines | ~246 |
+| 15:56 | Edited FACE_RECOGNITION_V2.md | 4→5 lines | ~82 |
+| 15:56 | Session end: 12 writes across 7 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 9 reads | ~8059 tok |
+| 15:59 | Session end: 12 writes across 7 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 11 reads | ~11233 tok |
+| 16:01 | Edited frontend/next.config.ts | expanded (+19 lines) | ~308 |
+| 16:01 | Edited frontend/next.config.ts | modified if() | ~131 |
+| 16:02 | Created frontend/lib/faceAlignment.ts | — | ~1057 |
+| 16:02 | Created frontend/hooks/useFaceApi.ts | — | ~1642 |
+| 16:02 | Edited FACE_RECOGNITION_V2.md | added error handling | ~196 |
+| 16:03 | Session end: 17 writes across 7 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 11 reads | ~14581 tok |
+| 16:07 | Session end: 17 writes across 7 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 19 reads | ~15420 tok |
+| 16:08 | Edited src/main/java/org/example/attendTrack/user/dto/FaceDescriptorRequest.java | 3→3 lines | ~37 |
+| 16:10 | Created frontend/scripts/copy-wasm.js | — | ~454 |
+| 16:10 | Edited frontend/package.json | 6→7 lines | ~50 |
+| 16:10 | Created frontend/hooks/useFaceApi.ts | — | ~1496 |
+| 16:11 | Edited frontend/next.config.ts | "/:path*.wasm" → "/(.*)\\.wasm" | ~9 |
+| 16:11 | Edited frontend/lib/faceAlignment.ts | modified getCanvas() | ~158 |
+| 16:11 | Edited FACE_RECOGNITION_V2.md | inline fix | ~14 |
+| 16:11 | Edited FACE_RECOGNITION_V2.md | expanded (+10 lines) | ~198 |
+| 16:11 | Session end: 25 writes across 10 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 19 reads | ~17853 tok |
+| 16:14 | Session end: 25 writes across 10 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 21 reads | ~18479 tok |
+| 16:15 | Edited frontend/hooks/useFaceApi.ts | modified catch() | ~410 |
+| 16:15 | Edited frontend/hooks/useFaceApi.ts | added 1 condition(s) | ~113 |
+| 16:15 | Edited frontend/hooks/useFaceApi.ts | modified if() | ~54 |
+| 16:15 | Created frontend/scripts/copy-wasm.js | — | ~522 |
+| 16:15 | Edited frontend/lib/faceMatcher.ts | modified normalize() | ~102 |
+| 16:16 | Edited FACE_RECOGNITION_V2.md | added error handling | ~150 |
+| 16:16 | Session end: 31 writes across 10 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 21 reads | ~19840 tok |
+| 16:20 | Session end: 31 writes across 10 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 21 reads | ~20478 tok |
+| 16:24 | Edited frontend/hooks/useFaceApi.ts | expanded (+11 lines) | ~233 |
+| 16:25 | Edited frontend/lib/faceMatcher.ts | added 1 condition(s) | ~52 |
+| 16:25 | Edited frontend/scripts/copy-wasm.js | added 1 condition(s) | ~242 |
+| 16:25 | Edited frontend/lib/faceAlignment.ts | 2→1 lines | ~24 |
+| 16:25 | Edited FACE_RECOGNITION_V2.md | added error handling | ~133 |
+| 16:25 | Session end: 36 writes across 10 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 21 reads | ~21172 tok |
+| 16:28 | Session end: 36 writes across 10 files (FACE_RECOGNITION_V2.md, next.config.ts, faceAlignment.ts, faceMatcher.ts, useFaceApi.ts) | 21 reads | ~21365 tok |
+
+## Session: 2026-06-21 16:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:35 | Created frontend/hooks/useFaceApi.ts | — | ~2328 |
+| 16:36 | Created frontend/components/verify/VerifyCamera.tsx | — | ~4867 |
+| 14:05 | Added face mesh overlay (tessellation + eyes + lips + oval) during scanning | hooks/useFaceApi.ts, components/verify/VerifyCamera.tsx | TypeScript 0 errors ✓ |
+| 16:38 | Session end: 2 writes across 2 files (useFaceApi.ts, VerifyCamera.tsx) | 1 reads | ~7195 tok |
+| 16:41 | Edited frontend/Dockerfile | 3→4 lines | ~20 |
+| 14:10 | Fix Docker build: COPY scripts/ before npm install so postinstall finds copy-wasm.js | frontend/Dockerfile | build error resolved |
+| 16:42 | Session end: 3 writes across 3 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile) | 2 reads | ~7424 tok |
+| 21:14 | Edited frontend/scripts/copy-wasm.js | 5→5 lines | ~43 |
+| 21:14 | Edited frontend/next.config.ts | 9→9 lines | ~85 |
+| 21:14 | Edited frontend/next.config.ts | 6→10 lines | ~80 |
+| 14:20 | Fix 404 ort-wasm-simd-threaded.jsep.mjs — copy .mjs files too, add headers + PWA cache | scripts/copy-wasm.js, next.config.ts, public/ | TS 0 errors ✓ |
+| 21:15 | Session end: 6 writes across 5 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 4 reads | ~8848 tok |
+| 21:16 | Session end: 6 writes across 5 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 4 reads | ~8848 tok |
+| 21:19 | Created frontend/lib/prefetchModels.ts | — | ~489 |
+| 21:19 | Edited frontend/app/[locale]/(manager)/layout.tsx | added 1 condition(s) | ~233 |
+| 14:35 | Offline prefetch: prefetchModels() called from ManagerLayout on auth ready | lib/prefetchModels.ts (new), app/[locale]/(manager)/layout.tsx | TS 0 errors ✓ |
+| 21:19 | Session end: 8 writes across 7 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 5 reads | ~9570 tok |
+| 21:23 | Session end: 8 writes across 7 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 6 reads | ~9570 tok |
+| 21:24 | Edited .gitignore | 1→2 lines | ~16 |
+| 21:24 | Edited frontend/Dockerfile | 5→8 lines | ~80 |
+| 21:24 | Edited frontend/lib/prefetchModels.ts | 9→5 lines | ~66 |
+| 21:24 | Edited frontend/components/verify/VerifyCamera.tsx | added 1 condition(s) | ~164 |
+| 14:50 | Audit 5 fixes: gitignore .mjs, Dockerfile Stage 2 copy-wasm, canvas clientWidth guard, trim asyncify/jspi prefetch | .gitignore, Dockerfile, VerifyCamera.tsx, prefetchModels.ts | TS 0 errors ✓ |
+| 21:26 | Session end: 12 writes across 8 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 7 reads | ~9911 tok |
+| 21:29 | Session end: 12 writes across 8 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 10 reads | ~10980 tok |
+| 21:29 | Edited frontend/lib/faceAlignment.ts | 3→5 lines | ~53 |
+| 21:29 | Edited frontend/hooks/useFaceApi.ts | 6→10 lines | ~131 |
+| 21:29 | Edited frontend/lib/faceAlignment.ts | 3→3 lines | ~45 |
+| 21:29 | Edited frontend/lib/faceAlignment.ts | modified resetAlignmentCanvas() | ~39 |
+| 21:29 | Edited frontend/lib/faceMatcher.ts | inline fix | ~20 |
+| 21:30 | Edited frontend/next.config.ts | 27→27 lines | ~264 |
+| 15:10 | Audit 6 fixes: clearRect in alignFace, dispose all output tensors, clean Fix#N comments, PWA maxEntries | faceAlignment.ts, useFaceApi.ts, faceMatcher.ts, next.config.ts | TS 0 errors ✓ |
+| 21:30 | Session end: 18 writes across 10 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 10 reads | ~11532 tok |
+| 21:38 | Session end: 18 writes across 10 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 11 reads | ~18816 tok |
+| 21:41 | Session end: 18 writes across 10 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 11 reads | ~18816 tok |
+| 21:45 | Edited frontend/Dockerfile | expanded (+14 lines) | ~285 |
+| 21:46 | Edited frontend/components/verify/VerifyCamera.tsx | inline fix | ~10 |
+| 21:46 | Edited frontend/lib/prefetchModels.ts | added 1 condition(s) | ~102 |
+| 15:40 | Audit 7 fixes: Dockerfile wget models, setFaceVisible(true), prefetchModels SW guard | Dockerfile, VerifyCamera.tsx, prefetchModels.ts | TS 0 errors ✓ |
+| 21:46 | Session end: 21 writes across 10 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 11 reads | ~19233 tok |
+| 21:50 | Session end: 21 writes across 10 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 12 reads | ~19233 tok |
+| 21:51 | Edited frontend/components/verify/VerifyCamera.tsx | added error handling | ~581 |
+| 21:51 | Edited frontend/components/workers/FaceRegisterModal.tsx | 3→4 lines | ~61 |
+| 21:51 | Edited frontend/components/workers/FaceRegisterModal.tsx | added error handling | ~116 |
+| 15:55 | Audit 8 fixes: catch in VerifyCamera detection loop, detectingRef guard + catch in FaceRegisterModal | VerifyCamera.tsx, FaceRegisterModal.tsx | TS 0 errors ✓ |
+| 21:52 | Session end: 24 writes across 11 files (useFaceApi.ts, VerifyCamera.tsx, Dockerfile, copy-wasm.js, next.config.ts) | 12 reads | ~19991 tok |
+
+## Session: 2026-06-21 21:58
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:59 | Edited frontend/messages/en.json | 3→4 lines | ~40 |
+| 21:59 | Edited frontend/messages/bg.json | 3→4 lines | ~46 |
+| 21:59 | Edited frontend/components/verify/VerifyCamera.tsx | "Камерата не може да бъде " → "cameraError" | ~11 |
+| 21:59 | Edited frontend/components/workers/FaceRegisterModal.tsx | "Камерата не може да бъде " → "cameraError" | ~10 |
+| 21:59 | Session end: 4 writes across 4 files (en.json, bg.json, VerifyCamera.tsx, FaceRegisterModal.tsx) | 4 reads | ~2466 tok |
+| 22:02 | Edited frontend/components/workers/FaceRegisterModal.tsx | 11→11 lines | ~117 |
+| 22:02 | Session end: 5 writes across 4 files (en.json, bg.json, VerifyCamera.tsx, FaceRegisterModal.tsx) | 5 reads | ~4356 tok |
+
+## Session: 2026-06-22 07:52
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 07:55 | Edited src/main/java/org/example/attendTrack/user/UserService.java | modified deactivate() | ~58 |
+| 07:56 | Session end: 1 writes across 1 files (UserService.java) | 7 reads | ~2909 tok |
+| 07:56 | Session end: 1 writes across 1 files (UserService.java) | 7 reads | ~2909 tok |
+| 07:57 | Session end: 1 writes across 1 files (UserService.java) | 13 reads | ~5091 tok |
+| 08:02 | Edited frontend/lib/db.ts | expanded (+8 lines) | ~162 |
+| 08:03 | Edited frontend/hooks/useSiteSync.ts | inline fix | ~12 |
+| 08:03 | Session end: 3 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~5878 tok |
+| 08:03 | Session end: 3 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~5878 tok |
+| 08:10 | Edited frontend/lib/db.ts | expanded (+7 lines) | ~145 |
+| 08:10 | Session end: 4 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~6476 tok |
+| 08:11 | Session end: 4 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~6476 tok |
+| 08:11 | Session end: 4 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~6476 tok |
+| 08:12 | Session end: 4 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~6476 tok |

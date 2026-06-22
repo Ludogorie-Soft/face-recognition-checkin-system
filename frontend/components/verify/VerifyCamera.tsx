@@ -7,7 +7,8 @@ import {
   Loader2, UserX, RefreshCw,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useFaceApi } from '@/hooks/useFaceApi'
+import { useFaceApi, getMeshConnections } from '@/hooks/useFaceApi'
+import type { NormalizedLandmark } from '@/hooks/useFaceApi'
 import { useGeoLocation } from '@/hooks/useGeoLocation'
 import { ManualOverrideModal } from './ManualOverrideModal'
 import type { SiteInfo, WorkerRecord } from '@/lib/db'
@@ -34,10 +35,91 @@ interface Props {
   }) => Promise<void>
 }
 
+// ── Face mesh drawing ─────────────────────────────────────────────────────────
+
+function drawFaceMesh(
+  canvas: HTMLCanvasElement,
+  landmarks: NormalizedLandmark[],
+  videoWidth: number,
+  videoHeight: number,
+) {
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  // Sync canvas intrinsic size to its CSS display size.
+  // Guard against zero dimensions — can happen on the very first render
+  // before the browser has completed layout.
+  const displayW = canvas.clientWidth
+  const displayH = canvas.clientHeight
+  if (displayW === 0 || displayH === 0) return
+
+  if (canvas.width !== displayW || canvas.height !== displayH) {
+    canvas.width = displayW
+    canvas.height = displayH
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  if (landmarks.length === 0) return
+
+  const connections = getMeshConnections()
+  if (!connections) return
+
+  // Compute object-cover transform: scale + offset to match video display within canvas
+  const cw = canvas.width
+  const ch = canvas.height
+  const scale = Math.max(cw / videoWidth, ch / videoHeight)
+  const ox = (cw - videoWidth * scale) / 2
+  const oy = (ch - videoHeight * scale) / 2
+
+  const toX = (lm: NormalizedLandmark) => lm.x * videoWidth * scale + ox
+  const toY = (lm: NormalizedLandmark) => lm.y * videoHeight * scale + oy
+
+  function drawConnections(
+    conns: ReadonlyArray<{ start: number; end: number }>,
+    color: string,
+    lineWidth: number,
+  ) {
+    if (!ctx) return
+    ctx.strokeStyle = color
+    ctx.lineWidth = lineWidth
+    ctx.beginPath()
+    for (const c of conns) {
+      const a = landmarks[c.start]
+      const b = landmarks[c.end]
+      if (!a || !b) continue
+      ctx.moveTo(toX(a), toY(a))
+      ctx.lineTo(toX(b), toY(b))
+    }
+    ctx.stroke()
+  }
+
+  // Background tessellation (subtle mesh)
+  drawConnections(connections.tesselation, 'rgba(0, 200, 255, 0.10)', 0.5)
+  // Face oval
+  drawConnections(connections.faceOval, 'rgba(0, 220, 255, 0.55)', 1.5)
+  // Eyes
+  drawConnections(connections.leftEye, 'rgba(0, 240, 255, 0.80)', 1.5)
+  drawConnections(connections.rightEye, 'rgba(0, 240, 255, 0.80)', 1.5)
+  // Eyebrows
+  drawConnections(connections.leftEyebrow, 'rgba(0, 220, 255, 0.55)', 1.5)
+  drawConnections(connections.rightEyebrow, 'rgba(0, 220, 255, 0.55)', 1.5)
+  // Lips
+  drawConnections(connections.lips, 'rgba(80, 210, 255, 0.70)', 1.5)
+}
+
+function clearMeshCanvas(canvas: HTMLCanvasElement | null) {
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
   const t = useTranslations('verify')
 
   const videoRef = useRef<HTMLVideoElement>(null)
+  const meshCanvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const detectingRef = useRef(false)
   const missCountRef = useRef(0)
@@ -50,7 +132,7 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
   const [manualOpen, setManualOpen] = useState(false)
   const [cameraError, setCameraError] = useState<string | null>(null)
 
-  const { state: faceState, detectDescriptor, buildMatcher } = useFaceApi()
+  const { state: faceState, detectWithMesh, buildMatcher } = useFaceApi()
   const geo = useGeoLocation(site)
 
   const matcher = useMemo(
@@ -75,7 +157,7 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
       }
       setCameraActive(true)
     } catch {
-      setCameraError('Камерата не може да бъде стартирана')
+      setCameraError(t('cameraError'))
     }
   }, [])
 
@@ -83,6 +165,7 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
     streamRef.current?.getTracks().forEach((t) => t.stop())
     streamRef.current = null
     if (videoRef.current) videoRef.current.srcObject = null
+    clearMeshCanvas(meshCanvasRef.current)
     setCameraActive(false)
     setDetected(null)
     setFaceVisible(false)
@@ -107,8 +190,20 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
 
         detectingRef.current = true
         try {
-          const descriptor = await detectDescriptor(videoRef.current)
+          const { descriptor, landmarks } = await detectWithMesh(videoRef.current)
           if (!active) break
+
+          // Draw face mesh whenever landmarks are detected
+          if (landmarks && landmarks.length > 0 && meshCanvasRef.current && videoRef.current) {
+            drawFaceMesh(
+              meshCanvasRef.current,
+              landmarks,
+              videoRef.current.videoWidth,
+              videoRef.current.videoHeight,
+            )
+          } else {
+            clearMeshCanvas(meshCanvasRef.current)
+          }
 
           if (!descriptor) {
             missCountRef.current++
@@ -131,7 +226,7 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
               }
             } else {
               missCountRef.current++
-              setFaceVisible(descriptor !== null)
+              setFaceVisible(true)
               if (missCountRef.current >= MISS_THRESHOLD) {
                 setDetected(null)
               }
@@ -143,6 +238,10 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
               setDetected(null)
             }
           }
+        } catch {
+          // Inference error (ORT/MediaPipe internal failure) — clear mesh and
+          // let the loop continue. Next cycle will retry automatically.
+          clearMeshCanvas(meshCanvasRef.current)
         } finally {
           detectingRef.current = false
         }
@@ -153,7 +252,7 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
 
     runDetection()
     return () => { active = false }
-  }, [cameraActive, faceState, confirming, detectDescriptor, matcher, workers])
+  }, [cameraActive, faceState, confirming, detectWithMesh, matcher, workers])
 
   // ── Confirm ──────────────────────────────────────────────────────────────────
 
@@ -223,6 +322,14 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
           muted
           className="w-full h-full object-cover scale-x-[-1]"
         />
+
+        {/* Face mesh overlay — mirrors video with scale-x-[-1] */}
+        {cameraActive && (
+          <canvas
+            ref={meshCanvasRef}
+            className="absolute inset-0 w-full h-full scale-x-[-1] pointer-events-none"
+          />
+        )}
 
         {/* Camera off state */}
         {!cameraActive && (

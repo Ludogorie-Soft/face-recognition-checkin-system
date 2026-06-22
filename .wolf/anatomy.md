@@ -1,15 +1,16 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T13:47:25.329Z
-> Files: 43 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-22T05:10:02.646Z
+> Files: 59 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `.gitignore` — Git ignore rules (~152 tok)
+- `.gitignore` — Git ignore rules (~220 tok)
 - `CLAUDE.md` — OpenWolf entry point (~57 tok)
 - `DEPLOY.md` — Деплой на AWS EC2 с HTTPS (без домейн) (~1404 tok)
 - `docker-compose.prod.yml` — Docker Compose: 5 services (~352 tok)
 - `docker-compose.yml` — Docker Compose services (~320 tok)
+- `FACE_RECOGNITION_V2.md` — Face Recognition — Вариант 2: MediaPipe + MobileFaceNet ONNX (~1394 tok)
 - `nginx.conf` (~302 tok)
 - `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
 - `README.md` — Project documentation (~2597 tok)
@@ -24,9 +25,9 @@
 
 ## frontend/
 
-- `Dockerfile` — Docker container definition (~207 tok)
-- `next.config.ts` — Declares withNextIntl (~305 tok)
-- `package.json` — Node.js package manifest (~425 tok)
+- `Dockerfile` — Docker container definition (~445 tok)
+- `next.config.ts` — Declares withNextIntl (~672 tok)
+- `package.json` — Node.js package manifest (~452 tok)
 
 ## frontend/app/
 
@@ -48,6 +49,10 @@
 
 - `page.tsx` — LoginPage — renders form (~1233 tok)
 
+## frontend/app/[locale]/(manager)/
+
+- `layout.tsx` — ManagerLayout (~596 tok)
+
 ## frontend/app/[locale]/(manager)/verify/
 
 - `page.tsx` — VerifyPage (~2182 tok)
@@ -64,14 +69,36 @@
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~756 tok)
 
+## frontend/components/verify/
+
+- `VerifyCamera.tsx` — drawFaceMesh (~4977 tok)
+
+## frontend/components/workers/
+
+- `FaceRegisterModal.tsx` — FaceRegisterModal — renders modal (~1759 tok)
+
 ## frontend/hooks/
 
-- `useFaceApi.ts` — Exports FaceApiState, useFaceApi (~556 tok)
+- `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
 - `useSites.ts` — API routes: GET, DELETE, POST (7 endpoints) (~718 tok)
+- `useSiteSync.ts` — Exports SyncResult, SyncStatus, useSiteSync (~603 tok)
 
 ## frontend/lib/
 
 - `axios.ts` — Declares api (~267 tok)
+- `db.ts` — Exports WorkerRecord, SiteInfo, PendingAttendance, db (~495 tok)
+- `faceAlignment.ts` — Face alignment: transforms a raw video frame into a normalized (~1112 tok)
+- `faceMatcher.ts` — Cosine-similarity 1:N face matcher. (~613 tok)
+- `prefetchModels.ts` — prefetchModels — silently warms the Service Worker cache with all face (~462 tok)
+
+## frontend/messages/
+
+- `bg.json` (~1443 tok)
+- `en.json` (~1375 tok)
+
+## frontend/scripts/
+
+- `copy-wasm.js` — copy-wasm.js — runs automatically after `npm install` (postinstall). (~625 tok)
 
 ## src/main/java/org/example/ (legacy)
 
@@ -80,6 +107,15 @@
 ## src/main/java/org/example/attendTrack/config/
 
 - `CorsConfig.java` — ", config); (~342 tok)
+
+## src/main/java/org/example/attendTrack/user/
+
+- `FaceDescriptorService.java` — Service: FaceDescriptorService (~888 tok)
+- `UserService.java` — Service: UserService (~964 tok)
+
+## src/main/java/org/example/attendTrack/user/dto/
+
+- `FaceDescriptorRequest.java` — Class: FaceDescriptorRequest (~84 tok)
 
 ## src/main/java/org/example/garant/
 
@@ -120,3 +156,4 @@
 ## src/main/resources/db/migration/
 
 - `V1__init.sql` — Full schema: users, sites, site_managers, site_workers, face_descriptors, attendance, push_subscriptions, notifications (~200 tok)
+- `V2__clear_face_descriptors.sql` — V2: Clear all 128-dim face descriptors (face-api.js). (~43 tok)

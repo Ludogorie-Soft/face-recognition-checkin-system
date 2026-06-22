@@ -18,15 +18,20 @@ public class FaceDescriptorService {
     private final FaceDescriptorRepository faceDescriptorRepository;
     private final UserRepository userRepository;
 
-    private static final double FACE_DISTANCE_THRESHOLD = 0.45;
+    // Cosine similarity threshold for 512-dim MobileFaceNet embeddings.
+    // Similarity >= 0.45 is considered the same person.
+    private static final double FACE_SIMILARITY_THRESHOLD = 0.45;
+    private static final int EXPECTED_DESCRIPTOR_LENGTH = 512;
 
-    private static double euclideanDistance(double[] a, double[] b) {
-        double sum = 0;
+    private static double cosineSimilarity(double[] a, double[] b) {
+        double dot = 0, normA = 0, normB = 0;
         for (int i = 0; i < a.length; i++) {
-            double diff = a[i] - b[i];
-            sum += diff * diff;
+            dot   += a[i] * b[i];
+            normA += a[i] * a[i];
+            normB += b[i] * b[i];
         }
-        return Math.sqrt(sum);
+        if (normA == 0 || normB == 0) return 0;
+        return dot / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 
     @Transactional
@@ -38,9 +43,14 @@ public class FaceDescriptorService {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.WRONG_ROLE, "Face descriptors are only supported for workers");
         }
 
+        if (descriptor.length != EXPECTED_DESCRIPTOR_LENGTH) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR,
+                    "Invalid descriptor length: expected " + EXPECTED_DESCRIPTOR_LENGTH + ", got " + descriptor.length);
+        }
+
         List<FaceDescriptor> others = faceDescriptorRepository.findAllExcludingUser(userId);
         for (FaceDescriptor other : others) {
-            if (euclideanDistance(descriptor, other.getDescriptor()) < FACE_DISTANCE_THRESHOLD) {
+            if (cosineSimilarity(descriptor, other.getDescriptor()) >= FACE_SIMILARITY_THRESHOLD) {
                 throw new ApiException(HttpStatus.CONFLICT, ErrorCode.FACE_ALREADY_REGISTERED,
                         "This face is already registered to another worker");
             }

@@ -1,261 +1,132 @@
 {
-  "session_id": "session-2026-06-18-1255",
-  "started": "2026-06-18T09:55:32.527Z",
+  "session_id": "session-2026-06-22-0752",
+  "started": "2026-06-22T04:52:52.913Z",
   "files_read": {
-    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx": {
-      "count": 3,
-      "tokens": 2097,
-      "first_read": "2026-06-18T09:55:47.477Z"
+    "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/FaceRegisterModal.tsx": {
+      "count": 1,
+      "tokens": 1759,
+      "first_read": "2026-06-22T04:53:29.173Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/frontend/components/offline/SyncBanner.tsx": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/FaceDescriptorService.java": {
+      "count": 1,
+      "tokens": 888,
+      "first_read": "2026-06-22T04:53:29.267Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V1__init.sql": {
+      "count": 1,
+      "tokens": 200,
+      "first_read": "2026-06-22T04:53:44.783Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/FaceDescriptorController.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T09:55:47.569Z"
+      "first_read": "2026-06-22T04:53:48.949Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSiteSync.ts": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/FaceDescriptorRepository.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T09:55:56.702Z"
+      "first_read": "2026-06-22T04:53:49.038Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/frontend/lib/db.ts": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserController.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T09:55:56.803Z"
+      "first_read": "2026-06-22T04:54:31.799Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/frontend/next.config.ts": {
-      "count": 1,
-      "tokens": 298,
-      "first_read": "2026-06-18T09:56:07.545Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSites.ts": {
-      "count": 2,
-      "tokens": 728,
-      "first_read": "2026-06-18T09:56:07.635Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T09:56:33.170Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useAuth.ts": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T09:56:38.721Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/src/main/resources/application.yml": {
-      "count": 1,
-      "tokens": 434,
-      "first_read": "2026-06-18T10:02:27.263Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/types/site.ts": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T10:03:48.543Z"
+      "first_read": "2026-06-22T04:55:19.096Z"
     },
     "/Users/user/Documents/projects/AttendTrack/frontend/components/verify/VerifyCamera.tsx": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T10:14:47.607Z"
+      "first_read": "2026-06-22T04:56:57.526Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceController.java": {
+    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx": {
+      "count": 1,
+      "tokens": 2182,
+      "first_read": "2026-06-22T04:56:57.614Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/sync/SyncController.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T10:15:38.628Z"
+      "first_read": "2026-06-22T04:57:02.546Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java": {
+    "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSiteSync.ts": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T10:15:42.084Z"
+      "first_read": "2026-06-22T04:57:05.231Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/frontend/package.json": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/sync/SyncService.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T10:22:55.761Z"
+      "first_read": "2026-06-22T04:57:07.665Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/Dockerfile": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/SiteWorkerRepository.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T10:23:13.927Z"
+      "first_read": "2026-06-22T04:57:37.067Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/docker-compose.yml": {
+    "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useFaceApi.ts": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T10:23:32.148Z"
+      "first_read": "2026-06-22T04:58:43.616Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/.gitignore": {
+    "/Users/user/Documents/projects/AttendTrack/frontend/lib/faceMatcher.ts": {
       "count": 1,
-      "tokens": 133,
-      "first_read": "2026-06-18T10:24:09.701Z"
+      "tokens": 613,
+      "first_read": "2026-06-22T04:58:43.708Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/README.md": {
-      "count": 1,
-      "tokens": 2199,
-      "first_read": "2026-06-18T10:25:03.822Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/Dockerfile": {
-      "count": 1,
-      "tokens": 206,
-      "first_read": "2026-06-18T10:31:34.675Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/SiteWorker.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T13:21:24.526Z"
+      "first_read": "2026-06-22T04:59:29.725Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/frontend/components/sites/SiteAssignModal.tsx": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/sync/dto/SiteWorkerSyncResponse.java": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T13:33:04.956Z"
+      "first_read": "2026-06-22T04:59:32.765Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/dashboard/page.tsx": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T13:33:05.048Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useDashboard.ts": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T13:33:11.501Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/sites/page.tsx": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T13:46:55.648Z"
+    "/Users/user/Documents/projects/AttendTrack/frontend/lib/db.ts": {
+      "count": 2,
+      "tokens": 453,
+      "first_read": "2026-06-22T05:01:16.598Z"
     }
   },
   "files_written": [
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/application.yml",
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
       "action": "edit",
-      "tokens": 12,
-      "at": "2026-06-18T10:03:11.573Z"
+      "tokens": 62,
+      "at": "2026-06-22T04:55:43.009Z"
     },
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/next.config.ts",
-      "action": "edit",
-      "tokens": 137,
-      "at": "2026-06-18T10:03:19.650Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
-      "action": "edit",
-      "tokens": 154,
-      "at": "2026-06-18T10:03:27.857Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
-      "action": "edit",
-      "tokens": 268,
-      "at": "2026-06-18T10:03:37.775Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
-      "action": "edit",
-      "tokens": 181,
-      "at": "2026-06-18T10:04:07.619Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
-      "action": "edit",
-      "tokens": 30,
-      "at": "2026-06-18T10:04:11.772Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
-      "action": "edit",
-      "tokens": 199,
-      "at": "2026-06-18T10:16:32.636Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/next.config.ts",
-      "action": "edit",
-      "tokens": 34,
-      "at": "2026-06-18T10:23:00.082Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/Dockerfile",
-      "action": "create",
-      "tokens": 220,
-      "at": "2026-06-18T10:23:20.654Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/docker-compose.yml",
-      "action": "create",
-      "tokens": 320,
-      "at": "2026-06-18T10:23:41.647Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/docker-compose.prod.yml",
-      "action": "create",
-      "tokens": 352,
-      "at": "2026-06-18T10:23:47.921Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/nginx.conf",
-      "action": "create",
-      "tokens": 323,
-      "at": "2026-06-18T10:23:59.348Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/.gitignore",
-      "action": "edit",
-      "tokens": 20,
-      "at": "2026-06-18T10:24:14.079Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/README.md",
-      "action": "edit",
-      "tokens": 459,
-      "at": "2026-06-18T10:25:14.595Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/DEPLOY.md",
-      "action": "create",
-      "tokens": 1605,
-      "at": "2026-06-18T10:30:27.320Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/Dockerfile",
-      "action": "edit",
-      "tokens": 11,
-      "at": "2026-06-18T10:31:38.423Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/lib/db.ts",
       "action": "edit",
       "tokens": 162,
-      "at": "2026-06-18T13:24:10.518Z"
+      "at": "2026-06-22T05:02:59.343Z"
     },
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSites.ts",
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSiteSync.ts",
       "action": "edit",
-      "tokens": 200,
-      "at": "2026-06-18T13:33:22.626Z"
+      "tokens": 12,
+      "at": "2026-06-22T05:03:04.042Z"
     },
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useSites.ts",
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/lib/db.ts",
       "action": "edit",
-      "tokens": 347,
-      "at": "2026-06-18T13:47:25.356Z"
+      "tokens": 145,
+      "at": "2026-06-22T05:10:02.661Z"
     }
   ],
   "edit_counts": {
-    "src/main/resources/application.yml": 1,
-    "frontend/next.config.ts": 2,
-    "frontend/app/[locale]/(manager)/verify/page.tsx": 5,
-    "frontend/Dockerfile": 2,
-    "docker-compose.yml": 1,
-    "docker-compose.prod.yml": 1,
-    "nginx.conf": 1,
-    ".gitignore": 1,
-    "README.md": 1,
-    "DEPLOY.md": 1,
-    "frontend/app/[locale]/(admin)/reports/page.tsx": 1,
-    "frontend/hooks/useSites.ts": 2
+    "src/main/java/org/example/attendTrack/user/UserService.java": 1,
+    "frontend/lib/db.ts": 2,
+    "frontend/hooks/useSiteSync.ts": 1
   },
-  "anatomy_hits": 7,
-  "anatomy_misses": 13,
-  "repeated_reads_warned": 3,
+  "anatomy_hits": 4,
+  "anatomy_misses": 10,
+  "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
-  "stop_count": 21
+  "stop_count": 10
 }

@@ -86,6 +86,7 @@ public class UserService {
         User user = findOrThrow(id);
         user.deactivate();
         userRepository.save(user);
+        faceDescriptorRepository.deleteByUserId(id);
     }
 
     private User findOrThrow(UUID id) {

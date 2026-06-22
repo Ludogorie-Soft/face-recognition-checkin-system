@@ -112,7 +112,8 @@
     "confidence": "Confidence: {value}%",
     "noDescriptors": "No workers with registered face",
     "modelsLoading": "Loading models...",
-    "modelsError": "Failed to load models"
+    "modelsError": "Failed to load models",
+    "cameraError": "Camera could not be started"
   },
   "errors": {
     "INVALID_CREDENTIALS": "Invalid email or password",
