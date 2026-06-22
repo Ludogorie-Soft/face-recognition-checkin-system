@@ -196,6 +196,150 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-22T05:10:02.662Z"
+    },
+    {
+      "id": "bug-013",
+      "timestamp": "2026-06-22T07:08:43.448Z",
+      "error_message": "CSS fix: hover",
+      "file": "frontend/components/verify/VerifyCamera.tsx",
+      "root_cause": "hover: bg-red-700\" → bg-green-700\"",
+      "fix": "Changed hover: bg-red-700\" → bg-green-700\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T07:08:43.448Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-06-22T07:08:49.845Z",
+      "error_message": "CSS fix: required",
+      "file": "frontend/components/workers/WorkerDialog.tsx",
+      "root_cause": "required: !user → role !== 'WORKER'",
+      "fix": "Changed required: !user → role !== 'WORKER'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T07:08:49.845Z"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-06-22T07:15:29.979Z",
+      "error_message": "Wrong reference: role should be true",
+      "file": "frontend/components/workers/WorkerDialog.tsx",
+      "root_cause": "Used \"role\" instead of \"true\"",
+      "fix": "Changed role → true",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T07:15:29.979Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-06-22T07:48:00.266Z",
+      "error_message": "Wrong reference: _IP should be 52",
+      "file": "DEPLOY.md",
+      "root_cause": "Used \"_IP\" instead of \"52\"",
+      "fix": "Changed _IP → 52",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T07:48:00.266Z"
+    },
+    {
+      "id": "bug-017",
+      "timestamp": "2026-06-22T07:58:38.276Z",
+      "error_message": "Significant refactor of ",
+      "file": "DEPLOY.md",
+      "root_cause": "10 lines replaced/restructured",
+      "fix": "Rewrote 28→52 lines (10 removed) | Also: # Rebuild само frontend; docker compose -f docker-compose.prod.yml up --bui",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-22T07:59:37.227Z"
+    },
+    {
+      "id": "bug-018",
+      "timestamp": "2026-06-22T08:55:58.156Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/bg.json",
+      "root_cause": "Had \"locationLoading\"",
+      "fix": "Changed to \"locationError\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T08:55:58.156Z"
+    },
+    {
+      "id": "bug-019",
+      "timestamp": "2026-06-22T08:56:07.465Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/en.json",
+      "root_cause": "Had \"locationLoading\"",
+      "fix": "Changed to \"locationError\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T08:56:07.465Z"
+    },
+    {
+      "id": "bug-020",
+      "timestamp": "2026-06-22T08:56:45.255Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(manager)/layout.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T08:56:45.255Z"
+    },
+    {
+      "id": "bug-021",
+      "timestamp": "2026-06-22T08:57:44.559Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/components/providers.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T08:57:44.559Z"
     }
   ]
 }

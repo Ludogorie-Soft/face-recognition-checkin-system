@@ -105,6 +105,7 @@
     "alreadyCheckedOut": "Already checked out",
     "locationValid": "Location is valid",
     "locationInvalid": "Outside site radius",
+    "locationError": "Location access denied — enable in settings",
     "locationLoading": "Determining location...",
     "success": "{name} — recorded successfully",
     "manualConfirm": "Manual confirmation",

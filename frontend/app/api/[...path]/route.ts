@@ -12,6 +12,7 @@ async function proxy(request: NextRequest, { params }: { params: Promise<{ path:
   headers.delete('host')
   headers.delete('origin')
   headers.delete('referer')
+  headers.delete('connection')
 
   const hasBody = !['GET', 'HEAD'].includes(request.method)
   const body = hasBody ? await request.arrayBuffer() : undefined

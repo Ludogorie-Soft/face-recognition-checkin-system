@@ -387,11 +387,18 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
           <div className="absolute top-0 inset-x-0 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/70 to-transparent">
             <div className={`flex items-center gap-1.5 text-xs font-medium ${
               geo.loading ? 'text-white/70'
+              : geo.error ? 'text-red-400'
               : geo.locationValid ? 'text-green-400'
               : 'text-amber-400'
             }`}>
               <MapPin size={13} />
-              {geo.loading ? t('locationLoading') : geo.locationValid ? t('locationValid') : t('locationInvalid')}
+              {geo.loading
+                ? t('locationLoading')
+                : geo.error
+                ? t('locationError')
+                : geo.locationValid
+                ? t('locationValid')
+                : t('locationInvalid')}
             </div>
             <button onClick={stopCamera} className="text-white/70 hover:text-white transition-colors">
               <XCircle size={22} />
@@ -444,20 +451,12 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
                   {t('checkIn')}
                 </Button>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    className="h-14 text-base font-bold bg-green-600 hover:bg-green-700"
-                    onClick={() => handleConfirm('CHECK_IN')}
-                  >
-                    {t('checkIn')}
-                  </Button>
-                  <Button
-                    className="h-14 text-base font-bold bg-red-600 hover:bg-red-700"
-                    onClick={() => handleConfirm('CHECK_OUT')}
-                  >
-                    {t('checkOut')}
-                  </Button>
-                </div>
+                <Button
+                  className="h-14 text-base font-bold w-full bg-green-600 hover:bg-green-700"
+                  onClick={() => handleConfirm('CHECK_IN')}
+                >
+                  {t('checkIn')}
+                </Button>
               )}
             </>
           ) : faceVisible ? (

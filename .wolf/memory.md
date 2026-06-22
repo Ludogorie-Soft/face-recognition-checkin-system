@@ -268,3 +268,71 @@
 | 08:11 | Session end: 4 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~6476 tok |
 | 08:11 | Session end: 4 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~6476 tok |
 | 08:12 | Session end: 4 writes across 3 files (UserService.java, db.ts, useSiteSync.ts) | 18 reads | ~6476 tok |
+| 10:08 | Edited frontend/components/verify/VerifyCamera.tsx | reduced (-8 lines) | ~84 |
+| 10:08 | Edited frontend/components/workers/WorkerDialog.tsx | 11→11 lines | ~119 |
+| 10:08 | Edited src/main/java/org/example/attendTrack/user/UserService.java | added 1 condition(s) | ~251 |
+| 10:09 | Session end: 7 writes across 5 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 21 reads | ~6948 tok |
+| 10:09 | Session end: 7 writes across 5 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 21 reads | ~6948 tok |
+| 10:15 | Edited frontend/components/workers/WorkerDialog.tsx | inline fix | ~18 |
+| 10:15 | Session end: 8 writes across 5 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 21 reads | ~6966 tok |
+| 10:25 | Created DEPLOY.md | — | ~2221 |
+| 10:25 | Session end: 9 writes across 6 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 25 reads | ~11102 tok |
+| 10:47 | Edited nginx.conf | 10→10 lines | ~56 |
+| 10:48 | Edited DEPLOY.md | inline fix | ~4 |
+| 10:48 | Edited DEPLOY.md | inline fix | ~4 |
+| 10:48 | Session end: 12 writes across 7 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~12293 tok |
+| 10:48 | Session end: 12 writes across 7 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~12293 tok |
+| 10:50 | Created DEPLOY.md | — | ~1934 |
+| 10:50 | Session end: 13 writes across 7 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~14376 tok |
+| 10:52 | Session end: 13 writes across 7 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~14376 tok |
+| 10:54 | Session end: 13 writes across 7 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~14376 tok |
+| 10:54 | Edited DEPLOY.md | expanded (+6 lines) | ~141 |
+| 10:54 | Session end: 14 writes across 7 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~14527 tok |
+| 10:55 | Session end: 14 writes across 7 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~14527 tok |
+| 10:58 | Created docker-compose.prod.yml | — | ~375 |
+| 10:58 | Edited DEPLOY.md | expanded (+24 lines) | ~279 |
+| 10:58 | Edited DEPLOY.md | 38→41 lines | ~212 |
+| 10:59 | Edited DEPLOY.md | 21→22 lines | ~153 |
+| 10:59 | Edited DEPLOY.md | 13 → 14 | ~15 |
+| 10:59 | Edited DEPLOY.md | 22→21 lines | ~148 |
+| 10:59 | Edited DEPLOY.md | 5→7 lines | ~87 |
+| 10:59 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15817 tok |
+| 11:00 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15817 tok |
+| 11:03 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15817 tok |
+| 11:07 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:16 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:17 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:18 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:19 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:21 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:22 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:23 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:23 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:23 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:24 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:25 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:26 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:26 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:27 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:28 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:29 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:30 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:30 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:31 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:32 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:33 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:35 | Session end: 21 writes across 8 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 26 reads | ~15840 tok |
+| 11:37 | Edited frontend/app/api/[...path]/route.ts | 4→5 lines | ~45 |
+| 11:37 | Session end: 22 writes across 9 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 27 reads | ~16239 tok |
+| 11:53 | Session end: 22 writes across 9 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 28 reads | ~16239 tok |
+| 11:55 | Edited frontend/components/verify/VerifyCamera.tsx | modified t() | ~162 |
+| 11:55 | Edited frontend/messages/bg.json | 2→3 lines | ~51 |
+| 11:56 | Edited frontend/messages/en.json | 2→3 lines | ~47 |
+| 11:56 | Session end: 25 writes across 11 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 30 reads | ~17942 tok |
+| 11:56 | Edited frontend/app/[locale]/(manager)/layout.tsx | added optional chaining | ~142 |
+| 11:56 | Session end: 26 writes across 12 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 31 reads | ~18680 tok |
+| 11:57 | Edited frontend/components/providers.tsx | added optional chaining | ~114 |
+| 11:57 | Edited frontend/app/[locale]/(manager)/layout.tsx | — | ~0 |
+| 11:57 | Session end: 28 writes across 13 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 33 reads | ~18794 tok |
+| 11:58 | Session end: 28 writes across 13 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 33 reads | ~18794 tok |
+| 11:58 | Session end: 28 writes across 13 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 33 reads | ~18794 tok |

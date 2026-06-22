@@ -105,6 +105,7 @@
     "alreadyCheckedOut": "Вече излязъл",
     "locationValid": "Локацията е валидна",
     "locationInvalid": "Извън радиуса на обекта",
+    "locationError": "Няма достъп до местоположение — разреши в настройките",
     "locationLoading": "Определяне на локация...",
     "success": "{name} — успешно записан",
     "manualConfirm": "Ръчно потвърждение",

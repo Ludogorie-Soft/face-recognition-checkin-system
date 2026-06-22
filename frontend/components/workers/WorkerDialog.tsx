@@ -102,12 +102,12 @@ export function WorkerDialog({ open, onClose, user }: Props) {
             <Label>{t('phone')}</Label>
             <Input {...register('phone')} disabled={loading} />
           </div>
-          {!user && (
+          {!user && role !== 'WORKER' && (
             <div className="flex flex-col gap-1.5">
               <Label>Парола</Label>
               <Input
                 type="password"
-                {...register('password', { required: !user })}
+                {...register('password', { required: true })}
                 disabled={loading}
                 className={errors.password ? 'border-destructive' : ''}
               />

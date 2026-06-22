@@ -46,15 +46,22 @@ public class UserService {
         if (userRepository.existsByEmail(request.email())) {
             throw new ApiException(HttpStatus.CONFLICT, ErrorCode.DUPLICATE_EMAIL, "Email already in use");
         }
-        if (!StringUtils.hasText(request.password())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.PASSWORD_REQUIRED, "Password is required");
+
+        String rawPassword;
+        if (request.role() == Role.WORKER) {
+            rawPassword = java.util.UUID.randomUUID().toString();
+        } else {
+            if (!StringUtils.hasText(request.password())) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.PASSWORD_REQUIRED, "Password is required");
+            }
+            rawPassword = request.password();
         }
 
         User user = User.builder()
                 .name(request.name())
                 .email(request.email())
                 .phone(request.phone())
-                .passwordHash(passwordEncoder.encode(request.password()))
+                .passwordHash(passwordEncoder.encode(rawPassword))
                 .role(request.role())
                 .build();
 

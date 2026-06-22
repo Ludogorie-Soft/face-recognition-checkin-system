@@ -1,17 +1,17 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-22T05:10:02.646Z
-> Files: 59 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-22T08:57:50.257Z
+> Files: 61 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~220 tok)
 - `CLAUDE.md` — OpenWolf entry point (~57 tok)
-- `DEPLOY.md` — Деплой на AWS EC2 с HTTPS (без домейн) (~1404 tok)
-- `docker-compose.prod.yml` — Docker Compose: 5 services (~352 tok)
+- `DEPLOY.md` — Деплой на AttendTrack — AWS EC2 (Amazon Linux) + Docker + HTTPS (~2098 tok)
+- `docker-compose.prod.yml` — Docker Compose: 5 services (~375 tok)
 - `docker-compose.yml` — Docker Compose services (~320 tok)
 - `FACE_RECOGNITION_V2.md` — Face Recognition — Вариант 2: MediaPipe + MobileFaceNet ONNX (~1394 tok)
-- `nginx.conf` (~302 tok)
+- `nginx.conf` (~313 tok)
 - `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
 - `README.md` — Project documentation (~2597 tok)
 
@@ -51,7 +51,7 @@
 
 ## frontend/app/[locale]/(manager)/
 
-- `layout.tsx` — ManagerLayout (~596 tok)
+- `layout.tsx` — ManagerLayout (~597 tok)
 
 ## frontend/app/[locale]/(manager)/verify/
 
@@ -59,7 +59,11 @@
 
 ## frontend/app/api/[...path]/
 
-- `route.ts` — Next.js API route (~354 tok)
+- `route.ts` — Next.js API route (~362 tok)
+
+## frontend/components/
+
+- `providers.tsx` — Providers (~296 tok)
 
 ## frontend/components/layout/
 
@@ -71,11 +75,12 @@
 
 ## frontend/components/verify/
 
-- `VerifyCamera.tsx` — drawFaceMesh (~4977 tok)
+- `VerifyCamera.tsx` — drawFaceMesh (~4928 tok)
 
 ## frontend/components/workers/
 
 - `FaceRegisterModal.tsx` — FaceRegisterModal — renders modal (~1759 tok)
+- `WorkerDialog.tsx` — ROLES — renders form, modal (~1316 tok)
 
 ## frontend/hooks/
 
@@ -93,8 +98,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~1443 tok)
-- `en.json` (~1375 tok)
+- `bg.json` (~1465 tok)
+- `en.json` (~1395 tok)
 
 ## frontend/scripts/
 
@@ -111,7 +116,7 @@
 ## src/main/java/org/example/attendTrack/user/
 
 - `FaceDescriptorService.java` — Service: FaceDescriptorService (~888 tok)
-- `UserService.java` — Service: UserService (~964 tok)
+- `UserService.java` — Service: UserService (~1022 tok)
 
 ## src/main/java/org/example/attendTrack/user/dto/
 

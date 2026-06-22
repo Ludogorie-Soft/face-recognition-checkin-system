@@ -18,6 +18,7 @@ export default function ManagerLayout({ children }: { children: React.ReactNode 
     if (ready) prefetchModels()
   }, [ready])
 
+
   if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
