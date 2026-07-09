@@ -93,11 +93,12 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
                     AND co.site.id = a.site.id
                     AND co.type = 'CHECK_OUT'
                     AND co.recordedAt >= :from
-                    AND co.recordedAt < :to
+                    AND co.recordedAt < :checkOutTo
               )
             """)
     List<Attendance> findUnclosedCheckIns(
             @Param("from") LocalDateTime from,
-            @Param("to") LocalDateTime to
+            @Param("to") LocalDateTime to,
+            @Param("checkOutTo") LocalDateTime checkOutTo
     );
 }

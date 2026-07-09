@@ -96,7 +96,10 @@
     "searchSite": "Search site...",
     "searchWorker": "Search worker...",
     "allAssigned": "All workers are already assigned to this site",
-    "faceConflict": "Face already registered for: {name}"
+    "faceConflict": "Face already registered for: {name}",
+    "company": "Company",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "Passwords do not match"
   },
   "verify": {
     "title": "Verify",
@@ -184,6 +187,7 @@
     "periodDay": "Today",
     "periodWeek": "This Week",
     "periodMonth": "This Month",
-    "periodCustom": "Custom"
+    "periodCustom": "Custom",
+    "autoCheckout": "Auto or manual checkout"
   }
 }

@@ -5,6 +5,7 @@ export interface UserResponse {
   name: string
   email: string
   phone: string | null
+  company: string | null
   role: Role
   active: boolean
   faceRegistered: boolean
@@ -13,8 +14,9 @@ export interface UserResponse {
 
 export interface UserRequest {
   name: string
-  email: string
+  email?: string
   phone?: string
+  company?: string
   password?: string
   role: Role
 }

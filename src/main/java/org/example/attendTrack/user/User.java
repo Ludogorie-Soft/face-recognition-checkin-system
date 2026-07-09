@@ -31,6 +31,8 @@ public class User implements UserDetails {
 
     private String phone;
 
+    private String company;
+
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
@@ -75,10 +77,11 @@ public class User implements UserDetails {
 
     // --- Mutators ---
 
-    public void update(String name, String email, String phone, Role role, String newPasswordHash) {
+    public void update(String name, String email, String phone, String company, Role role, String newPasswordHash) {
         this.name = name;
         this.email = email;
         this.phone = phone;
+        this.company = company;
         this.role = role;
         if (newPasswordHash != null) {
             this.passwordHash = newPasswordHash;

@@ -602,3 +602,62 @@
 | 14:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | inline fix | ~17 |
 | 14:46 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified fmtLocal() | ~88 |
 | 14:48 | Session end: 19 writes across 6 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 10 reads | ~23014 tok |
+| 14:50 | Session end: 19 writes across 6 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 10 reads | ~23014 tok |
+| 14:51 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | modified WorkedHoursRow() | ~321 |
+| 14:51 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 7→9 lines | ~119 |
+| 14:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getNote() | ~157 |
+| 14:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | inline fix | ~14 |
+| 14:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 2 condition(s) | ~142 |
+| 14:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 3 condition(s) | ~125 |
+| 14:52 | Edited frontend/messages/bg.json | 1→2 lines | ~26 |
+| 14:52 | Edited frontend/messages/en.json | 1→2 lines | ~22 |
+| 14:52 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: autoCheckout | ~101 |
+| 14:53 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified formatTime() | ~634 |
+| 14:53 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified formatTime() | ~366 |
+| 14:53 | Session end: 30 writes across 7 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 11 reads | ~26094 tok |
+| 14:55 | Session end: 30 writes across 7 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 11 reads | ~26094 tok |
+| 14:57 | Session end: 30 writes across 7 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 17 reads | ~27505 tok |
+| 15:00 | Session end: 30 writes across 7 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 17 reads | ~27505 tok |
+| 15:00 | Session end: 30 writes across 7 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 17 reads | ~27505 tok |
+| 15:01 | Created src/main/resources/db/migration/V6__add_company_to_users.sql | — | ~14 |
+| 15:01 | Edited src/main/java/org/example/attendTrack/user/User.java | 3→5 lines | ~30 |
+| 15:01 | Edited src/main/java/org/example/attendTrack/user/User.java | modified update() | ~96 |
+| 15:01 | Created src/main/java/org/example/attendTrack/user/dto/UserRequest.java | — | ~158 |
+| 15:01 | Created src/main/java/org/example/attendTrack/user/dto/UserResponse.java | — | ~227 |
+| 15:02 | Created src/main/java/org/example/attendTrack/user/UserService.java | — | ~1366 |
+| 15:02 | Created frontend/types/user.ts | — | ~108 |
+| 15:02 | Edited frontend/messages/bg.json | 1→4 lines | ~50 |
+| 15:02 | Edited frontend/messages/en.json | 1→4 lines | ~51 |
+| 15:02 | Created frontend/components/workers/WorkerDialog.tsx | — | ~1858 |
+| 15:04 | add company field + role-based required fields + confirmPassword | User.java, UserRequest/Response.java, UserService.java, WorkerDialog.tsx, V6 migration | done | ~1500 |
+| 15:04 | Session end: 40 writes across 14 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 17 reads | ~31598 tok |
+| 15:06 | Edited src/main/java/org/example/attendTrack/user/UserService.java | modified company() | ~89 |
+| 15:06 | Edited src/main/java/org/example/attendTrack/user/UserService.java | added 1 import(s) | ~34 |
+| 15:06 | Edited src/main/java/org/example/attendTrack/user/UserService.java | 3→6 lines | ~47 |
+| 15:06 | Edited src/main/java/org/example/attendTrack/user/UserService.java | added 1 condition(s) | ~419 |
+| 15:06 | Edited frontend/components/workers/WorkerDialog.tsx | modified if() | ~67 |
+
+## Session: 2026-07-09 15:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:20 | Edited frontend/components/workers/WorkerDialog.tsx | inline fix | ~34 |
+| 15:20 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | added nullish coalescing | ~75 |
+| 15:20 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | added nullish coalescing | ~30 |
+| 15:20 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | "${deleteConfirm.name} (${" → "${deleteConfirm.name}${di" | ~44 |
+| 15:21 | Edited src/main/java/org/example/attendTrack/user/UserService.java | modified phone() | ~119 |
+| 15:21 | Edited src/main/java/org/example/attendTrack/user/UserService.java | modified phone() | ~113 |
+| 15:21 | Session end: 6 writes across 3 files (WorkerDialog.tsx, page.tsx, UserService.java) | 6 reads | ~3362 tok |
+| 15:23 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | inline fix | ~26 |
+| 15:23 | Session end: 7 writes across 3 files (WorkerDialog.tsx, page.tsx, UserService.java) | 7 reads | ~4934 tok |
+| 15:27 | Session end: 7 writes across 3 files (WorkerDialog.tsx, page.tsx, UserService.java) | 12 reads | ~13651 tok |
+| 15:30 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 3→5 lines | ~111 |
+| 15:30 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 4→4 lines | ~56 |
+| 15:30 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | 21→22 lines | ~222 |
+| 15:30 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | added 1 import(s) | ~31 |
+| 15:31 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | 5→6 lines | ~120 |
+| 15:31 | Session end: 12 writes across 6 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 12 reads | ~14230 tok |
+| 15:34 | Session end: 12 writes across 6 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 30 reads | ~19082 tok |
+| 15:38 | Created GUIDE_EN.md | — | ~2195 |
+| 15:40 | Created GUIDE_BG.md | — | ~2278 |
+| 15:40 | Session end: 14 writes across 8 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 32 reads | ~28653 tok |

@@ -54,6 +54,7 @@ interface WorkedHoursRow {
   checkIn: string | null
   checkOut: string | null
   inferredCheckOut: boolean
+  autoCheckout: boolean
   calculatedHours: number | null
   effectiveHours: number | null
   correctedHours: number | null
@@ -655,6 +656,11 @@ function WorkedHoursTable({
                       {row.checkOut ? formatTime(row.checkOut) : '—'}
                       <span title={t('inferredCheckOut')}><AlertCircle size={12} className="ml-0.5 opacity-70" /></span>
                     </span>
+                  ) : row.autoCheckout ? (
+                    <span className="flex items-center gap-1 text-orange-500 dark:text-orange-400 font-mono text-sm">
+                      {formatTime(row.checkOut!)}
+                      <span title={t('autoCheckout')}><AlertTriangle size={12} className="ml-0.5 opacity-70" /></span>
+                    </span>
                   ) : formatTime(row.checkOut!)}
                 </TableCell>
                 <TableCell className="text-sm">
@@ -768,6 +774,11 @@ function WorkedHoursSummaryTable({
                               <span className="flex items-center gap-1 text-sky-600 dark:text-sky-400 font-mono text-sm">
                                 {row.checkOut ? formatTime(row.checkOut) : '—'}
                                 <span title={t('inferredCheckOut')}><AlertCircle size={11} className="ml-0.5 opacity-70" /></span>
+                              </span>
+                            ) : row.autoCheckout ? (
+                              <span className="flex items-center gap-1 text-orange-500 dark:text-orange-400 font-mono text-sm">
+                                {formatTime(row.checkOut!)}
+                                <span title={t('autoCheckout')}><AlertTriangle size={11} className="ml-0.5 opacity-70" /></span>
                               </span>
                             ) : formatTime(row.checkOut!)}
                           </TableCell>

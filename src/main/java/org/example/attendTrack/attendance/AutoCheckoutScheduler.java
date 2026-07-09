@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,9 +31,10 @@ public class AutoCheckoutScheduler {
     public void autoCheckoutMissedWorkers() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         LocalDateTime from = yesterday.atStartOfDay();
-        LocalDateTime to = yesterday.plusDays(1).atStartOfDay();
+        LocalDateTime to = yesterday.plusDays(1).atStartOfDay();          // today 00:00 — CHECK_IN window
+        LocalDateTime checkOutTo = yesterday.plusDays(1).atTime(LocalTime.of(6, 0)); // today 06:00 — catches late checkouts
 
-        List<Attendance> unclosed = attendanceRepository.findUnclosedCheckIns(from, to);
+        List<Attendance> unclosed = attendanceRepository.findUnclosedCheckIns(from, to, checkOutTo);
         if (unclosed.isEmpty()) return;
 
         // Keep only the latest CHECK_IN per (worker, site) — guards against duplicate sync records

@@ -51,7 +51,7 @@ public class ReportService {
         validateDateRange(from, to);
         validateSiteExists(siteId);
         LocalDateTime start = from.atStartOfDay();
-        LocalDateTime end = to.plusDays(1).atStartOfDay();
+        LocalDateTime end = to.plusDays(1).atTime(LocalTime.of(6, 0));
 
         return attendanceRepository.findBySiteAndDateRange(siteId, start, end).stream()
                 .map(this::toRow)
@@ -215,7 +215,10 @@ public class ReportService {
                     checkOutCell.setCellValue("OPEN SHIFT");
                     checkOutCell.setCellStyle(warningStyle);
                 } else {
-                    checkOutCell.setCellValue(r.checkOut().format(TIME_FORMAT));
+                    String checkOutStr = r.checkOut().format(TIME_FORMAT);
+                    if (r.autoCheckout()) checkOutStr += " (AUTO)";
+                    else if (r.inferredCheckOut()) checkOutStr += " (→)";
+                    checkOutCell.setCellValue(checkOutStr);
                 }
                 row.createCell(5).setCellValue(r.calculatedHours() != null ? r.calculatedHours() : 0.0);
                 if (r.correctedHours() != null) row.createCell(6).setCellValue(r.correctedHours());
@@ -259,7 +262,14 @@ public class ReportService {
                     row.createCell(1).setCellValue(d.siteName());
                     row.createCell(2).setCellValue(d.date().toString());
                     row.createCell(3).setCellValue(d.checkIn() != null ? d.checkIn().format(TIME_FORMAT) : "");
-                    row.createCell(4).setCellValue(d.checkOut() != null ? d.checkOut().format(TIME_FORMAT) : "OPEN SHIFT");
+                    if (d.checkOut() == null) {
+                        row.createCell(4).setCellValue("OPEN SHIFT");
+                    } else {
+                        String checkOutStr = d.checkOut().format(TIME_FORMAT);
+                        if (d.autoCheckout()) checkOutStr += " (AUTO)";
+                        else if (d.inferredCheckOut()) checkOutStr += " (→)";
+                        row.createCell(4).setCellValue(checkOutStr);
+                    }
                     row.createCell(5).setCellValue(d.calculatedHours() != null ? d.calculatedHours() : 0.0);
                     if (d.correctedHours() != null) row.createCell(6).setCellValue(d.correctedHours());
                     if (d.correctionNote() != null) row.createCell(7).setCellValue(d.correctionNote());
@@ -354,7 +364,7 @@ public class ReportService {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR,
                     "Date 'from' must not be after 'to'");
         }
-        if (from.until(to).toTotalMonths() > 12) {
+        if (from.until(to).toTotalMonths() >= 12) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR,
                     "Date range must not exceed 12 months");
         }
@@ -396,9 +406,13 @@ public class ReportService {
             LocalTime checkOutTime = null;
             LocalDateTime inferredEndDt = null;
             boolean inferredCheckOut = false;
+            boolean autoCheckout = false;
 
             if (checkOut.isPresent()) {
                 checkOutTime = checkOut.get().getRecordedAt().toLocalTime();
+                // Auto-checkout = scheduler-generated (manualOverride=true, manager=null).
+                // Manually-confirmed checkouts also have manualOverride=true but have a manager set.
+                autoCheckout = checkOut.get().isManualOverride() && checkOut.get().getManager() == null;
             } else {
                 // AUTO-CLOSE: worker moved to another site without checking out.
                 // Find the earliest CHECK_IN at a different site on the same shift-day,
@@ -446,6 +460,7 @@ public class ReportService {
                     checkInTime,
                     checkOutTime,
                     inferredCheckOut,
+                    autoCheckout,
                     calculatedHours,
                     effectiveHours,
                     correctedHours,

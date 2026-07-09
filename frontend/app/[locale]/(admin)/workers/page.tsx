@@ -37,9 +37,13 @@ export default function WorkersPage() {
   const deactivate = useDeactivateWorker()
   const deleteFace = useDeleteFace(deleteFaceConfirm?.id ?? '')
 
-  const filtered = users.filter((u) =>
-    `${u.name} ${u.email}`.toLowerCase().includes(search.toLowerCase())
-  )
+  const displayEmail = (email: string) =>
+    email.endsWith('@worker.local') ? null : email
+
+  const filtered = users.filter((u) => {
+    const email = displayEmail(u.email) ?? ''
+    return `${u.name} ${email}`.toLowerCase().includes(search.toLowerCase())
+  })
 
   const handleDeactivate = async () => {
     if (!deleteConfirm) return
@@ -120,8 +124,8 @@ export default function WorkersPage() {
               : filtered.map((user) => (
                 <tr key={user.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3 font-medium text-foreground">{user.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{user.email}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{user.phone ?? '—'}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{displayEmail(user.email) ?? '—'}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{user.phone || '—'}</td>
                   <td className="px-4 py-3">
                     <Badge variant={ROLE_VARIANT[user.role]}>
                       {t(`roles.${user.role}`)}
@@ -227,7 +231,7 @@ export default function WorkersPage() {
       <ConfirmDialog
         open={!!deleteConfirm}
         title={t('deleteConfirm')}
-        description={deleteConfirm ? `${deleteConfirm.name} (${deleteConfirm.email})` : ''}
+        description={deleteConfirm ? `${deleteConfirm.name}${displayEmail(deleteConfirm.email) ? ` (${displayEmail(deleteConfirm.email)})` : ''}` : ''}
         onConfirm={handleDeactivate}
         onClose={() => setDeleteConfirm(null)}
         loading={deactivate.isPending}

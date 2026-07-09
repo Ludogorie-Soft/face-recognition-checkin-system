@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T11:46:37.262Z
-> Files: 102 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T12:40:02.923Z
+> Files: 108 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -11,6 +11,8 @@
 - `docker-compose.prod.yml` — Docker Compose: 5 services (~375 tok)
 - `docker-compose.yml` — Docker Compose services (~320 tok)
 - `FACE_RECOGNITION_V2.md` — Face Recognition — Вариант 2: MediaPipe + MobileFaceNet ONNX (~1394 tok)
+- `GUIDE_BG.md` — AttendTrack — Ръководство за потребителя (~2135 tok)
+- `GUIDE_EN.md` — AttendTrack — User Guide (~2058 tok)
 - `nginx.conf` (~313 tok)
 - `PLAN.md` — PLAN: Two-Role Refactor — ADMIN + WORKER only (~1591 tok)
 - `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
@@ -40,7 +42,7 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~8744 tok)
+- `page.tsx` — fmtLocal (~8970 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
@@ -48,7 +50,7 @@
 
 ## frontend/app/[locale]/(admin)/workers/
 
-- `page.tsx` — ROLE_VARIANT — renders table (~2759 tok)
+- `page.tsx` — ROLE_VARIANT — renders table (~2825 tok)
 
 ## frontend/app/[locale]/(auth)/login/
 
@@ -92,7 +94,7 @@
 ## frontend/components/workers/
 
 - `FaceRegisterModal.tsx` — FaceRegisterModal — renders modal (~1849 tok)
-- `WorkerDialog.tsx` — ROLES — renders form, modal (~1316 tok)
+- `WorkerDialog.tsx` — ROLES — renders form, modal (~1884 tok)
 - `WorkerSiteModal.tsx` — WorkerSiteModal — renders modal (~2333 tok)
 
 ## frontend/hooks/
@@ -115,8 +117,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~1871 tok)
-- `en.json` (~1779 tok)
+- `bg.json` (~1918 tok)
+- `en.json` (~1826 tok)
 
 ## frontend/scripts/
 
@@ -125,7 +127,7 @@
 ## frontend/types/
 
 - `site.ts` — Exports CheckpointResponse, CheckpointRequest, SiteResponse, SiteRequest (~252 tok)
-- `user.ts` — Exports Role, UserResponse, UserRequest (~95 tok)
+- `user.ts` — Exports Role, UserResponse, UserRequest (~108 tok)
 
 ## src/main/java/org/example/ (legacy)
 
@@ -134,9 +136,9 @@
 ## src/main/java/org/example/attendTrack/attendance/
 
 - `AttendanceController.java` — RestController: AttendanceController (3 endpoints) (~407 tok)
-- `AttendanceRepository.java` — Class: AttendanceRepository (~896 tok)
+- `AttendanceRepository.java` — Class: AttendanceRepository (~914 tok)
 - `AttendanceService.java` — Service: AttendanceService (~1614 tok)
-- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~882 tok)
+- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~938 tok)
 
 ## src/main/java/org/example/attendTrack/config/
 
@@ -151,12 +153,12 @@
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints) (~1423 tok)
-- `ReportService.java` — Service: ReportService (~6039 tok)
+- `ReportService.java` — Service: ReportService (~6287 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
 - `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
-- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~322 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~394 tok)
 - `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
 
 ## src/main/java/org/example/attendTrack/site/
@@ -186,11 +188,14 @@
 - `FaceDescriptorRepository.java` — Class: FaceDescriptorRepository (~271 tok)
 - `FaceDescriptorService.java` — Service: FaceDescriptorService (~881 tok)
 - `Role.java` — Class: Role (~22 tok)
-- `UserService.java` — Service: UserService (~1022 tok)
+- `User.java` — Entity: User (~581 tok)
+- `UserService.java` — For WORKER: email is optional — generates a placeholder if not provided. (~1546 tok)
 
 ## src/main/java/org/example/attendTrack/user/dto/
 
 - `FaceDescriptorRequest.java` — Class: FaceDescriptorRequest (~84 tok)
+- `UserRequest.java` — Class: UserRequest (~158 tok)
+- `UserResponse.java` — UserResponse: from (~227 tok)
 
 ## src/main/java/org/example/garant/
 
@@ -236,3 +241,4 @@
 - `V4__hours_corrections.sql` — SQL: tables: hours_corrections (~162 tok)
 - `V5__site_checkpoints.sql` — Creates site_checkpoints table; migrates existing site lat/lng/radius as first checkpoint (~80 tok)
 - `V5__site_checkpoints.sql` — SQL: tables: site_checkpoints (~174 tok)
+- `V6__add_company_to_users.sql` (~14 tok)

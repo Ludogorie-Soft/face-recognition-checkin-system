@@ -15,10 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     private final UserRepository userRepository;
     private final FaceDescriptorRepository faceDescriptorRepository;
@@ -43,13 +47,11 @@ public class UserService {
 
     @Transactional
     public UserResponse create(UserRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
-            throw new ApiException(HttpStatus.CONFLICT, ErrorCode.DUPLICATE_EMAIL, "Email already in use");
-        }
+        String email = resolveEmailOnCreate(request);
 
         String rawPassword;
         if (request.role() == Role.WORKER) {
-            rawPassword = java.util.UUID.randomUUID().toString();
+            rawPassword = UUID.randomUUID().toString();
         } else {
             if (!StringUtils.hasText(request.password())) {
                 throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.PASSWORD_REQUIRED, "Password is required");
@@ -59,8 +61,9 @@ public class UserService {
 
         User user = User.builder()
                 .name(request.name())
-                .email(request.email())
-                .phone(request.phone())
+                .email(email)
+                .phone(StringUtils.hasText(request.phone()) ? request.phone() : null)
+                .company(request.role() == Role.WORKER && StringUtils.hasText(request.company()) ? request.company() : null)
                 .passwordHash(passwordEncoder.encode(rawPassword))
                 .role(request.role())
                 .build();
@@ -72,14 +75,13 @@ public class UserService {
     public UserResponse update(UUID id, UserRequest request) {
         User user = findOrThrow(id);
 
-        if (!user.getEmail().equals(request.email()) && userRepository.existsByEmail(request.email())) {
-            throw new ApiException(HttpStatus.CONFLICT, ErrorCode.DUPLICATE_EMAIL, "Email already in use");
-        }
+        String email = resolveEmailOnUpdate(request, user);
 
         user.update(
                 request.name(),
-                request.email(),
-                request.phone(),
+                email,
+                StringUtils.hasText(request.phone()) ? request.phone() : null,
+                request.role() == Role.WORKER && StringUtils.hasText(request.company()) ? request.company() : null,
                 request.role(),
                 StringUtils.hasText(request.password()) ? passwordEncoder.encode(request.password()) : null
         );
@@ -94,6 +96,47 @@ public class UserService {
         user.deactivate();
         userRepository.save(user);
         faceDescriptorRepository.deleteByUserId(id);
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /**
+     * For WORKER: email is optional — generates a placeholder if not provided.
+     * For ADMIN: email is required and must be unique.
+     */
+    private String resolveEmailOnCreate(UserRequest request) {
+        if (StringUtils.hasText(request.email())) {
+            validateEmailFormat(request.email());
+            if (userRepository.existsByEmail(request.email())) {
+                throw new ApiException(HttpStatus.CONFLICT, ErrorCode.DUPLICATE_EMAIL, "Email already in use");
+            }
+            return request.email();
+        }
+        if (request.role() == Role.WORKER) {
+            return UUID.randomUUID() + "@worker.local";
+        }
+        throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, "Email is required for admin users");
+    }
+
+    /**
+     * On update: if no email is provided, keeps the existing one (handles workers with placeholder emails).
+     * If a new email is provided, validates format and checks uniqueness.
+     */
+    private String resolveEmailOnUpdate(UserRequest request, User existing) {
+        if (!StringUtils.hasText(request.email())) {
+            return existing.getEmail();
+        }
+        validateEmailFormat(request.email());
+        if (!existing.getEmail().equals(request.email()) && userRepository.existsByEmail(request.email())) {
+            throw new ApiException(HttpStatus.CONFLICT, ErrorCode.DUPLICATE_EMAIL, "Email already in use");
+        }
+        return request.email();
+    }
+
+    private void validateEmailFormat(String email) {
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, "Invalid email format");
+        }
     }
 
     private User findOrThrow(UUID id) {

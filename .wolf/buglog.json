@@ -971,6 +971,102 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09"
+    },
+    {
+      "id": "bug-061",
+      "timestamp": "2026-07-09T11:52:22.657Z",
+      "error_message": "Wrong operator: != should be ==",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Used \"!=\" instead of \"==\"",
+      "fix": "Changed operator != → ==",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T11:52:22.657Z"
+    },
+    {
+      "id": "bug-062",
+      "timestamp": "2026-07-09T11:53:19.358Z",
+      "error_message": "CSS fix: dark",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "dark: text-sky-400 font-mono text-sm\"> → text-orange-400 font-mono text-sm\">",
+      "fix": "Changed dark: text-sky-400 font-mono text-sm\"> → text-orange-400 font-mono text-sm\">",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T11:53:19.358Z"
+    },
+    {
+      "id": "bug-063",
+      "timestamp": "2026-07-09T12:20:45.314Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(admin)/workers/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: <td className=\"px-4 py-3 text-muted-foreground\">{displayEmai",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T12:20:48.579Z"
+    },
+    {
+      "id": "bug-064",
+      "timestamp": "2026-07-09T12:20:53.402Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/app/[locale]/(admin)/workers/page.tsx",
+      "root_cause": "Had `${deleteConfirm.name} (${deleteConfirm.email})`",
+      "fix": "Changed to `${deleteConfirm.name}${displayEmail(deleteConfirm",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T12:20:53.402Z"
+    },
+    {
+      "id": "bug-065",
+      "timestamp": "2026-07-09T12:23:55.210Z",
+      "error_message": "Wrong operator: ?? should be ||",
+      "file": "frontend/app/[locale]/(admin)/workers/page.tsx",
+      "root_cause": "Used \"??\" instead of \"||\"",
+      "fix": "Changed operator ?? → ||",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T12:23:55.210Z"
+    },
+    {
+      "id": "bug-066",
+      "timestamp": "2026-07-09T12:31:06.289Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T12:31:06.289Z"
     }
   ]
 }

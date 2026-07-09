@@ -96,7 +96,10 @@
     "searchSite": "Търси обект...",
     "searchWorker": "Търси работник...",
     "allAssigned": "Всички работници са вече присъединени към този обект",
-    "faceConflict": "Лицето вече е регистрирано за: {name}"
+    "faceConflict": "Лицето вече е регистрирано за: {name}",
+    "company": "Фирма",
+    "confirmPassword": "Потвърди парола",
+    "passwordMismatch": "Паролите не съвпадат"
   },
   "verify": {
     "title": "Верификация",
@@ -184,6 +187,7 @@
     "periodDay": "Днес",
     "periodWeek": "Тази седмица",
     "periodMonth": "Този месец",
-    "periodCustom": "Персонализиран"
+    "periodCustom": "Персонализиран",
+    "autoCheckout": "Автоматичен или ръчен чекаут"
   }
 }

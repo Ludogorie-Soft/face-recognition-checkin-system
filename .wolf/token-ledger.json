@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-06-17T06:06:35.448Z",
   "lifetime": {
-    "total_tokens_estimated": 2024438,
-    "total_reads": 3254,
-    "total_writes": 2815,
-    "total_sessions": 12,
-    "anatomy_hits": 935,
-    "anatomy_misses": 1596,
-    "repeated_reads_blocked": 645,
-    "estimated_savings_vs_bare_cli": 1041250
+    "total_tokens_estimated": 2300596,
+    "total_reads": 3459,
+    "total_writes": 3082,
+    "total_sessions": 13,
+    "anatomy_hits": 1026,
+    "anatomy_misses": 1631,
+    "repeated_reads_blocked": 691,
+    "estimated_savings_vs_bare_cli": 1404375
   },
   "sessions": [
     {
@@ -36523,6 +36523,2808 @@
         "writes_count": 19,
         "repeated_reads_blocked": 3,
         "anatomy_lookups": 5
+      }
+    },
+    {
+      "id": "session-2026-07-09-1431",
+      "started": "2026-07-09T11:31:03.529Z",
+      "ended": "2026-07-09T11:50:18.061Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 692,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/Site.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6039,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportController.java",
+          "tokens_estimated": 1423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 8082,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 1834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 336,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 643,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 118,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 626,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 45,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 171,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 323,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 180,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 240,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 661,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 88,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 18952,
+        "output_tokens_estimated": 4062,
+        "reads_count": 10,
+        "writes_count": 19,
+        "repeated_reads_blocked": 4,
+        "anatomy_lookups": 5
+      }
+    },
+    {
+      "id": "session-2026-07-09-1431",
+      "started": "2026-07-09T11:31:03.529Z",
+      "ended": "2026-07-09T11:53:28.246Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 692,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/Site.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6039,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportController.java",
+          "tokens_estimated": 1423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 8751,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 1834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 322,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 336,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 643,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 118,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 626,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 45,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 171,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 323,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 180,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 240,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 661,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 88,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 344,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 168,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 15,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 152,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 134,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 101,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 634,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 366,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 19943,
+        "output_tokens_estimated": 6151,
+        "reads_count": 11,
+        "writes_count": 30,
+        "repeated_reads_blocked": 7,
+        "anatomy_lookups": 6
+      }
+    },
+    {
+      "id": "session-2026-07-09-1431",
+      "started": "2026-07-09T11:31:03.529Z",
+      "ended": "2026-07-09T11:55:07.320Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 692,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/Site.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6039,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportController.java",
+          "tokens_estimated": 1423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 8751,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 1834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 322,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 336,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 643,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 118,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 626,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 45,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 171,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 323,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 180,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 240,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 661,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 88,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 344,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 168,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 15,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 152,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 134,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 101,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 634,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 366,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 19943,
+        "output_tokens_estimated": 6151,
+        "reads_count": 11,
+        "writes_count": 30,
+        "repeated_reads_blocked": 7,
+        "anatomy_lookups": 6
+      }
+    },
+    {
+      "id": "session-2026-07-09-1431",
+      "started": "2026-07-09T11:31:03.529Z",
+      "ended": "2026-07-09T11:57:28.684Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 692,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/Site.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6039,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportController.java",
+          "tokens_estimated": 1423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 8751,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 1834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 322,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 1316,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/types/user.ts",
+          "tokens_estimated": 95,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/User.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 336,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 643,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 118,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 626,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 45,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 171,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 323,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 180,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 240,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 661,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 88,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 344,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 168,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 15,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 152,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 134,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 101,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 634,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 366,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 21354,
+        "output_tokens_estimated": 6151,
+        "reads_count": 17,
+        "writes_count": 30,
+        "repeated_reads_blocked": 7,
+        "anatomy_lookups": 9
+      }
+    },
+    {
+      "id": "session-2026-07-09-1431",
+      "started": "2026-07-09T11:31:03.529Z",
+      "ended": "2026-07-09T12:00:12.775Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 692,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/Site.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6039,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportController.java",
+          "tokens_estimated": 1423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 8751,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 1834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 322,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 1316,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/types/user.ts",
+          "tokens_estimated": 95,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/User.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 336,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 643,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 118,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 626,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 45,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 171,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 323,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 180,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 240,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 661,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 88,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 344,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 168,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 15,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 152,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 134,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 101,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 634,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 366,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 21354,
+        "output_tokens_estimated": 6151,
+        "reads_count": 17,
+        "writes_count": 30,
+        "repeated_reads_blocked": 7,
+        "anatomy_lookups": 9
+      }
+    },
+    {
+      "id": "session-2026-07-09-1431",
+      "started": "2026-07-09T11:31:03.529Z",
+      "ended": "2026-07-09T12:00:52.971Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 692,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/Site.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6039,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportController.java",
+          "tokens_estimated": 1423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 8751,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 1834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 322,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 1316,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/types/user.ts",
+          "tokens_estimated": 95,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/User.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 336,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 643,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 118,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 626,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 45,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 171,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 323,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 180,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 240,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 661,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 88,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 344,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 168,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 15,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 152,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 134,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 101,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 634,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 366,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 21354,
+        "output_tokens_estimated": 6151,
+        "reads_count": 17,
+        "writes_count": 30,
+        "repeated_reads_blocked": 7,
+        "anatomy_lookups": 9
+      }
+    },
+    {
+      "id": "session-2026-07-09-1431",
+      "started": "2026-07-09T11:31:03.529Z",
+      "ended": "2026-07-09T12:04:53.126Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 692,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/Site.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6039,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportController.java",
+          "tokens_estimated": 1423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 8751,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 1834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 322,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 1316,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/types/user.ts",
+          "tokens_estimated": 95,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/User.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 336,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 643,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 118,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 626,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 45,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 171,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 323,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 180,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 240,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 661,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 88,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+          "tokens_estimated": 344,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 168,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 15,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 152,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 134,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 101,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 634,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 366,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V6__add_company_to_users.sql",
+          "tokens_estimated": 15,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/User.java",
+          "tokens_estimated": 32,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/User.java",
+          "tokens_estimated": 103,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 169,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 243,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 1464,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/types/user.ts",
+          "tokens_estimated": 108,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+          "tokens_estimated": 50,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+          "tokens_estimated": 51,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 1858,
+          "action": "create"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 21354,
+        "output_tokens_estimated": 10244,
+        "reads_count": 17,
+        "writes_count": 40,
+        "repeated_reads_blocked": 7,
+        "anatomy_lookups": 9
+      }
+    },
+    {
+      "id": "session-2026-07-09-1508",
+      "started": "2026-07-09T12:08:57.389Z",
+      "ended": "2026-07-09T12:16:28.378Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserController.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 2759,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useWorkers.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V6__add_company_to_users.sql",
+          "tokens_estimated": 14,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [],
+      "totals": {
+        "input_tokens_estimated": 2931,
+        "output_tokens_estimated": 0,
+        "reads_count": 6,
+        "writes_count": 0,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-07-09-1508",
+      "started": "2026-07-09T12:08:57.389Z",
+      "ended": "2026-07-09T12:21:10.175Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserController.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 2759,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useWorkers.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V6__add_company_to_users.sql",
+          "tokens_estimated": 14,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 44,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 121,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 2931,
+        "output_tokens_estimated": 431,
+        "reads_count": 6,
+        "writes_count": 6,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-07-09-1508",
+      "started": "2026-07-09T12:08:57.389Z",
+      "ended": "2026-07-09T12:23:58.742Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserController.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 2759,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useWorkers.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V6__add_company_to_users.sql",
+          "tokens_estimated": 14,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 1546,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 44,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 121,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 26,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 4477,
+        "output_tokens_estimated": 457,
+        "reads_count": 7,
+        "writes_count": 7,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 2
+      }
+    },
+    {
+      "id": "session-2026-07-09-1508",
+      "started": "2026-07-09T12:08:57.389Z",
+      "ended": "2026-07-09T12:27:26.891Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserController.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 2759,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useWorkers.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V6__add_company_to_users.sql",
+          "tokens_estimated": 14,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 1546,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 1614,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6221,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 44,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 121,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 26,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 13194,
+        "output_tokens_estimated": 457,
+        "reads_count": 12,
+        "writes_count": 7,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 4
+      }
+    },
+    {
+      "id": "session-2026-07-09-1508",
+      "started": "2026-07-09T12:08:57.389Z",
+      "ended": "2026-07-09T12:31:16.878Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserController.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 2759,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useWorkers.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V6__add_company_to_users.sql",
+          "tokens_estimated": 14,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 1546,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 1614,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6221,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 44,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 121,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 119,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 60,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 238,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 128,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 13194,
+        "output_tokens_estimated": 1036,
+        "reads_count": 12,
+        "writes_count": 12,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 4
+      }
+    },
+    {
+      "id": "session-2026-07-09-1508",
+      "started": "2026-07-09T12:08:57.389Z",
+      "ended": "2026-07-09T12:34:31.722Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserController.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 2759,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useWorkers.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V6__add_company_to_users.sql",
+          "tokens_estimated": 14,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 1546,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 1614,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6221,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V1__init.sql",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/application.yml",
+          "tokens_estimated": 434,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/garant/config/SecurityConfig.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/docker-compose.prod.yml",
+          "tokens_estimated": 375,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.conf",
+          "tokens_estimated": 313,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/config/CorsConfig.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/config/SecurityConfig.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/notification/NotificationService.java",
+          "tokens_estimated": 1068,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/SiteService.java",
+          "tokens_estimated": 2580,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/garant/auth/JwtTokenProvider.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V3__remove_manager_role.sql",
+          "tokens_estimated": 82,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/auth/JwtTokenProvider.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/auth/AuthService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/common/exception/GlobalExceptionHandler.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/auth/JwtAuthenticationFilter.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/config/JwtAuthenticationFilter.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/notification/AttendanceScheduler.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 44,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 121,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 119,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 60,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 238,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 128,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 18046,
+        "output_tokens_estimated": 1036,
+        "reads_count": 30,
+        "writes_count": 12,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 12
+      }
+    },
+    {
+      "id": "session-2026-07-09-1508",
+      "started": "2026-07-09T12:08:57.389Z",
+      "ended": "2026-07-09T12:40:11.073Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserResponse.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/dto/UserRequest.java",
+          "tokens_estimated": 158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserController.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 2759,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/hooks/useWorkers.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V6__add_company_to_users.sql",
+          "tokens_estimated": 14,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 1546,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 882,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+          "tokens_estimated": 1614,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 6221,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V1__init.sql",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/application.yml",
+          "tokens_estimated": 434,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/garant/config/SecurityConfig.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/docker-compose.prod.yml",
+          "tokens_estimated": 375,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.conf",
+          "tokens_estimated": 313,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/config/CorsConfig.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/config/SecurityConfig.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/notification/NotificationService.java",
+          "tokens_estimated": 1068,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/SiteService.java",
+          "tokens_estimated": 2580,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/garant/auth/JwtTokenProvider.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V3__remove_manager_role.sql",
+          "tokens_estimated": 82,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/auth/JwtTokenProvider.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/auth/AuthService.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/common/exception/GlobalExceptionHandler.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/auth/JwtAuthenticationFilter.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/config/JwtAuthenticationFilter.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/notification/AttendanceScheduler.java",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/README.md",
+          "tokens_estimated": 2597,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
+          "tokens_estimated": 2182,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerDialog.tsx",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 44,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 127,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/UserService.java",
+          "tokens_estimated": 121,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/workers/page.tsx",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 119,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+          "tokens_estimated": 60,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+          "tokens_estimated": 238,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+          "tokens_estimated": 128,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/GUIDE_EN.md",
+          "tokens_estimated": 2352,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/GUIDE_BG.md",
+          "tokens_estimated": 2440,
+          "action": "create"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 22825,
+        "output_tokens_estimated": 5828,
+        "reads_count": 32,
+        "writes_count": 14,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 14
       }
     }
   ],
