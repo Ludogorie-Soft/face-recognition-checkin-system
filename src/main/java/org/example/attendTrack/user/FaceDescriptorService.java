@@ -52,7 +52,7 @@ public class FaceDescriptorService {
         for (FaceDescriptor other : others) {
             if (cosineSimilarity(descriptor, other.getDescriptor()) >= FACE_SIMILARITY_THRESHOLD) {
                 throw new ApiException(HttpStatus.CONFLICT, ErrorCode.FACE_ALREADY_REGISTERED,
-                        "This face is already registered to another worker");
+                        other.getUser().getName());
             }
         }
 

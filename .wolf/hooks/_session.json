@@ -61,6 +61,41 @@
       "count": 1,
       "tokens": 95,
       "first_read": "2026-07-09T07:15:38.124Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/FaceRegisterModal.tsx": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-07-09T07:19:33.599Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/FaceDescriptorService.java": {
+      "count": 1,
+      "tokens": 888,
+      "first_read": "2026-07-09T07:19:33.695Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/garant/common/exception/ApiError.java": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-07-09T07:19:45.685Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/lib/errors.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-07-09T07:19:45.782Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/common/exception/GlobalExceptionHandler.java": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-07-09T07:19:54.269Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/common/exception/ApiError.java": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-07-09T07:19:54.411Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/FaceDescriptor.java": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-07-09T07:20:27.509Z"
     }
   },
   "files_written": [
@@ -189,19 +224,70 @@
       "action": "edit",
       "tokens": 50,
       "at": "2026-07-09T07:17:26.480Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/FaceDescriptorRepository.java",
+      "action": "edit",
+      "tokens": 55,
+      "at": "2026-07-09T07:20:46.393Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/user/FaceDescriptorService.java",
+      "action": "edit",
+      "tokens": 117,
+      "at": "2026-07-09T07:20:52.072Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/FaceRegisterModal.tsx",
+      "action": "edit",
+      "tokens": 49,
+      "at": "2026-07-09T07:20:58.911Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/FaceRegisterModal.tsx",
+      "action": "edit",
+      "tokens": 100,
+      "at": "2026-07-09T07:21:03.279Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+      "action": "edit",
+      "tokens": 70,
+      "at": "2026-07-09T07:21:08.958Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+      "action": "edit",
+      "tokens": 66,
+      "at": "2026-07-09T07:21:14.023Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/sites/SiteAssignModal.tsx",
+      "action": "edit",
+      "tokens": 659,
+      "at": "2026-07-09T07:22:35.011Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/workers/WorkerSiteModal.tsx",
+      "action": "edit",
+      "tokens": 432,
+      "at": "2026-07-09T07:22:43.463Z"
     }
   ],
   "edit_counts": {
     "frontend/app/[locale]/(admin)/reports/page.tsx": 5,
-    "frontend/messages/en.json": 3,
-    "frontend/messages/bg.json": 3,
-    "frontend/components/sites/SiteAssignModal.tsx": 3,
-    "frontend/components/workers/WorkerSiteModal.tsx": 2,
-    "frontend/app/[locale]/(admin)/workers/page.tsx": 5
+    "frontend/messages/en.json": 4,
+    "frontend/messages/bg.json": 4,
+    "frontend/components/sites/SiteAssignModal.tsx": 4,
+    "frontend/components/workers/WorkerSiteModal.tsx": 3,
+    "frontend/app/[locale]/(admin)/workers/page.tsx": 5,
+    "src/main/java/org/example/attendTrack/user/FaceDescriptorRepository.java": 1,
+    "src/main/java/org/example/attendTrack/user/FaceDescriptorService.java": 1,
+    "frontend/components/workers/FaceRegisterModal.tsx": 2
   },
-  "anatomy_hits": 10,
-  "anatomy_misses": 1,
+  "anatomy_hits": 12,
+  "anatomy_misses": 3,
   "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
-  "stop_count": 6
+  "stop_count": 10
 }

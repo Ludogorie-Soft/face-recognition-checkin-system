@@ -17,7 +17,7 @@ public interface FaceDescriptorRepository extends JpaRepository<FaceDescriptor, 
     @Query("SELECT fd.user.id FROM FaceDescriptor fd")
     List<UUID> findAllUserIdsWithFace();
 
-    @Query("SELECT fd FROM FaceDescriptor fd WHERE fd.user.id != :excludeUserId")
+    @Query("SELECT fd FROM FaceDescriptor fd JOIN FETCH fd.user WHERE fd.user.id != :excludeUserId")
     List<FaceDescriptor> findAllExcludingUser(@Param("excludeUserId") UUID excludeUserId);
 
     @Modifying

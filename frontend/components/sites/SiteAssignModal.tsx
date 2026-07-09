@@ -125,35 +125,33 @@ export function SiteAssignModal({ open, onClose, site }: Props) {
                         className="pl-8 text-sm h-9"
                       />
                     </div>
-                    {workerSearch.trim() !== '' && (
-                      <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
-                        {availableWorkers.length === 0 ? (
-                          <p className="text-xs text-muted-foreground px-1 py-2">{tc('noData')}</p>
-                        ) : (
-                          availableWorkers.map((u) => (
-                            <div key={u.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg hover:bg-muted/40 transition-colors">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm text-foreground">{u.name}</span>
-                                {u.faceRegistered
-                                  ? <ScanFace size={12} className="text-green-500" />
-                                  : <span className="text-xs text-muted-foreground">(без лице)</span>}
-                              </div>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                disabled={assigning === u.id}
-                                onClick={() => handleAssign(u.id)}
-                              >
-                                {assigning === u.id
-                                  ? <Loader2 size={13} className="animate-spin" />
-                                  : <UserPlus size={13} />}
-                              </Button>
+                    <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
+                      {availableWorkers.length === 0 ? (
+                        <p className="text-xs text-muted-foreground px-1 py-2">{tc('noData')}</p>
+                      ) : (
+                        availableWorkers.map((u) => (
+                          <div key={u.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg hover:bg-muted/40 transition-colors">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-foreground">{u.name}</span>
+                              {u.faceRegistered
+                                ? <ScanFace size={12} className="text-green-500" />
+                                : <span className="text-xs text-muted-foreground">(без лице)</span>}
                             </div>
-                          ))
-                        )}
-                      </div>
-                    )}
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-7 w-7 text-muted-foreground hover:text-primary"
+                              disabled={assigning === u.id}
+                              onClick={() => handleAssign(u.id)}
+                            >
+                              {assigning === u.id
+                                ? <Loader2 size={13} className="animate-spin" />
+                                : <UserPlus size={13} />}
+                            </Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </>
                 )}
               </div>

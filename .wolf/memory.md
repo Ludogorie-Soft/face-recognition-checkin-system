@@ -497,3 +497,17 @@
 | 10:17 | Edited frontend/messages/bg.json | 3→4 lines | ~52 |
 | 10:17 | Edited frontend/messages/en.json | 3→4 lines | ~50 |
 | 10:17 | Session end: 21 writes across 5 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 12 reads | ~30790 tok |
+| 10:45 | Audit fixes: W1 unused ts import, W2 loading skeleton, W3 optimistic updates, S1 allAssigned message | WorkerSiteModal.tsx, SiteAssignModal.tsx, bg.json, en.json | success | ~3500 |
+| 10:19 | Session end: 21 writes across 5 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 12 reads | ~30790 tok |
+| 10:20 | Edited src/main/java/org/example/attendTrack/user/FaceDescriptorRepository.java | 2→2 lines | ~51 |
+| 10:20 | Edited src/main/java/org/example/attendTrack/user/FaceDescriptorService.java | modified for() | ~110 |
+| 10:20 | Edited frontend/components/workers/FaceRegisterModal.tsx | added 1 import(s) | ~49 |
+| 10:21 | Edited frontend/components/workers/FaceRegisterModal.tsx | added optional chaining | ~100 |
+| 10:21 | Edited frontend/messages/bg.json | 4→5 lines | ~70 |
+| 10:21 | Edited frontend/messages/en.json | 4→5 lines | ~66 |
+| 10:21 | Session end: 27 writes across 8 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 19 reads | ~32135 tok |
+| 10:22 | Edited frontend/components/sites/SiteAssignModal.tsx | 44→42 lines | ~659 |
+| 10:22 | Edited frontend/components/workers/WorkerSiteModal.tsx | 29→27 lines | ~432 |
+| 10:23 | Session end: 29 writes across 8 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 19 reads | ~33226 tok |
+| 10:55 | Face conflict shows worker name; assign modals show full list with search filter | FaceDescriptorService.java, FaceDescriptorRepository.java, FaceRegisterModal.tsx, SiteAssignModal.tsx, WorkerSiteModal.tsx, bg.json, en.json | success | ~2500 |
+| 10:24 | Session end: 29 writes across 8 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 19 reads | ~33226 tok |

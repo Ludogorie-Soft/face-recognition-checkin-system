@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T07:17:26.463Z
-> Files: 88 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T07:22:43.447Z
+> Files: 89 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -78,7 +78,7 @@
 ## frontend/components/sites/
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~756 tok)
-- `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~1946 tok)
+- `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~1909 tok)
 
 ## frontend/components/ui/
 
@@ -90,9 +90,9 @@
 
 ## frontend/components/workers/
 
-- `FaceRegisterModal.tsx` — FaceRegisterModal — renders modal (~1759 tok)
+- `FaceRegisterModal.tsx` — FaceRegisterModal — renders modal (~1849 tok)
 - `WorkerDialog.tsx` — ROLES — renders form, modal (~1316 tok)
-- `WorkerSiteModal.tsx` — WorkerSiteModal — renders modal (~2352 tok)
+- `WorkerSiteModal.tsx` — WorkerSiteModal — renders modal (~2333 tok)
 
 ## frontend/hooks/
 
@@ -112,8 +112,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~1703 tok)
-- `en.json` (~1623 tok)
+- `bg.json` (~1720 tok)
+- `en.json` (~1640 tok)
 
 ## frontend/scripts/
 
@@ -166,7 +166,8 @@
 
 ## src/main/java/org/example/attendTrack/user/
 
-- `FaceDescriptorService.java` — Service: FaceDescriptorService (~888 tok)
+- `FaceDescriptorRepository.java` — Class: FaceDescriptorRepository (~271 tok)
+- `FaceDescriptorService.java` — Service: FaceDescriptorService (~881 tok)
 - `Role.java` — Class: Role (~22 tok)
 - `UserService.java` — Service: UserService (~1022 tok)
 

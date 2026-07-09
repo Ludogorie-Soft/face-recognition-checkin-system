@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import axios from 'axios'
 import { useFaceApi } from '@/hooks/useFaceApi'
 import { useSaveFace } from '@/hooks/useWorkers'
 import type { UserResponse } from '@/types/user'
@@ -97,8 +98,13 @@ export function FaceRegisterModal({ open, onClose, worker }: Props) {
       toast.success(tw('registerFace') + ' — ' + tc('success'))
       stopCamera()
       onClose()
-    } catch {
-      toast.error(tc('error'))
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.data?.code === 'FACE_ALREADY_REGISTERED') {
+        const conflictName: string = err.response.data.message ?? ''
+        toast.error(conflictName ? tw('faceConflict', { name: conflictName }) : tc('error'))
+      } else {
+        toast.error(tc('error'))
+      }
     } finally {
       setSaving(false)
     }

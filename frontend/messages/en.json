@@ -89,7 +89,8 @@
     "assignedSites": "Sites",
     "searchSite": "Search site...",
     "searchWorker": "Search worker...",
-    "allAssigned": "All workers are already assigned to this site"
+    "allAssigned": "All workers are already assigned to this site",
+    "faceConflict": "Face already registered for: {name}"
   },
   "verify": {
     "title": "Verify",

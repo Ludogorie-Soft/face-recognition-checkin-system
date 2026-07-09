@@ -171,8 +171,7 @@ export function WorkerSiteModal({ open, onClose, worker }: Props) {
                     className="pl-8 text-sm h-9"
                   />
                 </div>
-                {siteSearch.trim() !== '' && (
-                  <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
+                <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
                     {availableSites.length === 0 ? (
                       <p className="text-xs text-muted-foreground px-1 py-2">{tc('noData')}</p>
                     ) : (
@@ -199,7 +198,6 @@ export function WorkerSiteModal({ open, onClose, worker }: Props) {
                       ))
                     )}
                   </div>
-                )}
               </div>
             </>
           )}
