@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T12:40:02.923Z
-> Files: 108 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T16:26:40.189Z
+> Files: 118 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -11,12 +11,13 @@
 - `docker-compose.prod.yml` — Docker Compose: 5 services (~375 tok)
 - `docker-compose.yml` — Docker Compose services (~320 tok)
 - `FACE_RECOGNITION_V2.md` — Face Recognition — Вариант 2: MediaPipe + MobileFaceNet ONNX (~1394 tok)
-- `GUIDE_BG.md` — AttendTrack — Ръководство за потребителя (~2135 tok)
-- `GUIDE_EN.md` — AttendTrack — User Guide (~2058 tok)
+- `GUIDE_BG.md` — AttendTrack — Ръководство за потребителя (~2385 tok)
+- `GUIDE_EN.md` — AttendTrack — User Guide (~2311 tok)
 - `nginx.conf` (~313 tok)
 - `PLAN.md` — PLAN: Two-Role Refactor — ADMIN + WORKER only (~1591 tok)
 - `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
 - `README.md` — Project documentation (~2597 tok)
+- `ROADMAP.md` — AttendTrack — Roadmap (~647 tok)
 
 ## .claude/
 
@@ -40,9 +41,13 @@
 
 - `page.tsx` — LocalePage (~61 tok)
 
+## frontend/app/[locale]/(admin)/dashboard/
+
+- `page.tsx` — StatCard (~3901 tok)
+
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~8970 tok)
+- `page.tsx` — fmtLocal (~8968 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
@@ -100,6 +105,7 @@
 ## frontend/hooks/
 
 - `useAuth.ts` — Exports useAuth (~278 tok)
+- `useDashboard.ts` — API routes: GET (2 endpoints) (~382 tok)
 - `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
 - `useGeoLocation.ts` — Exports GeoState, useGeoLocation (~435 tok)
 - `useSites.ts` — API routes: GET, DELETE, POST (5 endpoints) (~567 tok)
@@ -117,8 +123,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~1918 tok)
-- `en.json` (~1826 tok)
+- `bg.json` (~2130 tok)
+- `en.json` (~2031 tok)
 
 ## frontend/scripts/
 
@@ -136,13 +142,22 @@
 ## src/main/java/org/example/attendTrack/attendance/
 
 - `AttendanceController.java` — RestController: AttendanceController (3 endpoints) (~407 tok)
-- `AttendanceRepository.java` — Class: AttendanceRepository (~914 tok)
+- `AttendanceRepository.java` — Class: AttendanceRepository (~1470 tok)
 - `AttendanceService.java` — Service: AttendanceService (~1614 tok)
 - `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~938 tok)
 
 ## src/main/java/org/example/attendTrack/config/
 
 - `CorsConfig.java` — ", config); (~342 tok)
+
+## src/main/java/org/example/attendTrack/dashboard/
+
+- `AbsenteeRow.java` — Class: AbsenteeRow (~39 tok)
+- `ActivityEntry.java` — Class: ActivityEntry (~67 tok)
+- `DashboardController.java` — RestController: DashboardController (3 endpoints) (~1642 tok)
+- `DashboardExtended.java` — Class: DashboardExtended (~101 tok)
+- `DayAttendance.java` — Class: DayAttendance (~36 tok)
+- `SiteAttendance.java` — Class: SiteAttendance (~45 tok)
 
 ## src/main/java/org/example/attendTrack/notification/
 
@@ -167,6 +182,7 @@
 - `SiteCheckpointRepository.java` — Class: SiteCheckpointRepository (~210 tok)
 - `SiteController.java` — RestController: SiteController (11 endpoints) (~902 tok)
 - `SiteService.java` — Service: SiteService (~2580 tok)
+- `SiteWorkerRepository.java` — Class: SiteWorkerRepository (~379 tok)
 
 ## src/main/java/org/example/attendTrack/site/dto/
 

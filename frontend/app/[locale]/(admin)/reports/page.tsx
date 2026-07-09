@@ -130,7 +130,7 @@ export default function ReportsPage() {
 
   const { data: sites = [] } = useSites()
 
-  const [tab, setTab] = useState<Tab>('attendance')
+  const [tab, setTab] = useState<Tab>('hours')
   const [hoursView, setHoursView] = useState<HoursView>('site')
   const [siteId, setSiteId] = useState('')
   const [period, setPeriod] = useState<Period>('day')
@@ -327,7 +327,7 @@ export default function ReportsPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">
-        {(['attendance', 'missing', 'hours'] as Tab[]).map((tabKey) => (
+        {(['hours', 'attendance', 'missing'] as Tab[]).map((tabKey) => (
           <button
             key={tabKey}
             onClick={() => setTab(tabKey)}

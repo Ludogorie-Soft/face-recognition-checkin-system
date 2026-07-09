@@ -2,17 +2,29 @@ package org.example.attendTrack.dashboard;
 
 import lombok.RequiredArgsConstructor;
 import org.example.attendTrack.attendance.AttendanceRepository;
+import org.example.attendTrack.site.Site;
 import org.example.attendTrack.site.SiteRepository;
+import org.example.attendTrack.site.SiteWorkerRepository;
 import org.example.attendTrack.user.Role;
 import org.example.attendTrack.user.UserRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -21,6 +33,7 @@ import java.time.LocalDateTime;
 public class DashboardController {
 
     private final SiteRepository siteRepository;
+    private final SiteWorkerRepository siteWorkerRepository;
     private final UserRepository userRepository;
     private final AttendanceRepository attendanceRepository;
 
@@ -36,5 +49,92 @@ public class DashboardController {
         long missingToday = Math.max(0, totalWorkers - presentToday);
 
         return ResponseEntity.ok(new DashboardStats(totalSites, totalWorkers, presentToday, missingToday));
+    }
+
+    @GetMapping("/extended")
+    public ResponseEntity<DashboardExtended> getExtended() {
+        LocalDate today = LocalDate.now();
+
+        // ── Weekly chart ──────────────────────────────────────────────────────
+        LocalDate thisMonday = today.with(DayOfWeek.MONDAY);
+        LocalDate lastMonday = thisMonday.minusWeeks(1);
+
+        List<DayAttendance> thisWeek = buildWeekData(thisMonday, today);
+        List<DayAttendance> lastWeek = buildWeekData(lastMonday, lastMonday.plusDays(6));
+
+        // ── Site breakdown ────────────────────────────────────────────────────
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+        List<Site> activeSites = siteRepository.findAllByActiveTrue();
+        Set<UUID> siteIdsWithActivity = new HashSet<>(
+                attendanceRepository.findSiteIdsWithActivity(startOfDay, endOfDay));
+
+        List<SiteAttendance> sites = activeSites.stream()
+                .map(site -> {
+                    long present = attendanceRepository.countDistinctWorkersPresentBySite(
+                            site.getId(), startOfDay, endOfDay);
+                    long total = siteWorkerRepository.countBySiteId(site.getId());
+                    return new SiteAttendance(site.getId(), site.getName(), present, total);
+                })
+                .sorted(Comparator.comparing(SiteAttendance::siteName))
+                .toList();
+
+        // ── Inactive sites ────────────────────────────────────────────────────
+        List<String> inactiveSiteNames = activeSites.stream()
+                .filter(s -> !siteIdsWithActivity.contains(s.getId()))
+                .map(Site::getName)
+                .sorted()
+                .toList();
+
+        // ── Recent activity ───────────────────────────────────────────────────
+        List<ActivityEntry> recentActivity = attendanceRepository.findRecentActivity(PageRequest.of(0, 15));
+
+        // ── Auto-checkouts last night ─────────────────────────────────────────
+        LocalDate yesterday = today.minusDays(1);
+        long autoCheckoutsLastNight = attendanceRepository.countAutoCheckouts(
+                yesterday.atStartOfDay(), today.atStartOfDay());
+
+        // ── Top absentees this month ──────────────────────────────────────────
+        LocalDate firstOfMonth = today.withDayOfMonth(1);
+        long totalDays = today.getDayOfMonth();
+
+        Map<UUID, Long> presentMap = attendanceRepository
+                .countDistinctDaysPresentPerWorker(firstOfMonth.atStartOfDay(), endOfDay)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (UUID) row[0],
+                        row -> (Long) row[1]
+                ));
+
+        List<AbsenteeRow> topAbsentees = userRepository.findAllByRoleAndActiveTrue(Role.WORKER)
+                .stream()
+                .map(w -> {
+                    long days = presentMap.getOrDefault(w.getId(), 0L);
+                    return new AbsenteeRow(w.getName(), days, totalDays, totalDays - days);
+                })
+                .filter(r -> r.absenceDays() > 0)
+                .sorted(Comparator.comparingLong(AbsenteeRow::absenceDays).reversed())
+                .limit(5)
+                .toList();
+
+        return ResponseEntity.ok(new DashboardExtended(
+                thisWeek, lastWeek, sites, recentActivity,
+                inactiveSiteNames, autoCheckoutsLastNight, topAbsentees
+        ));
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private List<DayAttendance> buildWeekData(LocalDate monday, LocalDate maxDay) {
+        List<DayAttendance> result = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDate day = monday.plusDays(i);
+            long count = day.isAfter(maxDay) ? 0
+                    : attendanceRepository.countDistinctWorkersPresentBetween(
+                            day.atStartOfDay(), day.plusDays(1).atStartOfDay());
+            result.add(new DayAttendance(day, count));
+        }
+        return result;
     }
 }

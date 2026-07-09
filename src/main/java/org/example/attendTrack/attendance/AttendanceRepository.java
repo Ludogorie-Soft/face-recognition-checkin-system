@@ -1,5 +1,6 @@
 package org.example.attendTrack.attendance;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -100,5 +101,68 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to,
             @Param("checkOutTo") LocalDateTime checkOutTo
+    );
+
+    // ── Dashboard extended ────────────────────────────────────────────────────
+
+    @Query("""
+            SELECT COUNT(DISTINCT a.worker.id)
+            FROM Attendance a
+            WHERE a.type = 'CHECK_IN'
+              AND a.site.id = :siteId
+              AND a.recordedAt >= :from
+              AND a.recordedAt < :to
+            """)
+    long countDistinctWorkersPresentBySite(
+            @Param("siteId") UUID siteId,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
+
+    @Query("""
+            SELECT DISTINCT a.site.id
+            FROM Attendance a
+            WHERE a.recordedAt >= :from
+              AND a.recordedAt < :to
+            """)
+    List<UUID> findSiteIdsWithActivity(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
+
+    @Query("""
+            SELECT new org.example.attendTrack.dashboard.ActivityEntry(
+                a.worker.name, a.site.name, a.type, a.recordedAt
+            )
+            FROM Attendance a
+            ORDER BY a.recordedAt DESC
+            """)
+    List<org.example.attendTrack.dashboard.ActivityEntry> findRecentActivity(Pageable pageable);
+
+    @Query("""
+            SELECT COUNT(a)
+            FROM Attendance a
+            WHERE a.type = 'CHECK_OUT'
+              AND a.manualOverride = true
+              AND a.manager IS NULL
+              AND a.recordedAt >= :from
+              AND a.recordedAt < :to
+            """)
+    long countAutoCheckouts(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
+
+    @Query("""
+            SELECT a.worker.id, COUNT(DISTINCT cast(a.recordedAt as date))
+            FROM Attendance a
+            WHERE a.type = 'CHECK_IN'
+              AND a.recordedAt >= :from
+              AND a.recordedAt < :to
+            GROUP BY a.worker.id
+            """)
+    List<Object[]> countDistinctDaysPresentPerWorker(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
     );
 }

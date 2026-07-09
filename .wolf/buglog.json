@@ -1067,6 +1067,86 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T12:31:06.289Z"
+    },
+    {
+      "id": "bug-067",
+      "timestamp": "2026-07-09T12:44:21.515Z",
+      "error_message": "Significant refactor of ",
+      "file": "GUIDE_EN.md",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 8→28 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T12:44:21.515Z"
+    },
+    {
+      "id": "bug-068",
+      "timestamp": "2026-07-09T12:44:37.929Z",
+      "error_message": "Significant refactor of ",
+      "file": "GUIDE_BG.md",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 8→28 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T12:44:37.929Z"
+    },
+    {
+      "id": "bug-069",
+      "timestamp": "2026-07-09T12:51:45.961Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Had 'attendance'",
+      "fix": "Changed to 'hours'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T12:51:52.344Z"
+    },
+    {
+      "id": "bug-070",
+      "timestamp": "2026-07-09T16:26:18.017Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 7→8 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T16:26:18.017Z"
+    },
+    {
+      "id": "bug-071",
+      "timestamp": "2026-07-09T16:26:40.212Z",
+      "error_message": "Wrong reference: Attendance should be AttendanceRepository",
+      "file": "src/main/java/org/example/attendTrack/dashboard/DashboardController.java",
+      "root_cause": "Used \"Attendance\" instead of \"AttendanceRepository\"",
+      "fix": "Changed Attendance → AttendanceRepository",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T16:26:40.212Z"
     }
   ]
 }

@@ -25,4 +25,7 @@ public interface SiteWorkerRepository extends JpaRepository<SiteWorker, SiteWork
 
     @Query("SELECT CASE WHEN COUNT(sw) > 0 THEN true ELSE false END FROM SiteWorker sw WHERE sw.site.id = :siteId AND sw.user.id = :userId")
     boolean existsBySiteIdAndUserId(@Param("siteId") UUID siteId, @Param("userId") UUID userId);
+
+    @Query("SELECT COUNT(sw) FROM SiteWorker sw WHERE sw.site.id = :siteId")
+    long countBySiteId(@Param("siteId") UUID siteId);
 }

@@ -661,3 +661,37 @@
 | 15:38 | Created GUIDE_EN.md | — | ~2195 |
 | 15:40 | Created GUIDE_BG.md | — | ~2278 |
 | 15:40 | Session end: 14 writes across 8 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 32 reads | ~28653 tok |
+| 15:41 | Session end: 14 writes across 8 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 35 reads | ~29744 tok |
+| 15:44 | Edited GUIDE_EN.md | expanded (+20 lines) | ~390 |
+| 15:44 | Edited GUIDE_BG.md | expanded (+20 lines) | ~397 |
+| 15:44 | Session end: 16 writes across 8 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 35 reads | ~30587 tok |
+| 15:51 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | "attendance" → "hours" | ~14 |
+| 15:51 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | "attendance" → "hours" | ~21 |
+| 15:51 | Session end: 18 writes across 8 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 35 reads | ~30622 tok |
+| 15:57 | Session end: 18 writes across 8 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 35 reads | ~30622 tok |
+| 15:59 | Session end: 18 writes across 8 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 35 reads | ~30622 tok |
+| 16:00 | Created ROADMAP.md | — | ~691 |
+| 16:00 | Session end: 19 writes across 9 files (WorkerDialog.tsx, page.tsx, UserService.java, ReportService.java, AttendanceRepository.java) | 35 reads | ~31362 tok |
+| 16:04 | Created src/main/java/org/example/attendTrack/dashboard/DayAttendance.java | — | ~36 |
+| 16:04 | Created src/main/java/org/example/attendTrack/dashboard/SiteAttendance.java | — | ~45 |
+| 16:04 | Created src/main/java/org/example/attendTrack/dashboard/ActivityEntry.java | — | ~67 |
+| 16:04 | Created src/main/java/org/example/attendTrack/dashboard/AbsenteeRow.java | — | ~39 |
+| 16:04 | Created src/main/java/org/example/attendTrack/dashboard/DashboardExtended.java | — | ~101 |
+| 16:05 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | added 1 import(s) | ~80 |
+| 16:05 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+62 lines) | ~566 |
+| 16:05 | Edited src/main/java/org/example/attendTrack/site/SiteWorkerRepository.java | 3→6 lines | ~99 |
+| 16:05 | Created src/main/java/org/example/attendTrack/dashboard/DashboardController.java | — | ~1734 |
+| 16:05 | Created frontend/hooks/useDashboard.ts | — | ~382 |
+| 16:06 | Edited frontend/messages/en.json | expanded (+18 lines) | ~259 |
+| 16:06 | Edited frontend/messages/bg.json | expanded (+18 lines) | ~267 |
+| 16:07 | Created frontend/app/[locale]/(admin)/dashboard/page.tsx | — | ~3901 |
+
+## Session: 2026-07-09 16:09
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 19:26 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | 7→8 lines | ~93 |
+| 19:26 | Edited src/main/java/org/example/attendTrack/dashboard/DashboardController.java | reduced (-8 lines) | ~51 |
+| 19:26 | Edited src/main/java/org/example/attendTrack/dashboard/DashboardController.java | 2→1 lines | ~17 |
+| 19:27 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 19:42 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |

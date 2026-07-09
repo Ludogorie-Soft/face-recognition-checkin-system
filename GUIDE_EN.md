@@ -156,12 +156,32 @@ The system can send two types of notifications — by **email** and **push notif
 
 ## Offline Support
 
-The system is built to work in locations with poor or no internet connectivity:
+The system is built to work in locations with poor or no internet connectivity.
 
-- On the Verify screen, when you select a site and click **Sync**, all worker data and face profiles are downloaded to the device
-- Check-in and check-out records are saved locally if offline
-- Records are automatically uploaded to the server when the connection is restored
-- If the list of sites cannot be loaded, the last cached version is used
+### What works offline
+
+Only the **Verify** screen is fully functional without internet:
+
+- **Site list** — the last cached list of sites is shown if the server cannot be reached
+- **Worker data and face profiles** — downloaded to the device during the last sync and available offline
+- **Face recognition** — the AI models run entirely on the device and do not require a connection
+- **GPS validation** — calculated locally, no server needed
+- **Check-in and check-out recording** — records are saved to the device and automatically uploaded to the server once the connection is restored
+
+### What does NOT work offline
+
+| Feature | Requires internet |
+|---|---|
+| Dashboard | Yes — statistics are loaded from the server |
+| Worker management | Yes — all changes require the server |
+| Site management | Yes — all changes require the server |
+| Face registration | Yes — the face profile must be saved to the database |
+| All reports | Yes — data is calculated and read from the server |
+| Excel export | Yes — generated on the server |
+
+### Important requirement
+
+**At least one successful sync must be performed while the device is online.** If a site has never been synced, it cannot be used offline — there is no cached data on the device. The face recognition AI models are also cached automatically the first time the administrator logs in while online.
 
 ---
 
