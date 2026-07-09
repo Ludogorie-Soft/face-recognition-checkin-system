@@ -15,7 +15,7 @@ export function removeToken(): void {
 
 export interface JwtPayload {
   sub: string
-  role: 'ADMIN' | 'MANAGER' | 'WORKER'
+  role: 'ADMIN' | 'WORKER'
   exp: number
 }
 
@@ -38,7 +38,7 @@ export function isTokenValid(token: string | null): boolean {
   return payload.exp * 1000 > Date.now()
 }
 
-export function getUserRole(): 'ADMIN' | 'MANAGER' | 'WORKER' | null {
+export function getUserRole(): 'ADMIN' | 'WORKER' | null {
   const token = getToken()
   if (!token) return null
   const payload = decodeToken(token)
@@ -47,6 +47,5 @@ export function getUserRole(): 'ADMIN' | 'MANAGER' | 'WORKER' | null {
 
 export function getDashboardPath(locale: string, role: string): string {
   if (role === 'ADMIN') return `/${locale}/dashboard`
-  if (role === 'MANAGER') return `/${locale}/verify`
   return `/${locale}/login`
 }

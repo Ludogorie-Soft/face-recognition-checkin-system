@@ -336,3 +336,164 @@
 | 11:57 | Session end: 28 writes across 13 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 33 reads | ~18794 tok |
 | 11:58 | Session end: 28 writes across 13 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 33 reads | ~18794 tok |
 | 11:58 | Session end: 28 writes across 13 files (UserService.java, db.ts, useSiteSync.ts, VerifyCamera.tsx, WorkerDialog.tsx) | 33 reads | ~18794 tok |
+
+## Session: 2026-07-09 08:59
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-09 09:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:08 | Created PLAN.md | — | ~909 |
+| 09:08 | Edited src/main/java/org/example/attendTrack/user/Role.java | 5→4 lines | ~12 |
+| 09:08 | Edited src/main/java/org/example/attendTrack/site/SiteController.java | hasAnyRole() → hasRole() | ~41 |
+| 09:08 | Edited src/main/java/org/example/attendTrack/site/SiteController.java | hasAnyRole() → hasRole() | ~36 |
+| 09:09 | Edited src/main/java/org/example/attendTrack/site/SiteController.java | hasAnyRole() → hasRole() | ~43 |
+| 09:09 | Edited src/main/java/org/example/attendTrack/sync/SyncController.java | "hasAnyRole(" → "hasRole(" | ~10 |
+| 09:09 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | "hasAnyRole(" → "hasRole(" | ~10 |
+| 09:09 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | modified getAll() | ~45 |
+| 09:09 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | modified assignManager() | ~101 |
+| 09:09 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 7→3 lines | ~46 |
+| 09:09 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | removed 7 lines | ~6 |
+| 09:10 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 5→3 lines | ~41 |
+| 09:10 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 5→4 lines | ~59 |
+| 09:10 | Edited src/main/java/org/example/attendTrack/sync/SyncService.java | removed 7 lines | ~12 |
+| 09:10 | Edited src/main/java/org/example/attendTrack/sync/SyncService.java | 8→6 lines | ~90 |
+| 09:10 | Edited src/main/java/org/example/attendTrack/sync/SyncService.java | 4→3 lines | ~48 |
+| 09:11 | Created src/main/resources/db/migration/V3__remove_manager_role.sql | — | ~82 |
+| 09:11 | Edited frontend/types/user.ts | inline fix | ~11 |
+| 09:11 | Edited frontend/lib/auth.ts | 5→5 lines | ~25 |
+| 09:11 | Edited frontend/lib/auth.ts | inline fix | ~17 |
+| 09:11 | Edited frontend/lib/auth.ts | modified getDashboardPath() | ~45 |
+| 09:11 | Edited frontend/hooks/useAuth.ts | inline fix | ~14 |
+| 09:11 | Edited frontend/hooks/useAuth.ts | inline fix | ~20 |
+| 09:12 | Edited frontend/components/workers/WorkerDialog.tsx | inline fix | ~12 |
+| 09:12 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | 5→4 lines | ~37 |
+| 09:12 | Edited frontend/app/[locale]/(manager)/layout.tsx | "MANAGER" → "ADMIN" | ~13 |
+| 09:12 | Edited frontend/components/layout/AdminSidebar.tsx | 9→10 lines | ~36 |
+| 09:12 | Edited frontend/components/layout/AdminSidebar.tsx | 6→7 lines | ~111 |
+| 09:12 | Edited frontend/messages/bg.json | 5→4 lines | ~23 |
+| 09:12 | Edited frontend/messages/en.json | 5→4 lines | ~22 |
+| 09:13 | Created frontend/components/sites/SiteAssignModal.tsx | — | ~1505 |
+| 09:13 | Edited PLAN.md | 29→31 lines | ~387 |
+| 09:14 | Edited PLAN.md | 32→35 lines | ~411 |
+| 09:14 | Edited PLAN.md | 5→5 lines | ~60 |
+| 09:15 | Two-role refactor: removed MANAGER, ADMIN absorbs scanning | B1-B9 backend + F1-F11 frontend | Both builds pass | ~4500 |
+| 09:15 | Session end: 34 writes across 19 files (PLAN.md, Role.java, SiteController.java, SyncController.java, AttendanceController.java) | 26 reads | ~16238 tok |
+| 09:17 | Session end: 34 writes across 19 files (PLAN.md, Role.java, SiteController.java, SyncController.java, AttendanceController.java) | 31 reads | ~18190 tok |
+| 09:20 | Edited PLAN.md | expanded (+32 lines) | ~256 |
+| 09:20 | Edited frontend/app/[locale]/(manager)/layout.tsx | inline fix | ~20 |
+| 09:20 | Edited frontend/app/[locale]/(manager)/layout.tsx | added optional chaining | ~218 |
+| 09:20 | Edited frontend/app/[locale]/(manager)/layout.tsx | CSS: hover | ~169 |
+| 09:20 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | modified assignManager() | ~123 |
+| 09:21 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | inline fix | ~11 |
+| 09:21 | Edited src/main/java/org/example/attendTrack/site/SiteController.java | modified getAll() | ~46 |
+| 09:21 | Edited src/main/java/org/example/attendTrack/site/SiteController.java | 7→5 lines | ~70 |
+| 09:21 | Edited src/main/java/org/example/attendTrack/sync/SyncService.java | modified getSiteSync() | ~24 |
+| 09:21 | Edited src/main/java/org/example/attendTrack/sync/SyncController.java | modified getSiteSync() | ~62 |
+| 09:21 | Edited src/main/java/org/example/attendTrack/sync/SyncController.java | 6→4 lines | ~59 |
+| 09:21 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | added 1 condition(s) | ~103 |
+| 09:22 | Edited frontend/messages/bg.json | 4→5 lines | ~30 |
+| 09:22 | Edited frontend/messages/en.json | 4→5 lines | ~30 |
+| 09:22 | Edited frontend/components/workers/WorkerDialog.tsx | 3→3 lines | ~40 |
+| 09:23 | Edited PLAN.md | 25→25 lines | ~297 |
+| 09:23 | Audit fixes: C1 nav-trap, C2 role-validation, M1 dead-params, M2 getSitesByUser, M3 rename, L2 i18n | 7 files | Both builds clean | ~3000 |
+| 09:23 | Session end: 50 writes across 19 files (PLAN.md, Role.java, SiteController.java, SyncController.java, AttendanceController.java) | 31 reads | ~20792 tok |
+| 09:25 | Session end: 50 writes across 19 files (PLAN.md, Role.java, SiteController.java, SyncController.java, AttendanceController.java) | 49 reads | ~20792 tok |
+| 09:26 | Edited PLAN.md | expanded (+37 lines) | ~358 |
+| 09:26 | Edited src/main/java/org/example/attendTrack/notification/NotificationService.java | 5→4 lines | ~48 |
+| 09:26 | Edited src/main/java/org/example/attendTrack/notification/NotificationService.java | 5→4 lines | ~59 |
+| 09:27 | Edited src/main/java/org/example/attendTrack/notification/NotificationService.java | modified resolveRecipients() | ~35 |
+| 09:27 | Edited src/main/java/org/example/attendTrack/notification/NotificationService.java | inline fix | ~14 |
+| 09:27 | Edited src/main/java/org/example/attendTrack/notification/NotificationService.java | modified resolveRecipients() | ~32 |
+| 09:27 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified getTodayStatus() | ~28 |
+| 09:27 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | modified getTodayStatus() | ~64 |
+| 09:27 | Edited frontend/app/[locale]/(admin)/sites/page.tsx | 28→27 lines | ~373 |
+| 09:27 | Edited frontend/app/[locale]/(admin)/sites/page.tsx | 10→5 lines | ~60 |
+| 09:27 | Edited frontend/hooks/useSites.ts | removed 17 lines | ~9 |
+| 09:28 | Edited frontend/messages/bg.json | 2→4 lines | ~39 |
+| 09:28 | Edited frontend/messages/en.json | 2→4 lines | ~39 |
+| 09:28 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 11→11 lines | ~150 |
+
+## Session: 2026-07-09 09:30
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:30 | Edited frontend/messages/bg.json | 3→4 lines | ~62 |
+| 09:30 | Edited frontend/messages/en.json | 3→4 lines | ~53 |
+| 09:31 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified sync() | ~234 |
+| 09:31 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 4→4 lines | ~39 |
+| 09:31 | Edited PLAN.md | 30→30 lines | ~344 |
+| 09:32 | Edited PLAN.md | 5→8 lines | ~111 |
+| 09:32 | Session end: 6 writes across 4 files (bg.json, en.json, AttendanceService.java, PLAN.md) | 2 reads | ~3533 tok |
+| 09:32 | Session end: 6 writes across 4 files (bg.json, en.json, AttendanceService.java, PLAN.md) | 2 reads | ~3533 tok |
+| 09:37 | Session end: 6 writes across 4 files (bg.json, en.json, AttendanceService.java, PLAN.md) | 7 reads | ~3918 tok |
+| 09:41 | Created src/main/resources/db/migration/V4__hours_corrections.sql | — | ~162 |
+| 09:41 | Created src/main/java/org/example/attendTrack/report/HoursCorrection.java | — | ~403 |
+| 09:41 | Created src/main/java/org/example/attendTrack/report/HoursCorrectionRepository.java | — | ~296 |
+| 09:41 | Created src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | — | ~248 |
+| 09:41 | Created src/main/java/org/example/attendTrack/report/dto/WorkedHoursSummaryRow.java | — | ~131 |
+| 09:42 | Created src/main/java/org/example/attendTrack/report/dto/HoursCorrectionRequest.java | — | ~108 |
+| 09:42 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+13 lines) | ~207 |
+| 09:42 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 6 import(s) | ~391 |
+| 09:42 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 9→12 lines | ~148 |
+| 09:42 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added error handling | ~2371 |
+| 09:43 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 2 condition(s) | ~1308 |
+| 09:43 | Edited src/main/java/org/example/attendTrack/report/ReportController.java | added 6 import(s) | ~238 |
+| 09:43 | Edited src/main/java/org/example/attendTrack/report/ReportController.java | modified saveHoursCorrection() | ~930 |
+| 09:45 | Created frontend/app/[locale]/(admin)/reports/page.tsx | — | ~7885 |
+| 09:45 | Edited frontend/messages/bg.json | expanded (+14 lines) | ~317 |
+| 09:45 | Edited frontend/messages/en.json | expanded (+14 lines) | ~309 |
+| 09:46 | Created frontend/components/ui/textarea.tsx | — | ~203 |
+| 09:46 | Session end: 23 writes across 15 files (bg.json, en.json, AttendanceService.java, PLAN.md, V4__hours_corrections.sql) | 11 reads | ~20068 tok |
+| 09:51 | Session end: 23 writes across 15 files (bg.json, en.json, AttendanceService.java, PLAN.md, V4__hours_corrections.sql) | 14 reads | ~30213 tok |
+| 09:52 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~26 |
+| 09:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 2 condition(s) | ~82 |
+| 09:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 2 condition(s) | ~85 |
+| 09:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getWorkedHours() | ~75 |
+| 09:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getWorkedHoursSummary() | ~65 |
+| 09:52 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 2 condition(s) | ~187 |
+| 09:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 import(s) | ~49 |
+| 09:53 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 5→5 lines | ~74 |
+| 09:53 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 6→1 lines | ~24 |
+| 09:53 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~4 |
+| 09:53 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 7→7 lines | ~71 |
+| 09:53 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~35 |
+| 09:54 | Session end: 35 writes across 15 files (bg.json, en.json, AttendanceService.java, PLAN.md, V4__hours_corrections.sql) | 15 reads | ~31026 tok |
+| 10:01 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | modified WorkedHoursRow() | ~289 |
+| 10:01 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 3 condition(s) | ~1238 |
+
+## Session: 2026-07-09 10:04
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:04 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: inferredCheckOut | ~94 |
+| 10:04 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified return() | ~740 |
+| 10:04 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified return() | ~462 |
+| 10:04 | Edited frontend/messages/en.json | 1→2 lines | ~36 |
+| 10:05 | Edited frontend/messages/bg.json | 1→2 lines | ~38 |
+| 10:05 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | "ml-0.5 opacity-70" → "inferredCheckOut" | ~34 |
+| 10:05 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | "ml-0.5 opacity-70" → "inferredCheckOut" | ~38 |
+| 10:06 | Session end: 7 writes across 3 files (page.tsx, en.json, bg.json) | 2 reads | ~10917 tok |
+| 10:07 | Multi-site worker support complete — inferredCheckOut field added backend+frontend, both builds pass | ReportService.java, WorkedHoursRow.java, reports/page.tsx, en.json, bg.json | success | ~2000 |
+| 10:08 | Session end: 7 writes across 3 files (page.tsx, en.json, bg.json) | 2 reads | ~10917 tok |
+| 10:10 | Edited frontend/components/sites/SiteAssignModal.tsx | modified SiteAssignModal() | ~1826 |
+| 10:10 | Created frontend/components/workers/WorkerSiteModal.tsx | — | ~1814 |
+| 10:11 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | inline fix | ~26 |
+| 10:11 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | added 1 import(s) | ~60 |
+| 10:11 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | 4→5 lines | ~122 |
+| 10:11 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | expanded (+12 lines) | ~250 |
+| 10:11 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | expanded (+8 lines) | ~98 |
+| 10:11 | Edited frontend/messages/bg.json | 5→8 lines | ~55 |
+| 10:11 | Edited frontend/messages/en.json | 5→8 lines | ~54 |
+| 10:12 | Session end: 16 writes across 5 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 9 reads | ~22827 tok |
+| 10:15 | Session end: 16 writes across 5 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 11 reads | ~27420 tok |
+| 10:16 | Created frontend/components/workers/WorkerSiteModal.tsx | — | ~2352 |
+| 10:16 | Session end: 17 writes across 5 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 12 reads | ~29867 tok |
+| 10:17 | Edited frontend/components/sites/SiteAssignModal.tsx | 4→4 lines | ~81 |
+| 10:17 | Edited frontend/components/sites/SiteAssignModal.tsx | expanded (+6 lines) | ~740 |
+| 10:17 | Edited frontend/messages/bg.json | 3→4 lines | ~52 |
+| 10:17 | Edited frontend/messages/en.json | 3→4 lines | ~50 |
+| 10:17 | Session end: 21 writes across 5 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 12 reads | ~30790 tok |

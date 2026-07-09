@@ -4,12 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.attendTrack.site.dto.SiteRequest;
 import org.example.attendTrack.site.dto.SiteResponse;
-import org.example.attendTrack.user.User;
 import org.example.attendTrack.user.dto.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,13 +21,13 @@ public class SiteController {
     private final SiteService siteService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<List<SiteResponse>> getAll(@AuthenticationPrincipal User currentUser) {
-        return ResponseEntity.ok(siteService.getAll(currentUser));
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<SiteResponse>> getAll() {
+        return ResponseEntity.ok(siteService.getAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SiteResponse> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(siteService.getById(id));
     }
@@ -90,7 +88,7 @@ public class SiteController {
     }
 
     @GetMapping("/{siteId}/workers")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> getWorkers(@PathVariable UUID siteId) {
         return ResponseEntity.ok(siteService.getWorkers(siteId));
     }

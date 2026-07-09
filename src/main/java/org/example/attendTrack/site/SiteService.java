@@ -27,14 +27,8 @@ public class SiteService {
     private final UserRepository userRepository;
     private final FaceDescriptorRepository faceDescriptorRepository;
 
-    public List<SiteResponse> getAll(User currentUser) {
-        List<Site> sites;
-        if (currentUser.getRole() == Role.ADMIN) {
-            sites = siteRepository.findAllByActiveTrue();
-        } else {
-            sites = siteManagerRepository.findByUserId(currentUser.getId())
-                    .stream().map(SiteManager::getSite).toList();
-        }
+    public List<SiteResponse> getAll() {
+        List<Site> sites = siteRepository.findAllByActiveTrue();
         if (sites.isEmpty()) return List.of();
 
         List<UUID> siteIds = sites.stream().map(Site::getId).toList();
@@ -110,7 +104,7 @@ public class SiteService {
     @Transactional
     public void assignManager(UUID siteId, UUID userId) {
         Site site = findOrThrow(siteId);
-        User user = findUserOrThrow(userId, Role.MANAGER);
+        User user = findUserOrThrow(userId, Role.ADMIN);
         if (siteManagerRepository.existsBySiteIdAndUserId(siteId, userId)) {
             throw new ApiException(HttpStatus.CONFLICT, ErrorCode.ALREADY_ASSIGNED, "User is already a manager of this site");
         }
@@ -154,9 +148,9 @@ public class SiteService {
     }
 
     public List<SiteResponse> getSitesByUser(UUID userId) {
-        Set<UUID> siteIds = new HashSet<>();
-        siteManagerRepository.findByUserId(userId).forEach(sm -> siteIds.add(sm.getId().getSiteId()));
-        siteWorkerRepository.findByUserId(userId).forEach(sw -> siteIds.add(sw.getId().getSiteId()));
+        List<UUID> siteIds = siteWorkerRepository.findByUserId(userId)
+                .stream().map(sw -> sw.getId().getSiteId()).toList();
+        if (siteIds.isEmpty()) return List.of();
         return siteRepository.findAllById(siteIds).stream()
                 .map(SiteResponse::summary)
                 .toList();

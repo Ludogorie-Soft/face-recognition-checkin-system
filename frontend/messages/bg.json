@@ -65,7 +65,8 @@
     "assignManager": "Добави мениджър",
     "assignWorker": "Добави работник",
     "clickMapToSelect": "Кликнете върху картата, за да зададете местоположението",
-    "deleteConfirm": "Сигурни ли сте, че искате да изтриете този обект?"
+    "deleteConfirm": "Сигурни ли сте, че искате да изтриете този обект?",
+    "shift": "Смяна"
   },
   "workers": {
     "title": "Работници",
@@ -80,11 +81,15 @@
     "registerFace": "Регистрирай лице",
     "deleteFace": "Изтрий лице",
     "deleteConfirm": "Сигурни ли сте, че искате да деактивирате този работник?",
+    "password": "Парола",
     "roles": {
       "ADMIN": "Администратор",
-      "MANAGER": "Мениджър",
       "WORKER": "Работник"
-    }
+    },
+    "assignedSites": "Обекти",
+    "searchSite": "Търси обект...",
+    "searchWorker": "Търси работник...",
+    "allAssigned": "Всички работници са вече присъединени към този обект"
   },
   "verify": {
     "title": "Верификация",
@@ -137,6 +142,9 @@
     "title": "Справки",
     "attendance": "Присъствие",
     "missing": "Липсващи работници",
+    "hours": "Отработени часове",
+    "hoursBySite": "По обект",
+    "hoursOverall": "Обща",
     "dateFrom": "От дата",
     "dateTo": "До дата",
     "date": "Дата",
@@ -148,9 +156,23 @@
     "locationValid": "Локация",
     "faceConfidence": "Увереност",
     "export": "Експортирай Excel",
-    "checkIn": "Отбелязване",
-    "checkOut": "Напускане",
+    "checkIn": "Влизане",
+    "checkOut": "Излизане",
     "noResults": "Няма резултати за избрания период",
-    "manual": "Ръчно"
+    "manual": "Ръчно",
+    "inZone": "В зоната",
+    "outOfZone": "Извън зоната",
+    "hoursWorked": "Часове",
+    "openShift": "Незатворена смяна",
+    "total": "Общо",
+    "expand": "Разгъни",
+    "collapse": "Свий",
+    "correctHours": "Корекция на часове",
+    "correctedHours": "Коригирани часове",
+    "correctionNote": "Бележка",
+    "optional": "незадължително",
+    "correctionNotePlaceholder": "Причина за корекцията...",
+    "correctionInvalidHours": "Въведете валидна стойност за часовете",
+    "inferredCheckOut": "Изведено от влизане на друг обект"
   }
 }

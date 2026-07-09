@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { Plus, Search, Pencil, Trash2, Camera, ScanFace } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Camera, ScanFace, Building2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WorkerDialog } from '@/components/workers/WorkerDialog'
 import { FaceRegisterModal } from '@/components/workers/FaceRegisterModal'
+import { WorkerSiteModal } from '@/components/workers/WorkerSiteModal'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useWorkers, useDeactivateWorker, useDeleteFace } from '@/hooks/useWorkers'
 import { apiErrorMessage } from '@/lib/errors'
@@ -17,7 +18,6 @@ import type { UserResponse } from '@/types/user'
 
 const ROLE_VARIANT: Record<string, 'default' | 'secondary' | 'destructive'> = {
   ADMIN: 'destructive',
-  MANAGER: 'default',
   WORKER: 'secondary',
 }
 
@@ -29,6 +29,7 @@ export default function WorkersPage() {
   const [search, setSearch] = useState('')
   const [workerDialog, setWorkerDialog] = useState<{ open: boolean; user?: UserResponse | null }>({ open: false })
   const [faceModal, setFaceModal] = useState<UserResponse | null>(null)
+  const [siteModal, setSiteModal] = useState<UserResponse | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<UserResponse | null>(null)
   const [deleteFaceConfirm, setDeleteFaceConfirm] = useState<UserResponse | null>(null)
 
@@ -162,6 +163,18 @@ export default function WorkersPage() {
                           </Button>
                         )
                       )}
+                      {/* Assign sites */}
+                      {user.role === 'WORKER' && (
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                          title={t('assignedSites')}
+                          onClick={() => setSiteModal(user)}
+                        >
+                          <Building2 size={15} />
+                        </Button>
+                      )}
                       {/* Edit */}
                       <Button
                         size="icon"
@@ -200,6 +213,14 @@ export default function WorkersPage() {
           open={!!faceModal}
           worker={faceModal}
           onClose={() => setFaceModal(null)}
+        />
+      )}
+
+      {siteModal && (
+        <WorkerSiteModal
+          open={!!siteModal}
+          worker={siteModal}
+          onClose={() => setSiteModal(null)}
         />
       )}
 

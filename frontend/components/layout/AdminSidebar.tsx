@@ -11,6 +11,7 @@ import {
   LogOut,
   ClipboardCheck,
   X,
+  ScanFace,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './ThemeToggle'
@@ -39,6 +40,7 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
     { href: `/${locale}/sites`, label: t('sites'), icon: MapPin },
     { href: `/${locale}/workers`, label: t('workers'), icon: Users },
     { href: `/${locale}/reports`, label: t('reports'), icon: BarChart2 },
+    { href: `/${locale}/verify`, label: t('verify'), icon: ScanFace },
   ]
 
   return (

@@ -65,7 +65,8 @@
     "assignManager": "Add manager",
     "assignWorker": "Add worker",
     "clickMapToSelect": "Click on the map to set the location",
-    "deleteConfirm": "Are you sure you want to delete this site?"
+    "deleteConfirm": "Are you sure you want to delete this site?",
+    "shift": "Shift"
   },
   "workers": {
     "title": "Workers",
@@ -80,11 +81,15 @@
     "registerFace": "Register face",
     "deleteFace": "Delete face",
     "deleteConfirm": "Are you sure you want to deactivate this worker?",
+    "password": "Password",
     "roles": {
       "ADMIN": "Administrator",
-      "MANAGER": "Manager",
       "WORKER": "Worker"
-    }
+    },
+    "assignedSites": "Sites",
+    "searchSite": "Search site...",
+    "searchWorker": "Search worker...",
+    "allAssigned": "All workers are already assigned to this site"
   },
   "verify": {
     "title": "Verify",
@@ -137,6 +142,9 @@
     "title": "Reports",
     "attendance": "Attendance",
     "missing": "Missing workers",
+    "hours": "Worked Hours",
+    "hoursBySite": "By site",
+    "hoursOverall": "Overall",
     "dateFrom": "From date",
     "dateTo": "To date",
     "date": "Date",
@@ -151,6 +159,20 @@
     "checkIn": "Check In",
     "checkOut": "Check Out",
     "noResults": "No results for the selected period",
-    "manual": "Manual"
+    "manual": "Manual",
+    "inZone": "In zone",
+    "outOfZone": "Out of zone",
+    "hoursWorked": "Hours",
+    "openShift": "Open shift",
+    "total": "Total",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "correctHours": "Correct hours",
+    "correctedHours": "Corrected hours",
+    "correctionNote": "Note",
+    "optional": "optional",
+    "correctionNotePlaceholder": "Reason for correction...",
+    "correctionInvalidHours": "Please enter a valid hours value",
+    "inferredCheckOut": "Inferred from next site check-in"
   }
 }

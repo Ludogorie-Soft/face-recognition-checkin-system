@@ -21,18 +21,16 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @GetMapping("/today")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Map<String, String>> getTodayStatus(
-            @RequestParam UUID siteId,
-            @AuthenticationPrincipal User currentUser) {
-        Map<UUID, AttendanceType> status = attendanceService.getTodayStatus(siteId, currentUser);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, String>> getTodayStatus(@RequestParam UUID siteId) {
+        Map<UUID, AttendanceType> status = attendanceService.getTodayStatus(siteId);
         Map<String, String> response = new java.util.LinkedHashMap<>();
         status.forEach((id, type) -> response.put(id.toString(), type.name()));
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/sync")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AttendanceSyncResponse> sync(
             @Valid @RequestBody AttendanceSyncRequest request,
             @AuthenticationPrincipal User currentUser) {

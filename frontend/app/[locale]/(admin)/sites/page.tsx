@@ -72,15 +72,14 @@ export default function SitesPage() {
 
       {/* Table */}
       <div className="rounded-xl border border-border overflow-x-auto">
-        <table className="w-full text-sm min-w-[700px]">
+        <table className="w-full text-sm min-w-[600px]">
           <thead>
             <tr className="bg-muted/50 text-muted-foreground text-left">
               <th className="px-4 py-3 font-medium">{t('name')}</th>
               <th className="px-4 py-3 font-medium">{t('address')}</th>
               <th className="px-4 py-3 font-medium">{t('coordinates')}</th>
               <th className="px-4 py-3 font-medium">{t('radius')}</th>
-              <th className="px-4 py-3 font-medium">Смяна</th>
-              <th className="px-4 py-3 font-medium">{t('managers')}</th>
+              <th className="px-4 py-3 font-medium">{t('shift')}</th>
               <th className="px-4 py-3 font-medium">{t('workers')}</th>
               <th className="px-4 py-3 font-medium text-right">{tc('actions')}</th>
             </tr>
@@ -89,7 +88,7 @@ export default function SitesPage() {
             {isLoading
               ? Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i}>
-                    {Array.from({ length: 8 }).map((_, j) => (
+                    {Array.from({ length: 7 }).map((_, j) => (
                       <td key={j} className="px-4 py-3">
                         <Skeleton className="h-4 w-20" />
                       </td>
@@ -99,7 +98,7 @@ export default function SitesPage() {
               : filtered.length === 0
               ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                     {tc('noData')}
                   </td>
                 </tr>
@@ -130,11 +129,6 @@ export default function SitesPage() {
                     ) : (
                       <span className="text-muted-foreground text-xs">—</span>
                     )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="secondary" className="text-xs">
-                      {site.managers.length}
-                    </Badge>
                   </td>
                   <td className="px-4 py-3">
                     <Badge variant="secondary" className="text-xs">

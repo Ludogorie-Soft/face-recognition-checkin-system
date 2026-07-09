@@ -7,10 +7,8 @@ import org.example.attendTrack.attendance.dto.AttendanceSyncResponse;
 import org.example.attendTrack.common.exception.ApiException;
 import org.example.attendTrack.common.exception.ErrorCode;
 import org.example.attendTrack.site.Site;
-import org.example.attendTrack.site.SiteManagerRepository;
 import org.example.attendTrack.site.SiteRepository;
 import org.example.attendTrack.site.SiteWorkerRepository;
-import org.example.attendTrack.user.Role;
 import org.example.attendTrack.user.User;
 import org.example.attendTrack.user.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -32,17 +30,12 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final SiteRepository siteRepository;
     private final SiteWorkerRepository siteWorkerRepository;
-    private final SiteManagerRepository siteManagerRepository;
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Map<UUID, AttendanceType> getTodayStatus(UUID siteId, User currentUser) {
+    public Map<UUID, AttendanceType> getTodayStatus(UUID siteId) {
         if (!siteRepository.existsById(siteId)) {
             throw new ApiException(HttpStatus.NOT_FOUND, ErrorCode.SITE_NOT_FOUND, "Site not found: " + siteId);
-        }
-        if (currentUser.getRole() == Role.MANAGER
-                && !siteManagerRepository.existsBySiteIdAndUserId(siteId, currentUser.getId())) {
-            throw new ApiException(HttpStatus.FORBIDDEN, ErrorCode.SITE_NOT_ASSIGNED, "You are not assigned to this site");
         }
 
         LocalDateTime start = LocalDate.now().atStartOfDay();
@@ -56,15 +49,9 @@ public class AttendanceService {
     }
 
     @Transactional
-    public AttendanceSyncResponse sync(User manager, AttendanceSyncRequest request) {
+    public AttendanceSyncResponse sync(User admin, AttendanceSyncRequest request) {
         Site site = siteRepository.findById(request.siteId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.SITE_NOT_FOUND, "Site not found: " + request.siteId()));
-
-        // Managers can only sync for their assigned sites
-        if (manager.getRole() == Role.MANAGER
-                && !siteManagerRepository.existsBySiteIdAndUserId(site.getId(), manager.getId())) {
-            throw new ApiException(HttpStatus.FORBIDDEN, ErrorCode.SITE_NOT_ASSIGNED, "You are not assigned to this site");
-        }
 
         int saved = 0;
         int skipped = 0;
@@ -72,7 +59,7 @@ public class AttendanceService {
 
         for (AttendanceRecord record : request.records()) {
             try {
-                saved += processRecord(record, site, manager);
+                saved += processRecord(record, site, admin);
             } catch (Exception e) {
                 skipped++;
                 errors.add("Worker %s — %s".formatted(record.workerId(), e.getMessage()));
@@ -82,7 +69,7 @@ public class AttendanceService {
         return new AttendanceSyncResponse(saved, skipped, errors);
     }
 
-    private int processRecord(AttendanceRecord record, Site site, User manager) {
+    private int processRecord(AttendanceRecord record, Site site, User admin) {
         // Skip duplicates
         if (attendanceRepository.existsDuplicate(
                 record.workerId(), site.getId(), record.type(), record.recordedAt())) {
@@ -101,7 +88,7 @@ public class AttendanceService {
         attendanceRepository.save(Attendance.builder()
                 .worker(worker)
                 .site(site)
-                .manager(manager)
+                .manager(admin)
                 .type(record.type())
                 .lat(record.lat())
                 .lng(record.lng())

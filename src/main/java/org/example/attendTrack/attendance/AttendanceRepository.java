@@ -65,4 +65,17 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to
     );
+
+    @Query("""
+            SELECT a FROM Attendance a
+            JOIN FETCH a.worker
+            JOIN FETCH a.site
+            WHERE a.recordedAt >= :from
+              AND a.recordedAt < :to
+            ORDER BY a.worker.name, a.site.id, a.recordedAt
+            """)
+    List<Attendance> findAllInDateRange(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
 }

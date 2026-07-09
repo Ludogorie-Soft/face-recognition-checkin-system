@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-22T08:57:50.257Z
-> Files: 61 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T07:17:26.463Z
+> Files: 88 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -12,6 +12,7 @@
 - `docker-compose.yml` — Docker Compose services (~320 tok)
 - `FACE_RECOGNITION_V2.md` — Face Recognition — Вариант 2: MediaPipe + MobileFaceNet ONNX (~1394 tok)
 - `nginx.conf` (~313 tok)
+- `PLAN.md` — PLAN: Two-Role Refactor — ADMIN + WORKER only (~1591 tok)
 - `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
 - `README.md` — Project documentation (~2597 tok)
 
@@ -39,11 +40,15 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — today — renders table (~3486 tok)
+- `page.tsx` — today (~8095 tok)
+
+## frontend/app/[locale]/(admin)/sites/
+
+- `page.tsx` — formatTime — renders table (~2210 tok)
 
 ## frontend/app/[locale]/(admin)/workers/
 
-- `page.tsx` — ROLE_VARIANT — renders table (~2517 tok)
+- `page.tsx` — ROLE_VARIANT — renders table (~2759 tok)
 
 ## frontend/app/[locale]/(auth)/login/
 
@@ -51,7 +56,7 @@
 
 ## frontend/app/[locale]/(manager)/
 
-- `layout.tsx` — ManagerLayout (~597 tok)
+- `layout.tsx` — VerifyLayout (~749 tok)
 
 ## frontend/app/[locale]/(manager)/verify/
 
@@ -67,11 +72,17 @@
 
 ## frontend/components/layout/
 
+- `AdminSidebar.tsx` — AdminSidebar (~911 tok)
 - `ThemeToggle.tsx` — ThemeToggle (~197 tok)
 
 ## frontend/components/sites/
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~756 tok)
+- `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~1946 tok)
+
+## frontend/components/ui/
+
+- `textarea.tsx` — Textarea (~203 tok)
 
 ## frontend/components/verify/
 
@@ -81,15 +92,18 @@
 
 - `FaceRegisterModal.tsx` — FaceRegisterModal — renders modal (~1759 tok)
 - `WorkerDialog.tsx` — ROLES — renders form, modal (~1316 tok)
+- `WorkerSiteModal.tsx` — WorkerSiteModal — renders modal (~2352 tok)
 
 ## frontend/hooks/
 
+- `useAuth.ts` — Exports useAuth (~278 tok)
 - `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
-- `useSites.ts` — API routes: GET, DELETE, POST (7 endpoints) (~718 tok)
+- `useSites.ts` — API routes: GET, DELETE, POST (5 endpoints) (~567 tok)
 - `useSiteSync.ts` — Exports SyncResult, SyncStatus, useSiteSync (~603 tok)
 
 ## frontend/lib/
 
+- `auth.ts` — Exports TOKEN_KEY, getToken, setToken, removeToken + 5 more (~400 tok)
 - `axios.ts` — Declares api (~267 tok)
 - `db.ts` — Exports WorkerRecord, SiteInfo, PendingAttendance, db (~495 tok)
 - `faceAlignment.ts` — Face alignment: transforms a raw video frame into a normalized (~1112 tok)
@@ -98,24 +112,62 @@
 
 ## frontend/messages/
 
-- `bg.json` (~1465 tok)
-- `en.json` (~1395 tok)
+- `bg.json` (~1703 tok)
+- `en.json` (~1623 tok)
 
 ## frontend/scripts/
 
 - `copy-wasm.js` — copy-wasm.js — runs automatically after `npm install` (postinstall). (~625 tok)
 
+## frontend/types/
+
+- `user.ts` — Exports Role, UserResponse, UserRequest (~95 tok)
+
 ## src/main/java/org/example/ (legacy)
 
 - `Main.java` — IntelliJ placeholder, unused (~50 tok)
+
+## src/main/java/org/example/attendTrack/attendance/
+
+- `AttendanceController.java` — RestController: AttendanceController (3 endpoints) (~407 tok)
+- `AttendanceRepository.java` — Class: AttendanceRepository (~692 tok)
+- `AttendanceService.java` — Service: AttendanceService (~1092 tok)
 
 ## src/main/java/org/example/attendTrack/config/
 
 - `CorsConfig.java` — ", config); (~342 tok)
 
+## src/main/java/org/example/attendTrack/notification/
+
+- `NotificationService.java` — Notifies all admins and managers of the site about missing workers. (~875 tok)
+
+## src/main/java/org/example/attendTrack/report/
+
+- `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
+- `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
+- `ReportController.java` — RestController: ReportController (9 endpoints) (~1423 tok)
+- `ReportService.java` — Service: ReportService (~5880 tok)
+
+## src/main/java/org/example/attendTrack/report/dto/
+
+- `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~322 tok)
+- `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
+
+## src/main/java/org/example/attendTrack/site/
+
+- `SiteController.java` — RestController: SiteController (11 endpoints) (~902 tok)
+- `SiteService.java` — Service: SiteService (~2103 tok)
+
+## src/main/java/org/example/attendTrack/sync/
+
+- `SyncController.java` — RestController: SyncController (2 endpoints) (~187 tok)
+- `SyncService.java` — Service: SyncService (~599 tok)
+
 ## src/main/java/org/example/attendTrack/user/
 
 - `FaceDescriptorService.java` — Service: FaceDescriptorService (~888 tok)
+- `Role.java` — Class: Role (~22 tok)
 - `UserService.java` — Service: UserService (~1022 tok)
 
 ## src/main/java/org/example/attendTrack/user/dto/
@@ -162,3 +214,5 @@
 
 - `V1__init.sql` — Full schema: users, sites, site_managers, site_workers, face_descriptors, attendance, push_subscriptions, notifications (~200 tok)
 - `V2__clear_face_descriptors.sql` — V2: Clear all 128-dim face descriptors (face-api.js). (~43 tok)
+- `V3__remove_manager_role.sql` — Migrate existing MANAGER users to ADMIN role (~82 tok)
+- `V4__hours_corrections.sql` — SQL: tables: hours_corrections (~162 tok)

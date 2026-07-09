@@ -1,16 +1,20 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { SyncBanner } from '@/components/offline/SyncBanner'
 import { useAuth } from '@/hooks/useAuth'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { LanguageToggle } from '@/components/layout/LanguageToggle'
-import { LogOut, ClipboardCheck } from 'lucide-react'
+import { LogOut, ClipboardCheck, LayoutDashboard } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { prefetchModels } from '@/lib/prefetchModels'
 
-export default function ManagerLayout({ children }: { children: React.ReactNode }) {
-  const { ready, logout } = useAuth('MANAGER')
+export default function VerifyLayout({ children }: { children: React.ReactNode }) {
+  const { ready, logout } = useAuth('ADMIN')
+  const params = useParams()
+  const locale = (params?.locale as string) ?? 'bg'
 
   // Warm the Service Worker cache with all face recognition assets as soon
   // as the manager is authenticated — enables full offline use from then on.
@@ -30,9 +34,18 @@ export default function ManagerLayout({ children }: { children: React.ReactNode 
   return (
     <div className="h-dvh flex flex-col bg-background overflow-hidden">
       <header className="flex items-center justify-between px-4 py-3 bg-card border-b border-border">
-        <div className="flex items-center gap-2">
-          <ClipboardCheck size={20} className="text-primary" />
-          <span className="text-sm font-bold tracking-tight text-foreground">AttendTrack</span>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/${locale}/dashboard`}
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Back to dashboard"
+          >
+            <LayoutDashboard size={16} />
+          </Link>
+          <div className="flex items-center gap-2">
+            <ClipboardCheck size={20} className="text-primary" />
+            <span className="text-sm font-bold tracking-tight text-foreground">AttendTrack</span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <NotificationBell />

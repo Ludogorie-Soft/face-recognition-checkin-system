@@ -43,22 +43,6 @@ export function useDeactivateSite() {
   })
 }
 
-export function useAssignManager(siteId: string) {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (userId: string) => api.post(`/api/sites/${siteId}/managers/${userId}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [QK] }),
-  })
-}
-
-export function useRemoveManager(siteId: string) {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (userId: string) => api.delete(`/api/sites/${siteId}/managers/${userId}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [QK] }),
-  })
-}
-
 export function useAssignWorker(siteId: string) {
   const qc = useQueryClient()
   return useMutation({

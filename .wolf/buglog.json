@@ -340,6 +340,422 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-22T08:57:44.559Z"
+    },
+    {
+      "id": "bug-022",
+      "timestamp": "2026-07-09T06:08:47.146Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/main/java/org/example/attendTrack/site/SiteController.java",
+      "root_cause": "Had \"hasAnyRole('",
+      "fix": "Changed to \"hasRole('",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-09T06:09:01.134Z"
+    },
+    {
+      "id": "bug-023",
+      "timestamp": "2026-07-09T06:09:05.194Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/main/java/org/example/attendTrack/sync/SyncController.java",
+      "root_cause": "Had \"hasAnyRole('",
+      "fix": "Changed to \"hasRole('",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:09:05.194Z"
+    },
+    {
+      "id": "bug-024",
+      "timestamp": "2026-07-09T06:09:11.840Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceController.java",
+      "root_cause": "Had \"hasAnyRole('",
+      "fix": "Changed to \"hasRole('",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:09:11.840Z"
+    },
+    {
+      "id": "bug-025",
+      "timestamp": "2026-07-09T06:09:18.763Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/site/SiteService.java",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 9→3 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:09:18.763Z"
+    },
+    {
+      "id": "bug-026",
+      "timestamp": "2026-07-09T06:09:42.820Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→3 lines (3 removed) | Also: import org.example.attendTrack.site.SiteManagerRep; import org.example.attendTrack.user.Role;",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T06:10:06.233Z"
+    },
+    {
+      "id": "bug-027",
+      "timestamp": "2026-07-09T06:11:38.845Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/types/user.ts",
+      "root_cause": "Had 'MANAGER'",
+      "fix": "Changed to 'WORKER'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:11:38.845Z"
+    },
+    {
+      "id": "bug-028",
+      "timestamp": "2026-07-09T06:11:46.425Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/lib/auth.ts",
+      "root_cause": "Had 'MANAGER'",
+      "fix": "Changed to 'WORKER'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:11:46.425Z"
+    },
+    {
+      "id": "bug-029",
+      "timestamp": "2026-07-09T06:11:57.651Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/hooks/useAuth.ts",
+      "root_cause": "Had 'MANAGER'",
+      "fix": "Changed to 'WORKER'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:11:57.651Z"
+    },
+    {
+      "id": "bug-030",
+      "timestamp": "2026-07-09T06:12:03.401Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/workers/WorkerDialog.tsx",
+      "root_cause": "Had 'MANAGER'",
+      "fix": "Changed to 'ADMIN'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:12:03.401Z"
+    },
+    {
+      "id": "bug-031",
+      "timestamp": "2026-07-09T06:12:11.611Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/app/[locale]/(manager)/layout.tsx",
+      "root_cause": "Had 'MANAGER'",
+      "fix": "Changed to 'ADMIN'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:12:11.611Z"
+    },
+    {
+      "id": "bug-032",
+      "timestamp": "2026-07-09T06:12:21.763Z",
+      "error_message": "CSS fix: label",
+      "file": "frontend/components/layout/AdminSidebar.tsx",
+      "root_cause": "label: t('reports'), icon: BarChart2 → t('verify'), icon: ScanFace",
+      "fix": "Changed label: t('reports'), icon: BarChart2 → t('verify'), icon: ScanFace",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:12:21.763Z"
+    },
+    {
+      "id": "bug-033",
+      "timestamp": "2026-07-09T06:20:43.315Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(manager)/layout.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:20:43.315Z"
+    },
+    {
+      "id": "bug-034",
+      "timestamp": "2026-07-09T06:21:11.784Z",
+      "error_message": "Wrong return value",
+      "file": "src/main/java/org/example/attendTrack/site/SiteController.java",
+      "root_cause": "Was returning: ResponseEntity.ok(siteService.getAll(currentUser))",
+      "fix": "Now returns: ResponseEntity.ok(siteService.getAll());",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:21:11.784Z"
+    },
+    {
+      "id": "bug-035",
+      "timestamp": "2026-07-09T06:21:22.670Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/site/SiteController.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:21:22.670Z"
+    },
+    {
+      "id": "bug-036",
+      "timestamp": "2026-07-09T06:21:43.540Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/sync/SyncController.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→4 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:21:43.540Z"
+    },
+    {
+      "id": "bug-037",
+      "timestamp": "2026-07-09T06:22:16.941Z",
+      "error_message": "Wrong reference: Label should be t",
+      "file": "frontend/components/workers/WorkerDialog.tsx",
+      "root_cause": "Used \"Label\" instead of \"t\"",
+      "fix": "Changed Label → t",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:22:16.941Z"
+    },
+    {
+      "id": "bug-038",
+      "timestamp": "2026-07-09T06:27:00.546Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/notification/NotificationService.java",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 9→3 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:27:00.546Z"
+    },
+    {
+      "id": "bug-039",
+      "timestamp": "2026-07-09T06:27:45.345Z",
+      "error_message": "CSS fix: length",
+      "file": "frontend/app/[locale]/(admin)/sites/page.tsx",
+      "root_cause": "length: 8 → 7",
+      "fix": "Changed length: 8 → 7",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:27:45.345Z"
+    },
+    {
+      "id": "bug-040",
+      "timestamp": "2026-07-09T06:42:54.841Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:42:54.841Z"
+    },
+    {
+      "id": "bug-041",
+      "timestamp": "2026-07-09T06:43:17.106Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:43:17.106Z"
+    },
+    {
+      "id": "bug-042",
+      "timestamp": "2026-07-09T06:45:43.587Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/messages/bg.json",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 22→36 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:45:43.588Z"
+    },
+    {
+      "id": "bug-043",
+      "timestamp": "2026-07-09T06:53:23.131Z",
+      "error_message": "Wrong reference: hasCorrestion should be hasCorrection",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Used \"hasCorrestion\" instead of \"hasCorrection\"",
+      "fix": "Changed hasCorrestion → hasCorrection",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T06:53:23.131Z"
+    },
+    {
+      "id": "bug-044",
+      "timestamp": "2026-07-09T06:53:30.878Z",
+      "error_message": "CSS fix: note",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "note: corrNote, → corrNote.trim() || null,",
+      "fix": "Changed note: corrNote, → corrNote.trim() || null,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T06:53:39.279Z"
+    },
+    {
+      "id": "bug-045",
+      "timestamp": "2026-07-09T07:04:48.741Z",
+      "error_message": "CSS fix: dark",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "dark: text-amber-400 font-medium text-xs\"> → text-sky-400 font-mono text-sm\">",
+      "fix": "Changed dark: text-amber-400 font-medium text-xs\"> → text-sky-400 font-mono text-sm\">",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T07:04:48.741Z"
+    },
+    {
+      "id": "bug-046",
+      "timestamp": "2026-07-09T07:05:34.778Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Had \"ml-0.5 opacity-70\"",
+      "fix": "Changed to 'inferredCheckOut'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T07:05:55.748Z"
+    },
+    {
+      "id": "bug-047",
+      "timestamp": "2026-07-09T07:10:35.322Z",
+      "error_message": "Wrong operator: || should be !==",
+      "file": "frontend/components/sites/SiteAssignModal.tsx",
+      "root_cause": "Used \"||\" instead of \"!==\"",
+      "fix": "Changed operator || → !==",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T07:10:35.322Z"
     }
   ]
 }

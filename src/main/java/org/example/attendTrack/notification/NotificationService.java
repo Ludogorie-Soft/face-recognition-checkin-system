@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import org.example.attendTrack.site.Site;
-import org.example.attendTrack.site.SiteManagerRepository;
 import org.example.attendTrack.user.Role;
 import org.example.attendTrack.user.User;
 import org.example.attendTrack.user.UserRepository;
@@ -24,7 +23,6 @@ public class NotificationService {
 
     private final JavaMailSender mailSender;
     private final PushSubscriptionRepository pushSubscriptionRepository;
-    private final SiteManagerRepository siteManagerRepository;
     private final UserRepository userRepository;
     private final Optional<PushService> pushService;
 
@@ -37,7 +35,7 @@ public class NotificationService {
         String subject = "Missing workers – " + site.getName();
         String body = buildMissingWorkersBody(site, missingWorkers);
 
-        List<User> recipients = resolveRecipients(site);
+        List<User> recipients = resolveRecipients();
         List<UUID> recipientIds = recipients.stream().map(User::getId).toList();
 
         recipients.forEach(user -> sendEmail(user.getEmail(), subject, body));
@@ -78,14 +76,8 @@ public class NotificationService {
         });
     }
 
-    private List<User> resolveRecipients(Site site) {
-        List<User> admins = userRepository.findAllByRoleAndActiveTrue(Role.ADMIN);
-        List<User> managers = siteManagerRepository.findBySiteId(site.getId())
-                .stream().map(sm -> sm.getUser()).toList();
-
-        return java.util.stream.Stream.concat(admins.stream(), managers.stream())
-                .distinct()
-                .toList();
+    private List<User> resolveRecipients() {
+        return userRepository.findAllByRoleAndActiveTrue(Role.ADMIN);
     }
 
     private String buildMissingWorkersBody(Site site, List<User> missingWorkers) {

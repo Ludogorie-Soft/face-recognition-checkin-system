@@ -32,7 +32,7 @@ interface Props {
   user?: UserResponse | null
 }
 
-const ROLES: Role[] = ['WORKER', 'MANAGER', 'ADMIN']
+const ROLES: Role[] = ['WORKER', 'ADMIN']
 
 export function WorkerDialog({ open, onClose, user }: Props) {
   const t = useTranslations('workers')
@@ -104,7 +104,7 @@ export function WorkerDialog({ open, onClose, user }: Props) {
           </div>
           {!user && role !== 'WORKER' && (
             <div className="flex flex-col gap-1.5">
-              <Label>Парола</Label>
+              <Label>{t('password')}</Label>
               <Input
                 type="password"
                 {...register('password', { required: true })}

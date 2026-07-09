@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { getToken, isTokenValid, getUserRole, removeToken } from '@/lib/auth'
 
-export function useAuth(requiredRole?: 'ADMIN' | 'MANAGER') {
+export function useAuth(requiredRole?: 'ADMIN') {
   const router = useRouter()
   const params = useParams()
   const locale = (params?.locale as string) ?? 'bg'
 
   const [ready, setReady] = useState(false)
-  const [role, setRole] = useState<'ADMIN' | 'MANAGER' | 'WORKER' | null>(null)
+  const [role, setRole] = useState<'ADMIN' | 'WORKER' | null>(null)
 
   useEffect(() => {
     const token = getToken()

@@ -1,13 +1,19 @@
 package org.example.attendTrack.report;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.attendTrack.report.dto.AttendanceReportRow;
+import org.example.attendTrack.report.dto.HoursCorrectionRequest;
 import org.example.attendTrack.report.dto.MissingWorkerReport;
+import org.example.attendTrack.report.dto.WorkedHoursRow;
+import org.example.attendTrack.report.dto.WorkedHoursSummaryRow;
+import org.example.attendTrack.user.User;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -45,6 +51,62 @@ public class ReportController {
 
         byte[] excel = reportService.exportAttendanceToExcel(siteId, from, to);
         String filename = "attendance_%s_%s.xlsx".formatted(from, to);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excel);
+    }
+
+    // ── Worked Hours ──────────────────────────────────────────────────────────
+
+    @GetMapping("/hours")
+    public ResponseEntity<List<WorkedHoursRow>> getWorkedHours(
+            @RequestParam UUID siteId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ResponseEntity.ok(reportService.getWorkedHours(siteId, from, to));
+    }
+
+    @GetMapping("/hours/summary")
+    public ResponseEntity<List<WorkedHoursSummaryRow>> getWorkedHoursSummary(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ResponseEntity.ok(reportService.getWorkedHoursSummary(from, to));
+    }
+
+    @PutMapping("/hours/correction")
+    public ResponseEntity<Void> saveHoursCorrection(
+            @Valid @RequestBody HoursCorrectionRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        reportService.saveHoursCorrection(request, currentUser);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/hours/export")
+    public ResponseEntity<byte[]> exportWorkedHours(
+            @RequestParam UUID siteId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+
+        byte[] excel = reportService.exportWorkedHoursToExcel(siteId, from, to);
+        String filename = "worked_hours_%s_%s.xlsx".formatted(from, to);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excel);
+    }
+
+    @GetMapping("/hours/summary/export")
+    public ResponseEntity<byte[]> exportWorkedHoursSummary(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+
+        byte[] excel = reportService.exportWorkedHoursSummaryToExcel(from, to);
+        String filename = "worked_hours_summary_%s_%s.xlsx".formatted(from, to);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
