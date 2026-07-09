@@ -8,6 +8,14 @@ public record SiteSyncResponse(
         SiteInfo site,
         List<SiteWorkerSyncResponse> workers
 ) {
+    public record CheckpointInfo(
+            UUID id,
+            String name,
+            double lat,
+            double lng,
+            int radiusMeters
+    ) {}
+
     public record SiteInfo(
             UUID id,
             String name,
@@ -15,6 +23,7 @@ public record SiteSyncResponse(
             double lng,
             int radiusMeters,
             LocalTime workStartTime,
-            LocalTime workEndTime
+            LocalTime workEndTime,
+            List<CheckpointInfo> checkpoints
     ) {}
 }

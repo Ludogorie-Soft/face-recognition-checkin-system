@@ -78,15 +78,47 @@ interface CorrectionTarget {
 
 type Tab = 'attendance' | 'missing' | 'hours'
 type HoursView = 'site' | 'summary'
+type Period = 'day' | 'week' | 'month' | 'custom'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+function fmtLocal(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 function today() {
-  return new Date().toISOString().slice(0, 10)
+  return fmtLocal(new Date())
 }
 
 function formatTime(dt: string) {
   return dt.slice(0, 5)
+}
+
+function fmt(d: Date) {
+  return fmtLocal(d)
+}
+
+function getPeriodDates(period: Period): { from: string; to: string } {
+  const now = new Date()
+  if (period === 'day') {
+    const t = fmt(now)
+    return { from: t, to: t }
+  }
+  if (period === 'week') {
+    const day = now.getDay()
+    const diffToMon = day === 0 ? -6 : 1 - day
+    const mon = new Date(now)
+    mon.setDate(now.getDate() + diffToMon)
+    const sun = new Date(mon)
+    sun.setDate(mon.getDate() + 6)
+    return { from: fmt(mon), to: fmt(sun) }
+  }
+  if (period === 'month') {
+    const from = new Date(now.getFullYear(), now.getMonth(), 1)
+    const to = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    return { from: fmt(from), to: fmt(to) }
+  }
+  return { from: fmt(now), to: fmt(now) }
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -100,6 +132,7 @@ export default function ReportsPage() {
   const [tab, setTab] = useState<Tab>('attendance')
   const [hoursView, setHoursView] = useState<HoursView>('site')
   const [siteId, setSiteId] = useState('')
+  const [period, setPeriod] = useState<Period>('day')
   const [dateFrom, setDateFrom] = useState(today())
   const [dateTo, setDateTo] = useState(today())
   const [date, setDate] = useState(today())
@@ -167,6 +200,30 @@ export default function ReportsPage() {
     },
     onError: () => toast.error(tc('error')),
   })
+
+  // ── Period helpers ─────────────────────────────────────────────────────────
+
+  const handlePeriodChange = (p: Period) => {
+    setPeriod(p)
+    if (p !== 'custom') {
+      const { from, to } = getPeriodDates(p)
+      setDateFrom(from)
+      setDateTo(to)
+    }
+    setQueryKey(0)
+  }
+
+  const handleDateFromChange = (v: string) => {
+    setDateFrom(v)
+    setPeriod('custom')
+    setQueryKey(0)
+  }
+
+  const handleDateToChange = (v: string) => {
+    setDateTo(v)
+    setPeriod('custom')
+    setQueryKey(0)
+  }
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
@@ -242,7 +299,7 @@ export default function ReportsPage() {
       workerId: corrTarget.workerId,
       siteId: corrTarget.siteId,
       date: corrTarget.date,
-      correctedHours: Math.round(parsed * 4) / 4, // snap to nearest 0.25
+      correctedHours: parsed,
       note: corrNote.trim() || null,
     })
   }
@@ -283,6 +340,25 @@ export default function ReportsPage() {
           </button>
         ))}
       </div>
+
+      {/* Period selector */}
+      {tab !== 'missing' && (
+        <div className="flex gap-1 p-1 bg-muted/50 border border-border rounded-lg w-fit">
+          {(['day', 'week', 'month', 'custom'] as Period[]).map((p) => (
+            <button
+              key={p}
+              onClick={() => handlePeriodChange(p)}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                period === p
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {t(p === 'day' ? 'periodDay' : p === 'week' ? 'periodWeek' : p === 'month' ? 'periodMonth' : 'periodCustom')}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Hours sub-toggle */}
       {tab === 'hours' && (
@@ -330,11 +406,11 @@ export default function ReportsPage() {
           <>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">{t('dateFrom')}</label>
-              <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-40" />
+              <Input type="date" value={dateFrom} onChange={(e) => handleDateFromChange(e.target.value)} className="w-40" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">{t('dateTo')}</label>
-              <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-40" />
+              <Input type="date" value={dateTo} onChange={(e) => handleDateToChange(e.target.value)} className="w-40" />
             </div>
           </>
         )}

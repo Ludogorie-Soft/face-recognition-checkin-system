@@ -7,6 +7,14 @@ export interface WorkerRecord {
   descriptor: number[] | null
 }
 
+export interface CheckpointInfo {
+  id: string
+  name: string | null
+  lat: number
+  lng: number
+  radiusMeters: number
+}
+
 export interface SiteInfo {
   id: string
   name: string
@@ -15,6 +23,7 @@ export interface SiteInfo {
   radiusMeters: number
   workStartTime: string | null
   workEndTime: string | null
+  checkpoints: CheckpointInfo[]
 }
 
 export interface PendingAttendance {
@@ -62,6 +71,14 @@ class GarantDB extends Dexie {
     // v4: recreate workers with compound primary key [id+siteId] so a worker
     // assigned to multiple sites gets one entry per site (no BulkError).
     this.version(4).stores({
+      workers: '[id+siteId], siteId, name',
+      siteInfo: 'id',
+      pending: '++id, siteId, status, recordedAt',
+    })
+
+    // v5: SiteInfo gains checkpoints[] — no schema change needed (BLOB field),
+    // but bump version so existing records get the default empty array on read.
+    this.version(5).stores({
       workers: '[id+siteId], siteId, name',
       siteInfo: 'id',
       pending: '++id, siteId, status, recordedAt',

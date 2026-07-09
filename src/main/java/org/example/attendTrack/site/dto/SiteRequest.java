@@ -1,9 +1,11 @@
 package org.example.attendTrack.site.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
+import java.util.List;
 
 public record SiteRequest(
         @NotBlank
@@ -21,5 +23,8 @@ public record SiteRequest(
 
         LocalTime workStartTime,
 
-        LocalTime workEndTime
+        LocalTime workEndTime,
+
+        @Valid
+        List<CheckpointDto> checkpoints
 ) {}

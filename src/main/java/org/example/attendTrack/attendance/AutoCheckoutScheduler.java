@@ -1,0 +1,82 @@
+package org.example.attendTrack.attendance;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class AutoCheckoutScheduler {
+
+    private final AttendanceRepository attendanceRepository;
+
+    /**
+     * Runs at 00:01 every day. For each worker who checked in yesterday at a site
+     * with a configured workEndTime but never checked out, creates an automatic
+     * CHECK_OUT at the site's workEndTime.
+     */
+    @Scheduled(cron = "0 1 0 * * *")
+    @Transactional
+    public void autoCheckoutMissedWorkers() {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDateTime from = yesterday.atStartOfDay();
+        LocalDateTime to = yesterday.plusDays(1).atStartOfDay();
+
+        List<Attendance> unclosed = attendanceRepository.findUnclosedCheckIns(from, to);
+        if (unclosed.isEmpty()) return;
+
+        // Keep only the latest CHECK_IN per (worker, site) — guards against duplicate sync records
+        Map<String, Attendance> lastCheckIn = new LinkedHashMap<>();
+        for (Attendance a : unclosed) {
+            String key = a.getWorker().getId() + ":" + a.getSite().getId();
+            lastCheckIn.merge(key, a, (existing, next) ->
+                    next.getRecordedAt().isAfter(existing.getRecordedAt()) ? next : existing);
+        }
+
+        Collection<Attendance> candidates = lastCheckIn.values();
+        log.info("Auto-checkout: {} candidate(s) for {} (from {} raw records)",
+                candidates.size(), yesterday, unclosed.size());
+
+        int created = 0;
+        for (Attendance checkIn : candidates) {
+            LocalDateTime checkOutTime = yesterday.atTime(checkIn.getSite().getWorkEndTime());
+
+            // Skip if worker checked in after the site's workEndTime
+            if (!checkOutTime.isAfter(checkIn.getRecordedAt())) {
+                log.debug("Auto-checkout skipped: workEndTime {} is not after checkIn {} for worker {}",
+                        checkOutTime, checkIn.getRecordedAt(), checkIn.getWorker().getId());
+                continue;
+            }
+
+            attendanceRepository.save(Attendance.builder()
+                    .worker(checkIn.getWorker())
+                    .site(checkIn.getSite())
+                    .manager(null)
+                    .type(AttendanceType.CHECK_OUT)
+                    .lat(checkIn.getLat())
+                    .lng(checkIn.getLng())
+                    .locationValid(true)
+                    .faceConfidence(null)
+                    .manualOverride(true)
+                    .recordedAt(checkOutTime)
+                    .syncedAt(LocalDateTime.now())
+                    .build());
+
+            log.debug("Auto-checkout: worker {} at site {} → {}",
+                    checkIn.getWorker().getId(), checkIn.getSite().getId(), checkOutTime);
+            created++;
+        }
+
+        log.info("Auto-checkout: {} record(s) created for {}", created, yesterday);
+    }
+}

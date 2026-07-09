@@ -20,9 +20,10 @@ public record SiteResponse(
         boolean active,
         LocalDateTime createdAt,
         List<UserResponse> managers,
-        List<UserResponse> workers
+        List<UserResponse> workers,
+        List<CheckpointDto> checkpoints
 ) {
-    public static SiteResponse from(Site site, List<UserResponse> managers, List<UserResponse> workers) {
+    public static SiteResponse from(Site site, List<UserResponse> managers, List<UserResponse> workers, List<CheckpointDto> checkpoints) {
         return new SiteResponse(
                 site.getId(),
                 site.getName(),
@@ -35,11 +36,12 @@ public record SiteResponse(
                 site.isActive(),
                 site.getCreatedAt(),
                 managers,
-                workers
+                workers,
+                checkpoints
         );
     }
 
     public static SiteResponse summary(Site site) {
-        return from(site, List.of(), List.of());
+        return from(site, List.of(), List.of(), List.of());
     }
 }

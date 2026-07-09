@@ -511,3 +511,94 @@
 | 10:23 | Session end: 29 writes across 8 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 19 reads | ~33226 tok |
 | 10:55 | Face conflict shows worker name; assign modals show full list with search filter | FaceDescriptorService.java, FaceDescriptorRepository.java, FaceRegisterModal.tsx, SiteAssignModal.tsx, WorkerSiteModal.tsx, bg.json, en.json | success | ~2500 |
 | 10:24 | Session end: 29 writes across 8 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 19 reads | ~33226 tok |
+| 10:26 | Session end: 29 writes across 8 files (page.tsx, en.json, bg.json, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 27 reads | ~34301 tok |
+
+## Session: 2026-07-09 10:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:45 | Created src/main/resources/db/migration/V5__site_checkpoints.sql | — | ~174 |
+| 10:45 | Created src/main/java/org/example/attendTrack/site/SiteCheckpoint.java | — | ~232 |
+| 10:45 | Created src/main/java/org/example/attendTrack/site/SiteCheckpointRepository.java | — | ~203 |
+| 10:46 | Created src/main/java/org/example/attendTrack/site/dto/CheckpointDto.java | — | ~115 |
+| 10:46 | Created src/main/java/org/example/attendTrack/site/dto/SiteRequest.java | — | ~134 |
+| 10:46 | Created src/main/java/org/example/attendTrack/site/dto/SiteResponse.java | — | ~368 |
+| 10:46 | Created src/main/java/org/example/attendTrack/site/SiteService.java | — | ~2561 |
+| 10:47 | Created src/main/java/org/example/attendTrack/attendance/AttendanceService.java | — | ~1513 |
+| 10:47 | Edited src/main/java/org/example/attendTrack/notification/NotificationService.java | modified notifySuspiciousCheckIn() | ~298 |
+| 10:47 | Created src/main/java/org/example/attendTrack/sync/dto/SiteSyncResponse.java | — | ~179 |
+| 10:47 | Created src/main/java/org/example/attendTrack/sync/SyncService.java | — | ~727 |
+| 10:47 | Created frontend/types/site.ts | — | ~252 |
+| 10:47 | Created frontend/lib/geo.ts | — | ~273 |
+| 10:48 | Created frontend/lib/db.ts | — | ~629 |
+| 10:48 | Created frontend/hooks/useGeoLocation.ts | — | ~435 |
+| 10:48 | Created frontend/hooks/useSiteSync.ts | — | ~670 |
+| 10:48 | Created frontend/components/sites/MapPicker.tsx | — | ~1173 |
+| 10:49 | Created frontend/components/sites/MapPicker.tsx | — | ~1214 |
+| 10:49 | Created frontend/components/sites/MapPicker.tsx | — | ~1205 |
+| 10:49 | Created frontend/components/sites/SiteDialog.tsx | — | ~3142 |
+| 10:50 | Edited frontend/messages/en.json | 4→9 lines | ~124 |
+| 10:50 | Edited frontend/messages/bg.json | 4→9 lines | ~141 |
+
+| 10:00 | Site checkpoints feature: V5 migration, SiteCheckpoint entity+repo, CheckpointDto, updated SiteRequest/SiteResponse/SiteService | backend site/* | complete | ~2500 |
+| 10:05 | AttendanceService: server-side haversine validation using checkpoints, notifySuspiciousCheckIn on outside-zone check-ins | AttendanceService.java, NotificationService.java | complete | ~800 |
+| 10:10 | SiteSyncResponse: added CheckpointInfo nested record, SyncService loads checkpoints | SiteSyncResponse.java, SyncService.java | complete | ~300 |
+| 10:15 | Frontend: types/site.ts, lib/geo.ts, lib/db.ts (v5), useGeoLocation, useSiteSync updated for checkpoints | frontend/* | complete | ~1200 |
+| 10:20 | MapPicker rewrite: multi-checkpoint, click-to-add, draggable markers, numbered icons | MapPicker.tsx | complete | ~800 |
+| 10:25 | SiteDialog rewrite: checkpoint list with name/radius inputs per row, select on click, delete button | SiteDialog.tsx | complete | ~1000 |
+| 10:30 | i18n: added checkpoints, clickMapToAdd, noCheckpoints, checkpointName, noCheckpointsError to bg.json and en.json | messages/*.json | complete | ~200 |
+| 10:52 | Session end: 22 writes across 20 files (V5__site_checkpoints.sql, SiteCheckpoint.java, SiteCheckpointRepository.java, CheckpointDto.java, SiteRequest.java) | 17 reads | ~18962 tok |
+| 10:55 | Edited frontend/components/sites/SiteDialog.tsx | CSS: radiusMeters | ~128 |
+| 10:55 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified sync() | ~859 |
+| 10:56 | Edited src/main/java/org/example/attendTrack/site/SiteCheckpointRepository.java | 3→3 lines | ~45 |
+| 10:56 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | modified getAll() | ~21 |
+| 10:56 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 2 import(s) | ~47 |
+| 10:57 | Session end: 27 writes across 20 files (V5__site_checkpoints.sql, SiteCheckpoint.java, SiteCheckpointRepository.java, CheckpointDto.java, SiteRequest.java) | 18 reads | ~24024 tok |
+| 11:00 | Edited frontend/components/sites/SiteDialog.tsx | added 1 condition(s) | ~92 |
+| 11:00 | Edited frontend/messages/bg.json | 1→2 lines | ~43 |
+| 11:00 | Edited frontend/messages/en.json | 1→2 lines | ~41 |
+| 11:00 | Created src/main/java/org/example/attendTrack/site/dto/CheckpointDto.java | — | ~131 |
+| 11:01 | Edited src/main/java/org/example/attendTrack/site/dto/SiteRequest.java | added 1 import(s) | ~135 |
+| 11:01 | Edited frontend/app/[locale]/(admin)/sites/page.tsx | 2→1 lines | ~22 |
+| 11:01 | Edited frontend/app/[locale]/(admin)/sites/page.tsx | 6→5 lines | ~68 |
+| 11:01 | Edited frontend/app/[locale]/(admin)/sites/page.tsx | 7 → 6 | ~26 |
+| 14:20 | Edited frontend/app/[locale]/(admin)/sites/page.tsx | 7 → 6 | ~18 |
+| 14:20 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | modified getById() | ~36 |
+| 14:23 | Session end: 37 writes across 21 files (V5__site_checkpoints.sql, SiteCheckpoint.java, SiteCheckpointRepository.java, CheckpointDto.java, SiteRequest.java) | 22 reads | ~32273 tok |
+
+| 11:00 | Second audit of checkpoints feature: found and fixed C1 (radius validation bypass), C2 (misleading table columns), C3 (missing @Transactional on getById) | SiteDialog.tsx, sites/page.tsx, SiteService.java, CheckpointDto.java, SiteRequest.java | complete | ~1200 |
+| 14:25 | Session end: 37 writes across 21 files (V5__site_checkpoints.sql, SiteCheckpoint.java, SiteCheckpointRepository.java, CheckpointDto.java, SiteRequest.java) | 22 reads | ~32273 tok |
+| 14:26 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~9 |
+| 14:26 | Session end: 38 writes across 21 files (V5__site_checkpoints.sql, SiteCheckpoint.java, SiteCheckpointRepository.java, CheckpointDto.java, SiteRequest.java) | 24 reads | ~40485 tok |
+
+## Session: 2026-07-09 14:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:33 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+22 lines) | ~313 |
+| 14:33 | Created src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | — | ~600 |
+| 14:33 | Session end: 2 writes across 2 files (AttendanceRepository.java, AutoCheckoutScheduler.java) | 4 reads | ~1671 tok |
+| 14:34 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | added 3 import(s) | ~111 |
+| 14:35 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | added 1 condition(s) | ~584 |
+| 14:35 | Session end: 4 writes across 2 files (AttendanceRepository.java, AutoCheckoutScheduler.java) | 5 reads | ~3297 tok |
+| 14:36 | Session end: 4 writes across 2 files (AttendanceRepository.java, AutoCheckoutScheduler.java) | 5 reads | ~3297 tok |
+| 14:37 | Session end: 4 writes across 2 files (AttendanceRepository.java, AutoCheckoutScheduler.java) | 5 reads | ~3297 tok |
+| 14:39 | Session end: 4 writes across 2 files (AttendanceRepository.java, AutoCheckoutScheduler.java) | 8 reads | ~12802 tok |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getAttendance() | ~68 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 2→2 lines | ~45 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 2→2 lines | ~42 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | toLocalDate() → normalizeShiftDate() | ~73 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified roundToQuarter() | ~160 |
+| 14:42 | Edited frontend/messages/bg.json | 3→7 lines | ~56 |
+| 14:42 | Edited frontend/messages/en.json | 3→7 lines | ~53 |
+| 14:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added 3 condition(s) | ~323 |
+| 14:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 8→9 lines | ~130 |
+| 14:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: p, v, v | ~180 |
+| 14:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: hover | ~240 |
+| 14:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 10→10 lines | ~175 |
+| 14:43 | audit+feature: reports period selector + bug fixes | ReportService.java, reports/page.tsx, bg.json, en.json | done | ~1800 |
+| 14:43 | Session end: 16 writes across 6 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 10 reads | ~22212 tok |
+| 14:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified if() | ~617 |
+| 14:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | inline fix | ~17 |
+| 14:46 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified fmtLocal() | ~88 |
+| 14:48 | Session end: 19 writes across 6 files (AttendanceRepository.java, AutoCheckoutScheduler.java, ReportService.java, bg.json, en.json) | 10 reads | ~23014 tok |

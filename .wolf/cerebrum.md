@@ -19,6 +19,12 @@
 
 ## Do-Not-Repeat
 
+<!-- [2026-07-09] HTML input min/max attributes are NOT enforced when the field is controlled via useState instead of react-hook-form. Always add explicit validation in onSubmit and @Positive/@Min constraints on the backend DTO for numeric inputs outside react-hook-form. -->
+
+<!-- [2026-07-09] @Modifying bulk JPQL DELETE must use clearAutomatically = true to avoid stale first-level cache when followed by inserts in the same transaction. -->
+
+<!-- [2026-07-09] All read methods in @Service classes that make multiple DB queries should have @Transactional(readOnly = true) — not just getAll() but also getById() and any helper that chains repository calls. -->
+
 <!-- [2026-06-18] React Query cache invalidation: always invalidate the LIST query key [QK], not just the detail [QK, id]. The list and detail are separate cache entries. Invalidating [QK] covers both due to partial matching. -->
 
 <!-- [2026-06-18] sessionLog in verify/page.tsx must merge BOTH /api/attendance/today (synced) AND db.pending (unsynced) records. Only using the API means offline/pending records are invisible. -->

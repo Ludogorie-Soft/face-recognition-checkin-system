@@ -788,6 +788,189 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T07:21:03.280Z"
+    },
+    {
+      "id": "bug-050",
+      "timestamp": "2026-07-09T08:01:10.051Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/app/[locale]/(admin)/sites/page.tsx",
+      "root_cause": "Had 'coordinates'",
+      "fix": "Changed to 'checkpoints'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T08:01:10.051Z"
+    },
+    {
+      "id": "bug-051",
+      "timestamp": "2026-07-09T11:20:26.057Z",
+      "error_message": "CSS fix: length",
+      "file": "frontend/app/[locale]/(admin)/sites/page.tsx",
+      "root_cause": "length: 7 → 6",
+      "fix": "Changed length: 7 → 6",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T11:20:26.057Z"
+    },
+    {
+      "id": "bug-052",
+      "timestamp": "2026-07-09T11:26:42.326Z",
+      "error_message": "Wrong reference: Math should be parsed",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Used \"Math\" instead of \"parsed\"",
+      "fix": "Changed Math → parsed",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T11:26:42.326Z"
+    },
+    {
+      "id": "bug-053",
+      "timestamp": "2026-07-09T11:35:10.012Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 27→46 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T11:35:10.012Z"
+    },
+    {
+      "id": "bug-054",
+      "timestamp": "2026-07-09T11:41:28.060Z",
+      "error_message": "Wrong reference: atStartOfDay should be atTime",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Used \"atStartOfDay\" instead of \"atTime\"",
+      "fix": "Changed atStartOfDay → atTime",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T11:41:35.905Z"
+    },
+    {
+      "id": "bug-055",
+      "timestamp": "2026-07-09T11:42:32.339Z",
+      "error_message": "Type error",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: {/* Period selector */}; {tab !== 'missing' && (",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T11:42:40.472Z"
+    },
+    {
+      "id": "bug-056",
+      "timestamp": "2026-07-09T11:46:37.281Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 11→15 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T11:46:37.281Z"
+    },
+    {
+      "id": "bug-057",
+      "timestamp": "2026-07-09T00:00:00Z",
+      "error_message": "Negative duration for inferred checkout crossing midnight in buildWorkedHoursRows",
+      "file": "ReportService.java",
+      "root_cause": "inferredEnd was computed as key.date().atTime(checkOutTime). After normalizeShiftDate, key.date() is the previous day, so 23:00 checkin vs 01:00 inferred checkout gives -22h duration.",
+      "fix": "Stored inferredEndDt = nextSiteCheckIn.get() (the actual LocalDateTime) and used it directly in Duration.between()",
+      "tags": [
+        "reports",
+        "overnight-shift",
+        "normalizeShiftDate",
+        "negative-duration"
+      ],
+      "related_bugs": [
+        "bug-058"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-09"
+    },
+    {
+      "id": "bug-058",
+      "timestamp": "2026-07-09T00:00:00Z",
+      "error_message": "Cross-site auto-close filter uses toLocalDate() instead of normalizeShiftDate() after shift normalization introduced",
+      "file": "ReportService.java",
+      "root_cause": "a.getRecordedAt().toLocalDate() compared to key.date() (which is normalized). For overnight records, they diverge — no match, so inferred checkout never triggers.",
+      "fix": "Changed filter to normalizeShiftDate(a.getRecordedAt()).equals(key.date())",
+      "tags": [
+        "reports",
+        "overnight-shift",
+        "normalizeShiftDate",
+        "inferred-checkout"
+      ],
+      "related_bugs": [
+        "bug-057"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-09"
+    },
+    {
+      "id": "bug-059",
+      "timestamp": "2026-07-09T00:00:00Z",
+      "error_message": "fmt()/today() use toISOString() (UTC) — in Bulgaria (UTC+2/+3), returns previous day between midnight and 2-3AM local time",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "toISOString() converts to UTC before formatting. getFullYear/getMonth/getDate use local timezone.",
+      "fix": "Replaced toISOString().slice(0,10) with fmtLocal() using local date getters",
+      "tags": [
+        "reports",
+        "timezone",
+        "frontend",
+        "date-formatting"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09"
+    },
+    {
+      "id": "bug-060",
+      "timestamp": "2026-07-09T00:00:00Z",
+      "error_message": "Summary totalHours rounded to nearest 0.25h even when correctedHours have sub-quarter precision",
+      "file": "ReportService.java",
+      "root_cause": "Math.round(total * 4.0) / 4.0 clipped correctedHours (e.g. 7.33) to 7.25 or 7.5",
+      "fix": "Changed to Math.round(total * 100.0) / 100.0 — 2 decimal precision",
+      "tags": [
+        "reports",
+        "rounding",
+        "hours-correction"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09"
     }
   ]
 }

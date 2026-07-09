@@ -6,7 +6,10 @@ import org.example.attendTrack.attendance.dto.AttendanceSyncRequest;
 import org.example.attendTrack.attendance.dto.AttendanceSyncResponse;
 import org.example.attendTrack.common.exception.ApiException;
 import org.example.attendTrack.common.exception.ErrorCode;
+import org.example.attendTrack.notification.NotificationService;
 import org.example.attendTrack.site.Site;
+import org.example.attendTrack.site.SiteCheckpoint;
+import org.example.attendTrack.site.SiteCheckpointRepository;
 import org.example.attendTrack.site.SiteRepository;
 import org.example.attendTrack.site.SiteWorkerRepository;
 import org.example.attendTrack.user.User;
@@ -18,9 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -30,7 +35,9 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final SiteRepository siteRepository;
     private final SiteWorkerRepository siteWorkerRepository;
+    private final SiteCheckpointRepository siteCheckpointRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public Map<UUID, AttendanceType> getTodayStatus(UUID siteId) {
@@ -53,13 +60,17 @@ public class AttendanceService {
         Site site = siteRepository.findById(request.siteId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.SITE_NOT_FOUND, "Site not found: " + request.siteId()));
 
+        List<SiteCheckpoint> checkpoints = siteCheckpointRepository.findBySiteId(site.getId());
+
         int saved = 0;
         int skipped = 0;
         List<String> errors = new ArrayList<>();
+        // Track workers already notified this sync — prevent notification spam for batch uploads
+        Set<UUID> notifiedWorkers = new HashSet<>();
 
         for (AttendanceRecord record : request.records()) {
             try {
-                saved += processRecord(record, site, admin);
+                saved += processRecord(record, site, admin, checkpoints, notifiedWorkers);
             } catch (Exception e) {
                 skipped++;
                 errors.add("Worker %s — %s".formatted(record.workerId(), e.getMessage()));
@@ -69,7 +80,8 @@ public class AttendanceService {
         return new AttendanceSyncResponse(saved, skipped, errors);
     }
 
-    private int processRecord(AttendanceRecord record, Site site, User admin) {
+    private int processRecord(AttendanceRecord record, Site site, User admin,
+                              List<SiteCheckpoint> checkpoints, Set<UUID> notifiedWorkers) {
         // Skip duplicates
         if (attendanceRepository.existsDuplicate(
                 record.workerId(), site.getId(), record.type(), record.recordedAt())) {
@@ -85,6 +97,21 @@ public class AttendanceService {
                     ErrorCode.SITE_NOT_ASSIGNED, "Worker is not assigned to this site");
         }
 
+        // Server-side location validation using checkpoints
+        boolean locationValid;
+        if (!checkpoints.isEmpty()) {
+            locationValid = checkpoints.stream().anyMatch(cp ->
+                    haversineDistance(record.lat(), record.lng(), cp.getLat(), cp.getLng()) <= cp.getRadiusMeters()
+            );
+        } else {
+            locationValid = haversineDistance(record.lat(), record.lng(), site.getLat(), site.getLng()) <= site.getRadiusMeters();
+        }
+
+        if (!locationValid && notifiedWorkers.add(worker.getId())) {
+            // At most one notification per worker per sync batch
+            notificationService.notifySuspiciousCheckIn(site, worker, record.lat(), record.lng());
+        }
+
         attendanceRepository.save(Attendance.builder()
                 .worker(worker)
                 .site(site)
@@ -92,7 +119,7 @@ public class AttendanceService {
                 .type(record.type())
                 .lat(record.lat())
                 .lng(record.lng())
-                .locationValid(record.locationValid())
+                .locationValid(locationValid)
                 .faceConfidence(record.faceConfidence())
                 .manualOverride(record.manualOverride())
                 .recordedAt(record.recordedAt())
@@ -100,5 +127,15 @@ public class AttendanceService {
                 .build());
 
         return 1;
+    }
+
+    private static double haversineDistance(double lat1, double lng1, double lat2, double lng2) {
+        final double R = 6_371_000.0;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 }

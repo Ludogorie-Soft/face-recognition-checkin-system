@@ -78,4 +78,26 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to
     );
+
+    @Query("""
+            SELECT a FROM Attendance a
+            JOIN FETCH a.worker
+            JOIN FETCH a.site
+            WHERE a.type = 'CHECK_IN'
+              AND a.recordedAt >= :from
+              AND a.recordedAt < :to
+              AND a.site.workEndTime IS NOT NULL
+              AND NOT EXISTS (
+                  SELECT 1 FROM Attendance co
+                  WHERE co.worker.id = a.worker.id
+                    AND co.site.id = a.site.id
+                    AND co.type = 'CHECK_OUT'
+                    AND co.recordedAt >= :from
+                    AND co.recordedAt < :to
+              )
+            """)
+    List<Attendance> findUnclosedCheckIns(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
 }

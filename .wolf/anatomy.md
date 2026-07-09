@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T07:22:43.447Z
-> Files: 89 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T11:46:37.262Z
+> Files: 102 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -40,11 +40,11 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — today (~8095 tok)
+- `page.tsx` — fmtLocal (~8744 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
-- `page.tsx` — formatTime — renders table (~2210 tok)
+- `page.tsx` — formatTime — renders table (~2170 tok)
 
 ## frontend/app/[locale]/(admin)/workers/
 
@@ -77,8 +77,9 @@
 
 ## frontend/components/sites/
 
-- `MapPicker.tsx` — DEFAULT_CENTER (~756 tok)
+- `MapPicker.tsx` — DEFAULT_CENTER (~1205 tok)
 - `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~1909 tok)
+- `SiteDialog.tsx` — MapPicker — renders form, modal (~3223 tok)
 
 ## frontend/components/ui/
 
@@ -98,22 +99,24 @@
 
 - `useAuth.ts` — Exports useAuth (~278 tok)
 - `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
+- `useGeoLocation.ts` — Exports GeoState, useGeoLocation (~435 tok)
 - `useSites.ts` — API routes: GET, DELETE, POST (5 endpoints) (~567 tok)
-- `useSiteSync.ts` — Exports SyncResult, SyncStatus, useSiteSync (~603 tok)
+- `useSiteSync.ts` — Exports SyncResult, SyncStatus, useSiteSync (~670 tok)
 
 ## frontend/lib/
 
 - `auth.ts` — Exports TOKEN_KEY, getToken, setToken, removeToken + 5 more (~400 tok)
 - `axios.ts` — Declares api (~267 tok)
-- `db.ts` — Exports WorkerRecord, SiteInfo, PendingAttendance, db (~495 tok)
+- `db.ts` — Exports WorkerRecord, CheckpointInfo, SiteInfo, PendingAttendance, db (~629 tok)
 - `faceAlignment.ts` — Face alignment: transforms a raw video frame into a normalized (~1112 tok)
 - `faceMatcher.ts` — Cosine-similarity 1:N face matcher. (~613 tok)
+- `geo.ts` — Exports haversineDistance, isWithinRadius, isWithinAnyCheckpoint (~273 tok)
 - `prefetchModels.ts` — prefetchModels — silently warms the Service Worker cache with all face (~462 tok)
 
 ## frontend/messages/
 
-- `bg.json` (~1720 tok)
-- `en.json` (~1640 tok)
+- `bg.json` (~1871 tok)
+- `en.json` (~1779 tok)
 
 ## frontend/scripts/
 
@@ -121,6 +124,7 @@
 
 ## frontend/types/
 
+- `site.ts` — Exports CheckpointResponse, CheckpointRequest, SiteResponse, SiteRequest (~252 tok)
 - `user.ts` — Exports Role, UserResponse, UserRequest (~95 tok)
 
 ## src/main/java/org/example/ (legacy)
@@ -130,8 +134,9 @@
 ## src/main/java/org/example/attendTrack/attendance/
 
 - `AttendanceController.java` — RestController: AttendanceController (3 endpoints) (~407 tok)
-- `AttendanceRepository.java` — Class: AttendanceRepository (~692 tok)
-- `AttendanceService.java` — Service: AttendanceService (~1092 tok)
+- `AttendanceRepository.java` — Class: AttendanceRepository (~896 tok)
+- `AttendanceService.java` — Service: AttendanceService (~1614 tok)
+- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~882 tok)
 
 ## src/main/java/org/example/attendTrack/config/
 
@@ -139,14 +144,14 @@
 
 ## src/main/java/org/example/attendTrack/notification/
 
-- `NotificationService.java` — Notifies all admins and managers of the site about missing workers. (~875 tok)
+- `NotificationService.java` — Notifies all admins and managers of the site about missing workers. (~1068 tok)
 
 ## src/main/java/org/example/attendTrack/report/
 
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints) (~1423 tok)
-- `ReportService.java` — Service: ReportService (~5880 tok)
+- `ReportService.java` — Service: ReportService (~6039 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
@@ -156,13 +161,25 @@
 
 ## src/main/java/org/example/attendTrack/site/
 
+- `SiteCheckpoint.java` — Entity: SiteCheckpoint (~232 tok)
+- `SiteCheckpointRepository.java` — Class: SiteCheckpointRepository (~210 tok)
 - `SiteController.java` — RestController: SiteController (11 endpoints) (~902 tok)
-- `SiteService.java` — Service: SiteService (~2103 tok)
+- `SiteService.java` — Service: SiteService (~2580 tok)
+
+## src/main/java/org/example/attendTrack/site/dto/
+
+- `CheckpointDto.java` — CheckpointDto: from (~131 tok)
+- `SiteRequest.java` — Class: SiteRequest (~147 tok)
+- `SiteResponse.java` — SiteResponse: from, summary (~368 tok)
 
 ## src/main/java/org/example/attendTrack/sync/
 
 - `SyncController.java` — RestController: SyncController (2 endpoints) (~187 tok)
-- `SyncService.java` — Service: SyncService (~599 tok)
+- `SyncService.java` — Service: SyncService (~727 tok)
+
+## src/main/java/org/example/attendTrack/sync/dto/
+
+- `SiteSyncResponse.java` — SiteSyncResponse: CheckpointInfo, SiteInfo (~179 tok)
 
 ## src/main/java/org/example/attendTrack/user/
 
@@ -217,3 +234,5 @@
 - `V2__clear_face_descriptors.sql` — V2: Clear all 128-dim face descriptors (face-api.js). (~43 tok)
 - `V3__remove_manager_role.sql` — Migrate existing MANAGER users to ADMIN role (~82 tok)
 - `V4__hours_corrections.sql` — SQL: tables: hours_corrections (~162 tok)
+- `V5__site_checkpoints.sql` — Creates site_checkpoints table; migrates existing site lat/lng/radius as first checkpoint (~80 tok)
+- `V5__site_checkpoints.sql` — SQL: tables: site_checkpoints (~174 tok)

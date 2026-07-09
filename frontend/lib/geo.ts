@@ -20,3 +20,12 @@ export function isWithinRadius(
 ): boolean {
   return haversineDistance(userLat, userLng, siteLat, siteLng) <= radiusMeters
 }
+
+export function isWithinAnyCheckpoint(
+  userLat: number, userLng: number,
+  checkpoints: Array<{ lat: number; lng: number; radiusMeters: number }>
+): boolean {
+  return checkpoints.some((cp) =>
+    haversineDistance(userLat, userLng, cp.lat, cp.lng) <= cp.radiusMeters
+  )
+}

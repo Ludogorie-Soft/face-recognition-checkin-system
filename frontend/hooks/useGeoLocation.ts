@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { isWithinRadius } from '@/lib/geo'
+import { isWithinAnyCheckpoint, isWithinRadius } from '@/lib/geo'
 import type { SiteInfo } from '@/lib/db'
 
 export interface GeoState {
@@ -31,11 +31,14 @@ export function useGeoLocation(site: SiteInfo | null) {
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude, accuracy } = pos.coords
+        const valid = site.checkpoints?.length
+          ? isWithinAnyCheckpoint(latitude, longitude, site.checkpoints)
+          : isWithinRadius(latitude, longitude, site.lat, site.lng, site.radiusMeters)
         setGeo({
           lat: latitude,
           lng: longitude,
           accuracy,
-          locationValid: isWithinRadius(latitude, longitude, site.lat, site.lng, site.radiusMeters),
+          locationValid: valid,
           loading: false,
           error: null,
         })

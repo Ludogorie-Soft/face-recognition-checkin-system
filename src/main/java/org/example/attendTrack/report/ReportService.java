@@ -48,6 +48,7 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public List<AttendanceReportRow> getAttendance(UUID siteId, LocalDate from, LocalDate to) {
+        validateDateRange(from, to);
         validateSiteExists(siteId);
         LocalDateTime start = from.atStartOfDay();
         LocalDateTime end = to.plusDays(1).atStartOfDay();
@@ -107,7 +108,7 @@ public class ReportService {
         validateDateRange(from, to);
         validateSiteExists(siteId);
         List<Attendance> records = attendanceRepository.findBySiteAndDateRange(
-                siteId, from.atStartOfDay(), to.plusDays(1).atStartOfDay());
+                siteId, from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)));
 
         Map<CorrectionKey, HoursCorrection> corrections = hoursCorrectionRepository
                 .findBySiteAndPeriod(siteId, from, to).stream()
@@ -123,7 +124,7 @@ public class ReportService {
     public List<WorkedHoursSummaryRow> getWorkedHoursSummary(LocalDate from, LocalDate to) {
         validateDateRange(from, to);
         List<Attendance> records = attendanceRepository.findAllInDateRange(
-                from.atStartOfDay(), to.plusDays(1).atStartOfDay());
+                from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)));
 
         Map<CorrectionKey, HoursCorrection> corrections = hoursCorrectionRepository
                 .findAllInPeriod(from, to).stream()
@@ -142,7 +143,7 @@ public class ReportService {
                     double total = workerRows.stream()
                             .mapToDouble(r -> r.effectiveHours() != null ? r.effectiveHours() : 0.0)
                             .sum();
-                    total = Math.round(total * 4.0) / 4.0;
+                    total = Math.round(total * 100.0) / 100.0;
                     return new WorkedHoursSummaryRow(
                             entry.getKey(),
                             workerRows.get(0).workerName(),
@@ -372,7 +373,7 @@ public class ReportService {
         Map<GroupKey, List<Attendance>> grouped = records.stream()
                 .collect(Collectors.groupingBy(a ->
                         new GroupKey(a.getWorker().getId(), a.getSite().getId(),
-                                a.getRecordedAt().toLocalDate())));
+                                normalizeShiftDate(a.getRecordedAt()))));
 
         List<WorkedHoursRow> rows = new ArrayList<>();
 
@@ -393,19 +394,20 @@ public class ReportService {
 
             LocalTime checkInTime = checkIn.get().getRecordedAt().toLocalTime();
             LocalTime checkOutTime = null;
+            LocalDateTime inferredEndDt = null;
             boolean inferredCheckOut = false;
 
             if (checkOut.isPresent()) {
                 checkOutTime = checkOut.get().getRecordedAt().toLocalTime();
             } else {
                 // AUTO-CLOSE: worker moved to another site without checking out.
-                // Find the earliest CHECK_IN at a different site on the same day,
+                // Find the earliest CHECK_IN at a different site on the same shift-day,
                 // occurring after the current CHECK_IN. This is only effective when
                 // 'records' contains data from multiple sites (summary mode).
                 Optional<LocalDateTime> nextSiteCheckIn = records.stream()
                         .filter(a -> a.getWorker().getId().equals(key.workerId())
                                 && !a.getSite().getId().equals(key.siteId())
-                                && a.getRecordedAt().toLocalDate().equals(key.date())
+                                && normalizeShiftDate(a.getRecordedAt()).equals(key.date())
                                 && a.getType() == AttendanceType.CHECK_IN
                                 && a.getRecordedAt().isAfter(checkIn.get().getRecordedAt()))
                         .map(Attendance::getRecordedAt)
@@ -413,6 +415,7 @@ public class ReportService {
 
                 if (nextSiteCheckIn.isPresent()) {
                     checkOutTime = nextSiteCheckIn.get().toLocalTime();
+                    inferredEndDt = nextSiteCheckIn.get();
                     inferredCheckOut = true;
                 }
             }
@@ -423,9 +426,9 @@ public class ReportService {
                         checkIn.get().getRecordedAt(), checkOut.get().getRecordedAt()).toMinutes();
                 calculatedHours = roundToQuarter(minutes);
             } else if (checkOutTime != null && inferredCheckOut) {
-                // Use checkIn recordedAt + inferred checkOut date+time for Duration
-                LocalDateTime inferredEnd = key.date().atTime(checkOutTime);
-                long minutes = Duration.between(checkIn.get().getRecordedAt(), inferredEnd).toMinutes();
+                // Use the actual next-site CHECK_IN datetime to avoid negative duration
+                // when the inferred checkout crosses midnight into the next day.
+                long minutes = Duration.between(checkIn.get().getRecordedAt(), inferredEndDt).toMinutes();
                 calculatedHours = roundToQuarter(minutes);
             }
 
@@ -459,6 +462,16 @@ public class ReportService {
     /** Rounds total minutes to the nearest quarter-hour (0.25h increments). */
     private static double roundToQuarter(long totalMinutes) {
         return Math.round(totalMinutes / 15.0) * 0.25;
+    }
+
+    /**
+     * Normalizes a timestamp to a "shift date": records between 00:00 and 06:00
+     * are attributed to the previous day's shift to handle overnight shifts.
+     */
+    private static LocalDate normalizeShiftDate(LocalDateTime dt) {
+        return dt.toLocalTime().isBefore(LocalTime.of(6, 0))
+                ? dt.toLocalDate().minusDays(1)
+                : dt.toLocalDate();
     }
 
     private CellStyle buildWarningStyle(Workbook workbook) {

@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { useForm, Controller } from 'react-hook-form'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { MapPin, Loader2 } from 'lucide-react'
+import { MapPin, Loader2, Trash2 } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
@@ -16,13 +16,17 @@ import { TimePicker } from './TimePicker'
 import { useCreateSite, useUpdateSite } from '@/hooks/useSites'
 import { apiErrorMessage } from '@/lib/errors'
 import type { SiteResponse, SiteRequest } from '@/types/site'
+import type { CheckpointDraft } from './MapPicker'
 
 // Leaflet uses window — must be loaded client-side only
 const MapPicker = dynamic(
   () => import('./MapPicker').then((m) => m.MapPicker),
-  { ssr: false, loading: () => (
-    <div className="h-[280px] rounded-lg bg-muted animate-pulse" />
-  )}
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[280px] rounded-lg bg-muted animate-pulse" />
+    ),
+  }
 )
 
 interface Props {
@@ -44,9 +48,6 @@ function toLocalTime(t: string): string | null {
 type FormValues = {
   name: string
   address: string
-  lat: number | null
-  lng: number | null
-  radiusMeters: string
   workStartTime: string
   workEndTime: string
 }
@@ -56,45 +57,111 @@ export function SiteDialog({ open, onClose, site }: Props) {
   const tc = useTranslations('common')
   const te = useTranslations('errors')
 
-  const { register, handleSubmit, reset, watch, setValue, control, formState: { errors } } = useForm<FormValues>()
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<FormValues>()
 
   const createMutation = useCreateSite()
   const updateMutation = useUpdateSite(site?.id ?? '')
 
-  const lat = watch('lat')
-  const lng = watch('lng')
-  const radius = parseInt(watch('radiusMeters') || '200')
+  const [checkpoints, setCheckpoints] = useState<CheckpointDraft[]>([])
+  const [selectedCpId, setSelectedCpId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (open) {
-      reset(site ? {
-        name: site.name,
-        address: site.address ?? '',
-        lat: site.lat,
-        lng: site.lng,
-        radiusMeters: String(site.radiusMeters),
-        workStartTime: toTimeInput(site.workStartTime),
-        workEndTime: toTimeInput(site.workEndTime),
-      } : {
-        name: '', address: '', lat: null, lng: null,
-        radiusMeters: '200', workStartTime: '', workEndTime: '',
-      })
+    if (!open) return
+    reset({
+      name: site?.name ?? '',
+      address: site?.address ?? '',
+      workStartTime: toTimeInput(site?.workStartTime),
+      workEndTime: toTimeInput(site?.workEndTime),
+    })
+
+    if (site?.checkpoints?.length) {
+      const drafts: CheckpointDraft[] = site.checkpoints.map((cp) => ({
+        localId: cp.id,
+        id: cp.id,
+        name: cp.name ?? '',
+        lat: cp.lat,
+        lng: cp.lng,
+        radiusMeters: cp.radiusMeters,
+      }))
+      setCheckpoints(drafts)
+      setSelectedCpId(drafts[0].localId)
+    } else {
+      setCheckpoints([])
+      setSelectedCpId(null)
     }
   }, [open, site, reset])
 
+  const handleAddCheckpoint = (lat: number, lng: number) => {
+    const localId = crypto.randomUUID()
+    const newCp: CheckpointDraft = {
+      localId,
+      id: null,
+      name: '',
+      lat,
+      lng,
+      radiusMeters: 200,
+    }
+    setCheckpoints((prev) => [...prev, newCp])
+    setSelectedCpId(localId)
+  }
+
+  const handleMoveCheckpoint = (localId: string, lat: number, lng: number) => {
+    setCheckpoints((prev) =>
+      prev.map((cp) => (cp.localId === localId ? { ...cp, lat, lng } : cp))
+    )
+  }
+
+  const handleUpdateCheckpoint = (localId: string, field: 'name' | 'radiusMeters', value: string) => {
+    setCheckpoints((prev) =>
+      prev.map((cp) =>
+        cp.localId === localId
+          ? {
+              ...cp,
+              [field]:
+                field === 'radiusMeters'
+                  ? value === '' ? cp.radiusMeters : (parseInt(value) || cp.radiusMeters)
+                  : value,
+            }
+          : cp
+      )
+    )
+  }
+
+  const handleDeleteCheckpoint = (localId: string) => {
+    setCheckpoints((prev) => {
+      const next = prev.filter((cp) => cp.localId !== localId)
+      if (selectedCpId === localId) {
+        setSelectedCpId(next.length > 0 ? next[0].localId : null)
+      }
+      return next
+    })
+  }
+
   const onSubmit = async (data: FormValues) => {
-    if (data.lat == null || data.lng == null) {
-      toast.error(t('coordinates'))
+    if (checkpoints.length === 0) {
+      toast.error(t('noCheckpointsError'))
       return
     }
+    if (checkpoints.some((cp) => !cp.radiusMeters || cp.radiusMeters < 1)) {
+      toast.error(t('checkpointRadiusError'))
+      return
+    }
+    const first = checkpoints[0]
     const body: SiteRequest = {
       name: data.name,
       address: data.address || undefined,
-      lat: data.lat,
-      lng: data.lng,
-      radiusMeters: data.radiusMeters ? parseInt(data.radiusMeters) : 200,
+      lat: first.lat,
+      lng: first.lng,
+      radiusMeters: first.radiusMeters,
       workStartTime: toLocalTime(data.workStartTime),
       workEndTime: toLocalTime(data.workEndTime),
+      checkpoints: checkpoints.map((cp) => ({
+        id: cp.id ?? null,
+        name: cp.name || null,
+        lat: cp.lat,
+        lng: cp.lng,
+        radiusMeters: cp.radiusMeters,
+      })),
     }
     try {
       if (site) {
@@ -134,42 +201,98 @@ export function SiteDialog({ open, onClose, site }: Props) {
             <Input {...register('address')} disabled={loading} />
           </div>
 
-          {/* Map */}
+          {/* Map — click to add checkpoints */}
           <div className="flex flex-col gap-1.5">
             <Label className="flex items-center gap-1.5">
               <MapPin size={14} />
-              {t('coordinates')}
+              {t('checkpoints')}
             </Label>
-            <p className="text-xs text-muted-foreground -mt-1">
-              {t('clickMapToSelect')}
-            </p>
+            <p className="text-xs text-muted-foreground -mt-1">{t('clickMapToAdd')}</p>
             <MapPicker
-              lat={lat ?? null}
-              lng={lng ?? null}
-              radius={radius}
-              onChange={(newLat, newLng) => {
-                setValue('lat', newLat, { shouldValidate: true })
-                setValue('lng', newLng, { shouldValidate: true })
-              }}
+              key={open ? `map-${site?.id ?? 'new'}` : 'map-closed'}
+              checkpoints={checkpoints}
+              selectedId={selectedCpId}
+              onAdd={handleAddCheckpoint}
+              onSelect={setSelectedCpId}
+              onMove={handleMoveCheckpoint}
             />
-            {/* Coordinate display */}
-            {lat != null && lng != null && (
-              <p className="text-xs text-muted-foreground text-center">
-                {lat.toFixed(6)}, {lng.toFixed(6)}
-              </p>
-            )}
           </div>
 
-          {/* Radius */}
-          <div className="flex flex-col gap-1.5">
-            <Label>{t('radius')}</Label>
-            <Input
-              type="number"
-              min={50}
-              max={5000}
-              {...register('radiusMeters')}
-              disabled={loading}
-            />
+          {/* Checkpoint list */}
+          <div className="flex flex-col gap-2">
+            {checkpoints.length === 0 ? (
+              <p className="text-xs text-muted-foreground py-1">{t('noCheckpoints')}</p>
+            ) : (
+              checkpoints.map((cp, idx) => (
+                <div
+                  key={cp.localId}
+                  onClick={() => setSelectedCpId(cp.localId)}
+                  className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${
+                    cp.localId === selectedCpId
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:bg-muted/40'
+                  }`}
+                >
+                  {/* Index badge */}
+                  <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                    cp.localId === selectedCpId ? 'bg-primary' : 'bg-muted-foreground'
+                  }`}>
+                    {idx + 1}
+                  </span>
+
+                  {/* Name input */}
+                  <Input
+                    placeholder={t('checkpointName')}
+                    value={cp.name}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      handleUpdateCheckpoint(cp.localId, 'name', e.target.value)
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-7 text-sm flex-1"
+                    disabled={loading}
+                  />
+
+                  {/* Radius input */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <Input
+                      type="number"
+                      min={50}
+                      max={5000}
+                      value={cp.radiusMeters}
+                      onChange={(e) => {
+                        e.stopPropagation()
+                        handleUpdateCheckpoint(cp.localId, 'radiusMeters', e.target.value)
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-7 text-sm w-20"
+                      disabled={loading}
+                    />
+                    <span className="text-xs text-muted-foreground">м</span>
+                  </div>
+
+                  {/* Coordinates display */}
+                  <span className="text-xs text-muted-foreground flex-shrink-0 hidden sm:block">
+                    {cp.lat.toFixed(5)}, {cp.lng.toFixed(5)}
+                  </span>
+
+                  {/* Delete */}
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeleteCheckpoint(cp.localId)
+                    }}
+                    disabled={loading}
+                  >
+                    <Trash2 size={13} />
+                  </Button>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Work hours */}

@@ -3,6 +3,7 @@ package org.example.attendTrack.site;
 import lombok.RequiredArgsConstructor;
 import org.example.attendTrack.common.exception.ApiException;
 import org.example.attendTrack.common.exception.ErrorCode;
+import org.example.attendTrack.site.dto.CheckpointDto;
 import org.example.attendTrack.site.dto.SiteRequest;
 import org.example.attendTrack.site.dto.SiteResponse;
 import org.example.attendTrack.user.FaceDescriptorRepository;
@@ -24,9 +25,11 @@ public class SiteService {
     private final SiteRepository siteRepository;
     private final SiteWorkerRepository siteWorkerRepository;
     private final SiteManagerRepository siteManagerRepository;
+    private final SiteCheckpointRepository siteCheckpointRepository;
     private final UserRepository userRepository;
     private final FaceDescriptorRepository faceDescriptorRepository;
 
+    @Transactional(readOnly = true)
     public List<SiteResponse> getAll() {
         List<Site> sites = siteRepository.findAllByActiveTrue();
         if (sites.isEmpty()) return List.of();
@@ -34,7 +37,7 @@ public class SiteService {
         List<UUID> siteIds = sites.stream().map(Site::getId).toList();
         Set<UUID> faceIds = new HashSet<>(faceDescriptorRepository.findAllUserIdsWithFace());
 
-        // Batch-load all managers and workers for all sites in 2 queries
+        // Batch-load all managers, workers, and checkpoints for all sites
         Map<UUID, List<UserResponse>> managersBySite = siteManagerRepository.findBySiteIdIn(siteIds)
                 .stream()
                 .collect(Collectors.groupingBy(
@@ -51,15 +54,24 @@ public class SiteService {
                                 Collectors.toList())
                 ));
 
+        Map<UUID, List<CheckpointDto>> checkpointsBySite = siteCheckpointRepository.findBySiteIdIn(siteIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        sc -> sc.getSite().getId(),
+                        Collectors.mapping(CheckpointDto::from, Collectors.toList())
+                ));
+
         return sites.stream()
                 .map(s -> SiteResponse.from(
                         s,
                         managersBySite.getOrDefault(s.getId(), List.of()),
-                        workersBySite.getOrDefault(s.getId(), List.of())
+                        workersBySite.getOrDefault(s.getId(), List.of()),
+                        checkpointsBySite.getOrDefault(s.getId(), List.of())
                 ))
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public SiteResponse getById(UUID id) {
         return toDetailResponse(findOrThrow(id));
     }
@@ -76,7 +88,9 @@ public class SiteService {
                 .workEndTime(request.workEndTime())
                 .build();
 
-        return SiteResponse.from(siteRepository.save(site), List.of(), List.of());
+        site = siteRepository.save(site);
+        List<CheckpointDto> checkpoints = saveCheckpoints(site, request.checkpoints());
+        return SiteResponse.from(site, List.of(), List.of(), checkpoints);
     }
 
     @Transactional
@@ -91,7 +105,14 @@ public class SiteService {
                 request.workStartTime(),
                 request.workEndTime()
         );
-        return SiteResponse.summary(siteRepository.save(site));
+        site = siteRepository.save(site);
+
+        if (request.checkpoints() != null) {
+            siteCheckpointRepository.deleteBySiteId(site.getId());
+            saveCheckpoints(site, request.checkpoints());
+        }
+
+        return SiteResponse.summary(site);
     }
 
     @Transactional
@@ -164,7 +185,24 @@ public class SiteService {
                 .stream().map(sm -> UserResponse.from(sm.getUser(), faceIds.contains(sm.getUser().getId()))).toList();
         List<UserResponse> workers = siteWorkerRepository.findBySiteId(site.getId())
                 .stream().map(sw -> UserResponse.from(sw.getUser(), faceIds.contains(sw.getUser().getId()))).toList();
-        return SiteResponse.from(site, managers, workers);
+        List<CheckpointDto> checkpoints = siteCheckpointRepository.findBySiteId(site.getId())
+                .stream().map(CheckpointDto::from).toList();
+        return SiteResponse.from(site, managers, workers, checkpoints);
+    }
+
+    private List<CheckpointDto> saveCheckpoints(Site site, List<CheckpointDto> checkpoints) {
+        if (checkpoints == null || checkpoints.isEmpty()) return List.of();
+        List<SiteCheckpoint> entities = checkpoints.stream()
+                .map(cp -> SiteCheckpoint.builder()
+                        .site(site)
+                        .name(cp.name())
+                        .lat(cp.lat())
+                        .lng(cp.lng())
+                        .radiusMeters(cp.radiusMeters())
+                        .build())
+                .toList();
+        return siteCheckpointRepository.saveAll(entities)
+                .stream().map(CheckpointDto::from).toList();
     }
 
     private Site findOrThrow(UUID id) {

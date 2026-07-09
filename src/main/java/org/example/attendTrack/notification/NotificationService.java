@@ -80,6 +80,21 @@ public class NotificationService {
         return userRepository.findAllByRoleAndActiveTrue(Role.ADMIN);
     }
 
+    /**
+     * Notifies all admins when a worker checks in from outside all site checkpoint zones.
+     */
+    public void notifySuspiciousCheckIn(Site site, User worker, double lat, double lng) {
+        String subject = "Suspicious check-in – " + site.getName();
+        String body = "Worker \"" + worker.getName() + "\" checked in at site \"" + site.getName()
+                + "\" from an unexpected location.\n\nCoordinates: " + lat + ", " + lng;
+
+        List<User> recipients = resolveRecipients();
+        List<UUID> recipientIds = recipients.stream().map(User::getId).toList();
+
+        recipients.forEach(u -> sendEmail(u.getEmail(), subject, body));
+        sendPushToUsers(recipientIds, subject, body);
+    }
+
     private String buildMissingWorkersBody(Site site, List<User> missingWorkers) {
         StringBuilder sb = new StringBuilder();
         sb.append("The following workers did not check in at site \"")

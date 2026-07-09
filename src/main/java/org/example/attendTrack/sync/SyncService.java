@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.attendTrack.common.exception.ApiException;
 import org.example.attendTrack.common.exception.ErrorCode;
 import org.example.attendTrack.site.Site;
+import org.example.attendTrack.site.SiteCheckpointRepository;
 import org.example.attendTrack.site.SiteRepository;
 import org.example.attendTrack.site.SiteWorkerRepository;
 import org.example.attendTrack.sync.dto.SiteSyncResponse;
@@ -23,6 +24,7 @@ public class SyncService {
 
     private final SiteRepository siteRepository;
     private final SiteWorkerRepository siteWorkerRepository;
+    private final SiteCheckpointRepository siteCheckpointRepository;
     private final FaceDescriptorRepository faceDescriptorRepository;
 
     @Transactional(readOnly = true)
@@ -41,6 +43,12 @@ public class SyncService {
                 })
                 .toList();
 
+        List<SiteSyncResponse.CheckpointInfo> checkpoints = siteCheckpointRepository.findBySiteId(siteId)
+                .stream()
+                .map(cp -> new SiteSyncResponse.CheckpointInfo(
+                        cp.getId(), cp.getName(), cp.getLat(), cp.getLng(), cp.getRadiusMeters()))
+                .toList();
+
         SiteSyncResponse.SiteInfo siteInfo = new SiteSyncResponse.SiteInfo(
                 site.getId(),
                 site.getName(),
@@ -48,7 +56,8 @@ public class SyncService {
                 site.getLng(),
                 site.getRadiusMeters(),
                 site.getWorkStartTime(),
-                site.getWorkEndTime()
+                site.getWorkEndTime(),
+                checkpoints
         );
 
         return new SiteSyncResponse(siteInfo, workers);

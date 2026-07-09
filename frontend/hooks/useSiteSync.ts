@@ -11,6 +11,13 @@ interface SiteSyncResponse {
     radiusMeters: number
     workStartTime: string | null
     workEndTime: string | null
+    checkpoints: Array<{
+      id: string
+      name: string | null
+      lat: number
+      lng: number
+      radiusMeters: number
+    }>
   }
   workers: Array<{
     id: string
@@ -45,6 +52,7 @@ export function useSiteSync() {
           radiusMeters: data.site.radiusMeters,
           workStartTime: data.site.workStartTime,
           workEndTime: data.site.workEndTime,
+          checkpoints: data.site.checkpoints ?? [],
         }
 
         const workers: WorkerRecord[] = data.workers.map((w) => ({
@@ -72,7 +80,7 @@ export function useSiteSync() {
 
     if (cached) {
       setStatus('offline')
-      return { site: cached, workers: cachedWorkers }
+      return { site: { ...cached, checkpoints: cached.checkpoints ?? [] }, workers: cachedWorkers }
     }
 
     setStatus('error')
