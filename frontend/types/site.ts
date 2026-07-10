@@ -41,4 +41,5 @@ export interface SiteRequest {
   workStartTime?: string | null  // "HH:mm:ss"
   workEndTime?: string | null
   checkpoints?: CheckpointRequest[]
+  companyId?: string  // required on create
 }

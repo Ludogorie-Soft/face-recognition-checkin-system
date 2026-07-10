@@ -11,11 +11,15 @@ public enum ErrorCode {
     PASSWORD_REQUIRED,
     WRONG_ROLE,
 
+    // Companies
+    COMPANY_NOT_FOUND,
+
     // Sites
     SITE_NOT_FOUND,
     ALREADY_ASSIGNED,
     ASSIGNMENT_NOT_FOUND,
     SITE_NOT_ASSIGNED,
+    WORKER_NOT_IN_COMPANY,
 
     // Face
     FACE_ALREADY_REGISTERED,

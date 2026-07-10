@@ -31,16 +31,18 @@ public class ReportController {
     @GetMapping("/attendance")
     public ResponseEntity<List<AttendanceReportRow>> getAttendance(
             @RequestParam UUID siteId,
+            @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return ResponseEntity.ok(reportService.getAttendance(siteId, from, to));
+        return ResponseEntity.ok(reportService.getAttendance(siteId, companyId, from, to));
     }
 
     @GetMapping("/missing")
     public ResponseEntity<List<MissingWorkerReport>> getMissingWorkers(
             @RequestParam UUID siteId,
+            @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(reportService.getMissingWorkers(siteId, date));
+        return ResponseEntity.ok(reportService.getMissingWorkers(siteId, companyId, date));
     }
 
     @GetMapping("/attendance/export")
@@ -64,16 +66,18 @@ public class ReportController {
     @GetMapping("/hours")
     public ResponseEntity<List<WorkedHoursRow>> getWorkedHours(
             @RequestParam UUID siteId,
+            @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return ResponseEntity.ok(reportService.getWorkedHours(siteId, from, to));
+        return ResponseEntity.ok(reportService.getWorkedHours(siteId, companyId, from, to));
     }
 
     @GetMapping("/hours/summary")
     public ResponseEntity<List<WorkedHoursSummaryRow>> getWorkedHoursSummary(
+            @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return ResponseEntity.ok(reportService.getWorkedHoursSummary(from, to));
+        return ResponseEntity.ok(reportService.getWorkedHoursSummary(companyId, from, to));
     }
 
     @PutMapping("/hours/correction")

@@ -12,6 +12,7 @@ import {
   ClipboardCheck,
   X,
   ScanFace,
+  Building2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './ThemeToggle'
@@ -37,6 +38,7 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
 
   const links = [
     { href: `/${locale}/dashboard`, label: t('dashboard'), icon: LayoutDashboard },
+    { href: `/${locale}/companies`, label: t('companies'), icon: Building2 },
     { href: `/${locale}/sites`, label: t('sites'), icon: MapPin },
     { href: `/${locale}/workers`, label: t('workers'), icon: Users },
     { href: `/${locale}/reports`, label: t('reports'), icon: BarChart2 },

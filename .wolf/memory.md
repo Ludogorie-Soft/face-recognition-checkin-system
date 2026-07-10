@@ -695,3 +695,201 @@
 | 19:26 | Edited src/main/java/org/example/attendTrack/dashboard/DashboardController.java | 2→1 lines | ~17 |
 | 19:27 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
 | 19:42 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 10:57 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 10:58 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 10:59 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:00 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:02 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:03 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:04 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:05 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:06 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:06 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:07 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 11:08 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 12:19 | Session end: 3 writes across 2 files (AttendanceRepository.java, DashboardController.java) | 6 reads | ~1022 tok |
+| 12:33 | Created src/main/resources/db/migration/V7__companies.sql | — | ~252 |
+| 12:33 | Created src/main/java/org/example/attendTrack/company/Company.java | — | ~547 |
+| 12:33 | Created src/main/java/org/example/attendTrack/company/CompanyRepository.java | — | ~587 |
+| 12:33 | Created src/main/java/org/example/attendTrack/company/dto/CompanyRequest.java | — | ~76 |
+| 12:34 | Created src/main/java/org/example/attendTrack/company/dto/CompanyResponse.java | — | ~369 |
+| 12:34 | Created src/main/java/org/example/attendTrack/company/CompanyService.java | — | ~1089 |
+| 12:34 | Edited src/main/java/org/example/attendTrack/company/CompanyRepository.java | 3→7 lines | ~115 |
+| 12:34 | Created src/main/java/org/example/attendTrack/company/CompanyController.java | — | ~763 |
+| 12:34 | Created src/main/java/org/example/attendTrack/user/User.java | — | ~560 |
+| 12:35 | Created src/main/java/org/example/attendTrack/user/dto/UserRequest.java | — | ~190 |
+| 12:35 | Created src/main/java/org/example/attendTrack/user/dto/UserResponse.java | — | ~292 |
+| 12:36 | Created src/main/java/org/example/attendTrack/user/UserService.java | — | ~1924 |
+| 12:36 | Created frontend/types/company.ts | — | ~133 |
+| 12:36 | Created frontend/types/user.ts | — | ~127 |
+| 12:36 | Created frontend/hooks/useCompanies.ts | — | ~693 |
+| 12:36 | Created frontend/components/companies/CompanyDialog.tsx | — | ~1198 |
+| 12:37 | Created frontend/components/companies/CompanySiteModal.tsx | — | ~1166 |
+| 12:37 | Created frontend/components/companies/CompanyWorkerModal.tsx | — | ~1345 |
+| 12:37 | Created frontend/app/[locale]/(admin)/companies/page.tsx | — | ~2246 |
+| 12:38 | Created frontend/components/workers/WorkerDialog.tsx | — | ~2094 |
+| 12:39 | Edited frontend/components/layout/AdminSidebar.tsx | 10→11 lines | ~40 |
+| 12:39 | Edited frontend/components/layout/AdminSidebar.tsx | 5→6 lines | ~127 |
+| 12:39 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | 6→7 lines | ~144 |
+| 12:39 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | added optional chaining | ~138 |
+| 12:39 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | 6 → 7 | ~18 |
+| 12:39 | Edited frontend/app/[locale]/(admin)/workers/page.tsx | 6 → 7 | ~26 |
+| 12:39 | Edited frontend/messages/en.json | 8→9 lines | ~58 |
+| 12:39 | Edited frontend/messages/en.json | expanded (+19 lines) | ~184 |
+| 12:39 | Edited frontend/messages/en.json | 1→2 lines | ~24 |
+| 12:40 | Edited frontend/messages/en.json | 1→3 lines | ~31 |
+| 12:40 | Edited frontend/messages/bg.json | 8→9 lines | ~58 |
+| 12:40 | Edited frontend/messages/bg.json | expanded (+19 lines) | ~184 |
+| 12:40 | Edited frontend/messages/bg.json | 1→2 lines | ~22 |
+| 12:40 | Edited frontend/messages/bg.json | 1→3 lines | ~32 |
+| 12:40 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added 1 import(s) | ~28 |
+| 12:40 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 5→7 lines | ~85 |
+| 12:41 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 35→35 lines | ~440 |
+| 12:41 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | expanded (+18 lines) | ~432 |
+| 12:41 | Edited src/main/java/org/example/attendTrack/report/ReportController.java | 14→16 lines | ~230 |
+
+## Session: 2026-07-10 12:44
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:44 | Edited src/main/java/org/example/attendTrack/company/CompanyRepository.java | added 1 import(s) | ~80 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/company/CompanyRepository.java | 1→4 lines | ~70 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 import(s) | ~244 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 9→9 lines | ~75 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 5→6 lines | ~92 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getAttendance() | ~179 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getMissingWorkers() | ~269 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified exportAttendanceToExcel() | ~54 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getWorkedHours() | ~162 |
+| 12:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getWorkedHoursSummary() | ~150 |
+| 12:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified exportWorkedHoursToExcel() | ~54 |
+| 12:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified exportWorkedHoursSummaryToExcel() | ~54 |
+| 12:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~62 |
+| 12:46 | Edited src/main/java/org/example/attendTrack/report/ReportController.java | 14→16 lines | ~244 |
+| 12:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 3→2 lines | ~15 |
+| 12:46 | Added company filter to all 4 report endpoints — controller + service + CompanyRepository.findWorkerIdsByCompanyId | ReportController.java, ReportService.java, CompanyRepository.java | complete | ~800 |
+| 12:46 | Session end: 15 writes across 3 files (CompanyRepository.java, ReportService.java, ReportController.java) | 2 reads | ~9180 tok |
+| 12:49 | Edited src/main/java/org/example/attendTrack/common/exception/ErrorCode.java | 2→5 lines | ~20 |
+| 12:49 | Edited src/main/java/org/example/attendTrack/company/CompanyService.java | modified findOrThrow() | ~77 |
+| 12:49 | Edited src/main/java/org/example/attendTrack/user/UserService.java | modified getAll() | ~23 |
+| 12:50 | Edited src/main/java/org/example/attendTrack/user/UserService.java | modified getById() | ~21 |
+| 12:50 | Edited frontend/messages/en.json | 2→3 lines | ~44 |
+| 12:50 | Edited frontend/messages/bg.json | 2→3 lines | ~46 |
+| 12:50 | Edited frontend/components/companies/CompanySiteModal.tsx | 3→3 lines | ~52 |
+| 12:50 | Edited frontend/components/companies/CompanySiteModal.tsx | added nullish coalescing | ~142 |
+| 12:50 | Edited frontend/components/companies/CompanySiteModal.tsx | 6→6 lines | ~114 |
+| 12:50 | Edited frontend/components/companies/CompanySiteModal.tsx | inline fix | ~21 |
+| 12:50 | Edited frontend/components/companies/CompanyWorkerModal.tsx | 3→3 lines | ~54 |
+| 12:50 | Edited frontend/components/companies/CompanyWorkerModal.tsx | added nullish coalescing | ~144 |
+| 12:50 | Edited frontend/components/companies/CompanyWorkerModal.tsx | 6→6 lines | ~123 |
+| 12:52 | Audit + fixes: stale modal props, @Transactional on UserService reads, COMPANY_NOT_FOUND error code | CompanySiteModal.tsx, CompanyWorkerModal.tsx, UserService.java, ErrorCode.java, CompanyService.java, en.json, bg.json | complete | ~1500 |
+| 12:53 | Edited frontend/lib/errors.ts | 15→17 lines | ~111 |
+| 12:54 | Edited src/main/java/org/example/attendTrack/site/SiteWorkerRepository.java | 2→2 lines | ~41 |
+| 12:55 | Second audit: FACE_ALREADY_REGISTERED/COMPANY_NOT_FOUND added to errors.ts type; N+1 fixed in findBySiteId with JOIN FETCH sw.user | errors.ts, SiteWorkerRepository.java | complete | ~800 |
+| 12:55 | Session end: 30 writes across 12 files (CompanyRepository.java, ReportService.java, ReportController.java, ErrorCode.java, CompanyService.java) | 25 reads | ~27300 tok |
+| 12:58 | Edited src/main/java/org/example/attendTrack/company/dto/CompanyResponse.java | modified from() | ~82 |
+| 12:59 | Edited frontend/hooks/useWorkers.ts | modified useCreateWorker() | ~287 |
+| 13:00 | Third audit: inactive sites in CompanyResponse.from(), stale companies cache after worker mutations (useWorkers.ts) | CompanyResponse.java, useWorkers.ts | complete | ~600 |
+| 13:00 | Session end: 32 writes across 14 files (CompanyRepository.java, ReportService.java, ReportController.java, ErrorCode.java, CompanyService.java) | 30 reads | ~29070 tok |
+
+## Session: 2026-07-10 13:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:03 | Edited frontend/components/workers/WorkerDialog.tsx | 1→4 lines | ~53 |
+| 13:03 | Edited frontend/components/workers/WorkerDialog.tsx | modified t() | ~465 |
+| 13:03 | Edited frontend/messages/en.json | 3→4 lines | ~27 |
+| 13:03 | Edited frontend/messages/bg.json | 3→4 lines | ~26 |
+| 13:03 | Session end: 4 writes across 3 files (WorkerDialog.tsx, en.json, bg.json) | 3 reads | ~4925 tok |
+| 13:06 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added nullish coalescing | ~89 |
+| 13:06 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~38 |
+| 13:06 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 5→5 lines | ~58 |
+| 13:07 | Session end: 7 writes across 4 files (WorkerDialog.tsx, en.json, bg.json, page.tsx) | 4 reads | ~14406 tok |
+| 13:09 | Edited frontend/messages/bg.json | 3→3 lines | ~34 |
+| 13:09 | Edited frontend/messages/en.json | 3→3 lines | ~31 |
+| 13:09 | Session end: 9 writes across 4 files (WorkerDialog.tsx, en.json, bg.json, page.tsx) | 5 reads | ~17790 tok |
+| 13:09 | Session end: 9 writes across 4 files (WorkerDialog.tsx, en.json, bg.json, page.tsx) | 5 reads | ~17790 tok |
+| 13:09 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 2→2 lines | ~34 |
+| 13:09 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified writeHeader() | ~75 |
+| 13:09 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 6→6 lines | ~95 |
+| 13:09 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified if() | ~26 |
+| 13:09 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 5→5 lines | ~77 |
+| 13:09 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 2→2 lines | ~33 |
+| 13:10 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | " — TOTAL" → " — ОБЩО" | ~21 |
+| 13:10 | Session end: 16 writes across 5 files (WorkerDialog.tsx, en.json, bg.json, page.tsx, ReportService.java) | 6 reads | ~24761 tok |
+| 13:12 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | added 1 condition(s) | ~221 |
+| 13:12 | Session end: 17 writes across 6 files (WorkerDialog.tsx, en.json, bg.json, page.tsx, ReportService.java) | 11 reads | ~27406 tok |
+| 13:12 | Session end: 17 writes across 6 files (WorkerDialog.tsx, en.json, bg.json, page.tsx, ReportService.java) | 11 reads | ~27406 tok |
+| 13:15 | Edited src/main/java/org/example/attendTrack/config/SecurityConfig.java | added 1 import(s) | ~69 |
+| 13:15 | Edited src/main/java/org/example/attendTrack/config/SecurityConfig.java | 5→10 lines | ~188 |
+| 13:15 | Edited src/main/java/org/example/attendTrack/site/SiteController.java | modified getAll() | ~20 |
+| 13:15 | Edited src/main/java/org/example/attendTrack/sync/SyncController.java | modified getSiteSync() | ~32 |
+| 13:15 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | modified getTodayStatus() | ~31 |
+| 13:15 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | 5→4 lines | ~59 |
+| 13:15 | Created frontend/app/[locale]/(manager)/layout.tsx | — | ~855 |
+| 13:16 | Session end: 24 writes across 11 files (WorkerDialog.tsx, en.json, bg.json, page.tsx, ReportService.java) | 23 reads | ~33873 tok |
+| 13:18 | Session end: 24 writes across 11 files (WorkerDialog.tsx, en.json, bg.json, page.tsx, ReportService.java) | 23 reads | ~33873 tok |
+| 13:20 | Session end: 24 writes across 11 files (WorkerDialog.tsx, en.json, bg.json, page.tsx, ReportService.java) | 34 reads | ~38736 tok |
+| 13:24 | Edited src/main/java/org/example/attendTrack/common/exception/ErrorCode.java | 5→6 lines | ~35 |
+| 13:24 | Edited src/main/java/org/example/attendTrack/site/SiteWorkerRepository.java | 3→7 lines | ~91 |
+| 13:24 | Edited src/main/java/org/example/attendTrack/company/CompanyRepository.java | expanded (+6 lines) | ~139 |
+| 13:24 | Edited src/main/java/org/example/attendTrack/site/dto/SiteRequest.java | 28→32 lines | ~172 |
+| 13:24 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | added 1 import(s) | ~267 |
+| 13:24 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | added 2 condition(s) | ~324 |
+| 13:24 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | added 2 condition(s) | ~275 |
+| 13:24 | Edited src/main/java/org/example/attendTrack/user/UserService.java | added 1 import(s) | ~45 |
+| 13:25 | Edited src/main/java/org/example/attendTrack/user/UserService.java | 4→5 lines | ~76 |
+| 13:25 | Edited src/main/java/org/example/attendTrack/user/UserService.java | modified deactivate() | ~87 |
+| 13:25 | Edited src/main/java/org/example/attendTrack/company/CompanyService.java | added 1 import(s) | ~62 |
+| 13:25 | Edited src/main/java/org/example/attendTrack/company/CompanyService.java | added 1 condition(s) | ~117 |
+| 13:25 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | modified sync() | ~60 |
+| 13:25 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | 7→4 lines | ~63 |
+| 13:26 | Edited frontend/types/site.ts | 10→11 lines | ~79 |
+| 13:26 | Edited frontend/hooks/useSites.ts | modified useCreateSite() | ~94 |
+| 13:26 | Edited frontend/components/sites/SiteDialog.tsx | added 1 import(s) | ~64 |
+| 13:26 | Edited frontend/components/sites/SiteDialog.tsx | 7→10 lines | ~113 |
+| 13:26 | Edited frontend/components/sites/SiteDialog.tsx | CSS: data | ~126 |
+| 13:26 | Edited frontend/components/sites/SiteDialog.tsx | 8→9 lines | ~73 |
+| 13:26 | Edited frontend/components/sites/SiteDialog.tsx | added 1 condition(s) | ~267 |
+| 13:27 | Edited frontend/components/sites/SiteDialog.tsx | expanded (+17 lines) | ~314 |
+| 13:27 | Edited frontend/lib/errors.ts | 3→4 lines | ~29 |
+| 13:27 | Edited frontend/messages/bg.json | 2→5 lines | ~51 |
+| 13:27 | Edited frontend/messages/en.json | 2→5 lines | ~51 |
+| 13:27 | Edited frontend/messages/bg.json | 1→2 lines | ~44 |
+| 13:27 | Edited frontend/messages/en.json | 1→2 lines | ~42 |
+| 13:28 | Session end: 51 writes across 22 files (WorkerDialog.tsx, en.json, bg.json, page.tsx, ReportService.java) | 40 reads | ~45849 tok |
+| 13:32 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | added 1 condition(s) | ~275 |
+| 13:32 | Edited src/main/java/org/example/attendTrack/sync/SyncController.java | 3→2 lines | ~26 |
+| 13:32 | Edited frontend/components/companies/CompanyWorkerModal.tsx | added 1 import(s) | ~68 |
+| 13:32 | Edited frontend/components/companies/CompanyWorkerModal.tsx | 3→4 lines | ~46 |
+| 13:32 | Edited frontend/components/companies/CompanyWorkerModal.tsx | modified catch() | ~107 |
+| 13:33 | Session end: 56 writes across 23 files (WorkerDialog.tsx, en.json, bg.json, page.tsx, ReportService.java) | 45 reads | ~56749 tok |
+
+## Session: 2026-07-10 13:37
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:40 | Edited src/main/java/org/example/attendTrack/site/SiteWorkerRepository.java | 2→5 lines | ~80 |
+| 13:40 | Edited src/main/java/org/example/attendTrack/company/CompanyService.java | added 2 import(s) | ~65 |
+| 13:40 | Edited src/main/java/org/example/attendTrack/company/CompanyService.java | added 2 import(s) | ~26 |
+| 13:40 | Edited src/main/java/org/example/attendTrack/company/CompanyService.java | 3→4 lines | ~57 |
+| 13:40 | Edited src/main/java/org/example/attendTrack/company/CompanyService.java | added 2 condition(s) | ~573 |
+| 13:40 | Edited src/main/java/org/example/attendTrack/user/UserService.java | added 1 import(s) | ~44 |
+| 13:40 | Edited src/main/java/org/example/attendTrack/user/UserService.java | added 2 condition(s) | ~358 |
+| 13:40 | Edited frontend/components/sites/SiteAssignModal.tsx | added 1 import(s) | ~79 |
+| 13:41 | Edited frontend/components/sites/SiteAssignModal.tsx | expanded (+9 lines) | ~240 |
+| 13:41 | Edited frontend/components/workers/WorkerSiteModal.tsx | 2→3 lines | ~40 |
+| 13:41 | Edited frontend/components/workers/WorkerSiteModal.tsx | added 1 import(s) | ~36 |
+| 13:41 | Edited frontend/components/workers/WorkerSiteModal.tsx | expanded (+8 lines) | ~182 |
+| 13:42 | Fixed C2/C3/C4 cascade bugs: removeSite/removeWorker/updateCompanyMemberships now clean up site_worker assignments | CompanyService.java, UserService.java, SiteWorkerRepository.java | fixed | ~800 |
+| 13:42 | Fixed D2/D3 frontend filter bugs: SiteAssignModal + WorkerSiteModal now filter by company membership | SiteAssignModal.tsx, WorkerSiteModal.tsx | fixed | ~300 |
+| 13:42 | Session end: 12 writes across 5 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 8 reads | ~6866 tok |
+| 13:43 | Edited frontend/app/page.tsx | "/bg/login" → "/bg/verify" | ~7 |
+| 13:43 | Edited frontend/app/[locale]/page.tsx | "/${locale}/login" → "/${locale}/verify" | ~9 |
+| 13:43 | Session end: 14 writes across 6 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 10 reads | ~6943 tok |
+| 13:44 | Session end: 14 writes across 6 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 10 reads | ~6943 tok |
+| 13:47 | Edited src/main/java/org/example/attendTrack/company/CompanyService.java | added 1 condition(s) | ~289 |
+| 13:47 | Edited frontend/messages/bg.json | 1→2 lines | ~29 |
+| 13:47 | Edited frontend/messages/en.json | 1→2 lines | ~27 |
+| 13:47 | Edited frontend/components/sites/SiteAssignModal.tsx | 3→3 lines | ~68 |
+| 13:48 | Session end: 18 writes across 8 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 22 reads | ~11956 tok |

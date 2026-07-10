@@ -6,6 +6,7 @@ import org.example.attendTrack.common.exception.ErrorCode;
 import org.example.attendTrack.site.dto.CheckpointDto;
 import org.example.attendTrack.site.dto.SiteRequest;
 import org.example.attendTrack.site.dto.SiteResponse;
+import org.example.attendTrack.company.CompanyRepository;
 import org.example.attendTrack.user.FaceDescriptorRepository;
 import org.example.attendTrack.user.Role;
 import org.example.attendTrack.user.User;
@@ -28,6 +29,7 @@ public class SiteService {
     private final SiteCheckpointRepository siteCheckpointRepository;
     private final UserRepository userRepository;
     private final FaceDescriptorRepository faceDescriptorRepository;
+    private final CompanyRepository companyRepository;
 
     @Transactional(readOnly = true)
     public List<SiteResponse> getAll() {
@@ -78,6 +80,15 @@ public class SiteService {
 
     @Transactional
     public SiteResponse create(SiteRequest request) {
+        if (request.companyId() == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR,
+                    "Company is required when creating a site");
+        }
+        if (!companyRepository.existsById(request.companyId())) {
+            throw new ApiException(HttpStatus.NOT_FOUND, ErrorCode.COMPANY_NOT_FOUND,
+                    "Company not found: " + request.companyId());
+        }
+
         Site site = Site.builder()
                 .name(request.name())
                 .address(request.address())
@@ -89,6 +100,7 @@ public class SiteService {
                 .build();
 
         site = siteRepository.save(site);
+        companyRepository.addSiteToCompany(request.companyId(), site.getId());
         List<CheckpointDto> checkpoints = saveCheckpoints(site, request.checkpoints());
         return SiteResponse.from(site, List.of(), List.of(), checkpoints);
     }
@@ -147,6 +159,15 @@ public class SiteService {
         User user = findUserOrThrow(userId, Role.WORKER);
         if (siteWorkerRepository.existsBySiteIdAndUserId(siteId, userId)) {
             throw new ApiException(HttpStatus.CONFLICT, ErrorCode.ALREADY_ASSIGNED, "User is already a worker on this site");
+        }
+        // Worker must belong to at least one company that has this site
+        Set<UUID> siteCompanyIds = companyRepository.findCompanyIdsBySiteId(siteId);
+        if (!siteCompanyIds.isEmpty()) {
+            Set<UUID> workerCompanyIds = companyRepository.findCompanyIdsByWorkerId(userId);
+            if (Collections.disjoint(siteCompanyIds, workerCompanyIds)) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.WORKER_NOT_IN_COMPANY,
+                        "Worker must belong to a company that is assigned to this site");
+            }
         }
         siteWorkerRepository.save(new SiteWorker(site, user));
     }

@@ -97,6 +97,7 @@ export default function WorkersPage() {
               <th className="px-4 py-3 font-medium">{t('name')}</th>
               <th className="px-4 py-3 font-medium">{t('email')}</th>
               <th className="px-4 py-3 font-medium">{t('phone')}</th>
+              <th className="px-4 py-3 font-medium">{t('companiesLabel')}</th>
               <th className="px-4 py-3 font-medium">{t('role')}</th>
               <th className="px-4 py-3 font-medium">Лице</th>
               <th className="px-4 py-3 font-medium text-right">{tc('actions')}</th>
@@ -106,7 +107,7 @@ export default function WorkersPage() {
             {isLoading
               ? Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i}>
-                    {Array.from({ length: 6 }).map((_, j) => (
+                    {Array.from({ length: 7 }).map((_, j) => (
                       <td key={j} className="px-4 py-3">
                         <Skeleton className="h-4 w-24" />
                       </td>
@@ -116,7 +117,7 @@ export default function WorkersPage() {
               : filtered.length === 0
               ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                     {tc('noData')}
                   </td>
                 </tr>
@@ -126,6 +127,11 @@ export default function WorkersPage() {
                   <td className="px-4 py-3 font-medium text-foreground">{user.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{displayEmail(user.email) ?? '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground">{user.phone || '—'}</td>
+                  <td className="px-4 py-3 text-muted-foreground text-xs">
+                    {user.companies?.length
+                      ? user.companies.map((c) => c.name).join(', ')
+                      : '—'}
+                  </td>
                   <td className="px-4 py-3">
                     <Badge variant={ROLE_VARIANT[user.role]}>
                       {t(`roles.${user.role}`)}

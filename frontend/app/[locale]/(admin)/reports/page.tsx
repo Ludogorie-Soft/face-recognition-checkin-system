@@ -22,6 +22,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useSites } from '@/hooks/useSites'
+import { useCompanies } from '@/hooks/useCompanies'
 import api from '@/lib/axios'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -129,11 +130,18 @@ export default function ReportsPage() {
   const tc = useTranslations('common')
 
   const { data: sites = [] } = useSites()
+  const { data: companies = [] } = useCompanies()
 
   const [tab, setTab] = useState<Tab>('hours')
   const [hoursView, setHoursView] = useState<HoursView>('site')
   const [siteId, setSiteId] = useState('')
+  const [companyId, setCompanyId] = useState('')
   const [period, setPeriod] = useState<Period>('day')
+
+  const selectedCompany = companies.find((c) => c.id === companyId) ?? null
+  const filteredSites = selectedCompany
+    ? sites.filter((s) => selectedCompany.sites.some((cs) => cs.id === s.id))
+    : sites
   const [dateFrom, setDateFrom] = useState(today())
   const [dateTo, setDateTo] = useState(today())
   const [date, setDate] = useState(today())
@@ -153,37 +161,37 @@ export default function ReportsPage() {
   // ── Queries ────────────────────────────────────────────────────────────────
 
   const attendanceQuery = useQuery<AttendanceRow[]>({
-    queryKey: ['reports', 'attendance', siteId, dateFrom, dateTo, queryKey],
+    queryKey: ['reports', 'attendance', siteId, companyId, dateFrom, dateTo, queryKey],
     queryFn: () =>
       api.get('/api/reports/attendance', {
-        params: { siteId, from: dateFrom, to: dateTo },
+        params: { siteId, companyId: companyId || undefined, from: dateFrom, to: dateTo },
       }).then((r) => r.data),
     enabled: tab === 'attendance' && !!siteId && queryKey > 0,
   })
 
   const missingQuery = useQuery<MissingRow[]>({
-    queryKey: ['reports', 'missing', siteId, date, queryKey],
+    queryKey: ['reports', 'missing', siteId, companyId, date, queryKey],
     queryFn: () =>
       api.get('/api/reports/missing', {
-        params: { siteId, date },
+        params: { siteId, companyId: companyId || undefined, date },
       }).then((r) => r.data),
     enabled: tab === 'missing' && !!siteId && queryKey > 0,
   })
 
   const hoursQuery = useQuery<WorkedHoursRow[]>({
-    queryKey: ['reports', 'hours', siteId, dateFrom, dateTo, queryKey],
+    queryKey: ['reports', 'hours', siteId, companyId, dateFrom, dateTo, queryKey],
     queryFn: () =>
       api.get('/api/reports/hours', {
-        params: { siteId, from: dateFrom, to: dateTo },
+        params: { siteId, companyId: companyId || undefined, from: dateFrom, to: dateTo },
       }).then((r) => r.data),
     enabled: tab === 'hours' && hoursView === 'site' && !!siteId && queryKey > 0,
   })
 
   const hoursSummaryQuery = useQuery<WorkedHoursSummaryRow[]>({
-    queryKey: ['reports', 'hours-summary', dateFrom, dateTo, queryKey],
+    queryKey: ['reports', 'hours-summary', companyId, dateFrom, dateTo, queryKey],
     queryFn: () =>
       api.get('/api/reports/hours/summary', {
-        params: { from: dateFrom, to: dateTo },
+        params: { companyId: companyId || undefined, from: dateFrom, to: dateTo },
       }).then((r) => r.data),
     enabled: tab === 'hours' && hoursView === 'summary' && queryKey > 0,
   })
@@ -382,6 +390,24 @@ export default function ReportsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-end gap-3">
+        {/* Company filter */}
+        {companies.length > 0 && (
+          <div className="flex flex-col gap-1.5 w-full sm:w-auto sm:min-w-[180px]">
+            <label className="text-xs font-medium text-muted-foreground">{t('company')}</label>
+            <Select value={companyId} onValueChange={(v) => { setCompanyId(v === '_all' ? '' : v); setSiteId(''); setQueryKey(0) }}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('allCompanies')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="_all">{t('allCompanies')}</SelectItem>
+                {companies.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {needsSite && (
           <div className="flex flex-col gap-1.5 w-full sm:w-auto sm:min-w-[200px]">
             <label className="text-xs font-medium text-muted-foreground">{t('site')}</label>
@@ -390,7 +416,7 @@ export default function ReportsPage() {
                 <SelectValue placeholder={t('site')} />
               </SelectTrigger>
               <SelectContent>
-                {sites.map((s) => (
+                {filteredSites.map((s) => (
                   <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                 ))}
               </SelectContent>

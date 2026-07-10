@@ -36,8 +36,9 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "sites": "Sites",
-    "workers": "Workers",
+    "companies": "Company Management",
+    "sites": "Site Management",
+    "workers": "Worker Management",
     "reports": "Reports",
     "verify": "Verify",
     "settings": "Settings"
@@ -76,6 +77,9 @@
     "address": "Address",
     "coordinates": "Coordinates",
     "radius": "Radius (meters)",
+    "company": "Company",
+    "selectCompany": "Select company...",
+    "companyRequired": "Please select a company",
     "workStart": "Shift start",
     "workEnd": "Shift end",
     "managers": "Managers",
@@ -91,6 +95,25 @@
     "checkpointName": "Checkpoint name (optional)",
     "noCheckpointsError": "Add at least one checkpoint",
     "checkpointRadiusError": "Every checkpoint must have a radius of at least 1 metre"
+  },
+  "companies": {
+    "title": "Companies",
+    "addCompany": "Add company",
+    "editCompany": "Edit company",
+    "deleteConfirm": "Are you sure you want to deactivate this company?",
+    "name": "Name",
+    "registrationNumber": "Registration number (EIK)",
+    "mol": "Responsible person (MOL)",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "sitesCount": "Sites",
+    "workersCount": "Workers",
+    "manageSites": "Manage sites",
+    "manageWorkers": "Manage workers",
+    "assignedSites": "Assigned sites",
+    "availableSites": "Available sites",
+    "assignedWorkers": "Assigned workers"
   },
   "workers": {
     "title": "Workers",
@@ -114,10 +137,13 @@
     "searchSite": "Search site...",
     "searchWorker": "Search worker...",
     "allAssigned": "All workers are already assigned to this site",
+    "noFace": "no face",
     "faceConflict": "Face already registered for: {name}",
     "company": "Company",
     "confirmPassword": "Confirm password",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "companiesLabel": "Companies",
+    "selectCompany": "Select company..."
   },
   "verify": {
     "title": "Verify",
@@ -160,10 +186,12 @@
     "ALREADY_ASSIGNED": "Already assigned to this site",
     "ASSIGNMENT_NOT_FOUND": "Assignment not found",
     "SITE_NOT_ASSIGNED": "You are not assigned to this site",
+    "WORKER_NOT_IN_COMPANY": "Worker must belong to a company assigned to this site",
     "FACE_ALREADY_REGISTERED": "This face is already registered to another worker",
     "DUPLICATE_ATTENDANCE": "Attendance record already exists",
     "VALIDATION_ERROR": "Invalid data submitted",
     "INTERNAL_ERROR": "Server error, please try again later",
+    "COMPANY_NOT_FOUND": "Company not found",
     "UNKNOWN": "An unexpected error occurred"
   },
   "reports": {
@@ -206,6 +234,8 @@
     "periodWeek": "This Week",
     "periodMonth": "This Month",
     "periodCustom": "Custom",
-    "autoCheckout": "Auto or manual checkout"
+    "autoCheckout": "Auto or manual checkout",
+    "company": "Company",
+    "allCompanies": "All companies"
   }
 }

@@ -14,6 +14,7 @@ import {
   useSite, useAssignWorker, useRemoveWorker,
 } from '@/hooks/useSites'
 import { useWorkers } from '@/hooks/useWorkers'
+import { useCompanies } from '@/hooks/useCompanies'
 import type { SiteResponse } from '@/types/site'
 import { apiErrorMessage } from '@/lib/errors'
 
@@ -34,12 +35,21 @@ export function SiteAssignModal({ open, onClose, site }: Props) {
 
   const { data: detail, isLoading } = useSite(site.id)
   const { data: allWorkers = [] } = useWorkers('WORKER')
+  const { data: allCompanies = [] } = useCompanies()
 
   const assignWorker = useAssignWorker(site.id)
   const removeWorker = useRemoveWorker(site.id)
 
   const currentWorkerIds = new Set((detail?.workers ?? []).map((u) => u.id))
-  const unassignedWorkers = allWorkers.filter((u) => !currentWorkerIds.has(u.id))
+  // Only show workers who belong to a company that has this site
+  const siteCompanyWorkerIds = new Set(
+    allCompanies
+      .filter((c) => c.sites.some((s) => s.id === site.id))
+      .flatMap((c) => c.workers.map((w) => w.id))
+  )
+  const unassignedWorkers = allWorkers
+    .filter((u) => !currentWorkerIds.has(u.id))
+    .filter((u) => siteCompanyWorkerIds.has(u.id))
   const availableWorkers = unassignedWorkers
     .filter((u) => u.name.toLowerCase().includes(workerSearch.toLowerCase()))
 
@@ -135,7 +145,7 @@ export function SiteAssignModal({ open, onClose, site }: Props) {
                               <span className="text-sm text-foreground">{u.name}</span>
                               {u.faceRegistered
                                 ? <ScanFace size={12} className="text-green-500" />
-                                : <span className="text-xs text-muted-foreground">(без лице)</span>}
+                                : <span className="text-xs text-muted-foreground">({tw('noFace')})</span>}
                             </div>
                             <Button
                               size="icon"

@@ -8,6 +8,7 @@ import org.example.attendTrack.attendance.AttendanceRepository;
 import org.example.attendTrack.attendance.AttendanceType;
 import org.example.attendTrack.common.exception.ApiException;
 import org.example.attendTrack.common.exception.ErrorCode;
+import org.example.attendTrack.company.CompanyRepository;
 import org.example.attendTrack.report.dto.AttendanceReportRow;
 import org.example.attendTrack.report.dto.HoursCorrectionRequest;
 import org.example.attendTrack.report.dto.MissingWorkerReport;
@@ -28,7 +29,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,25 +45,29 @@ public class ReportService {
     private final SiteWorkerRepository siteWorkerRepository;
     private final HoursCorrectionRepository hoursCorrectionRepository;
     private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
 
     @Transactional(readOnly = true)
-    public List<AttendanceReportRow> getAttendance(UUID siteId, LocalDate from, LocalDate to) {
+    public List<AttendanceReportRow> getAttendance(UUID siteId, UUID companyId, LocalDate from, LocalDate to) {
         validateDateRange(from, to);
         validateSiteExists(siteId);
         LocalDateTime start = from.atStartOfDay();
         LocalDateTime end = to.plusDays(1).atTime(LocalTime.of(6, 0));
+        Set<UUID> companyWorkers = workerIdsForCompany(companyId);
 
         return attendanceRepository.findBySiteAndDateRange(siteId, start, end).stream()
+                .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
                 .map(this::toRow)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<MissingWorkerReport> getMissingWorkers(UUID siteId, LocalDate date) {
+    public List<MissingWorkerReport> getMissingWorkers(UUID siteId, UUID companyId, LocalDate date) {
         validateSiteExists(siteId);
 
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.plusDays(1).atStartOfDay();
+        Set<UUID> companyWorkers = workerIdsForCompany(companyId);
 
         Set<UUID> checkedIn = attendanceRepository
                 .findBySiteAndDateRange(siteId, start, end).stream()
@@ -74,18 +78,19 @@ public class ReportService {
         return siteWorkerRepository.findBySiteId(siteId).stream()
                 .map(sw -> sw.getUser())
                 .filter(w -> !checkedIn.contains(w.getId()))
+                .filter(w -> companyWorkers == null || companyWorkers.contains(w.getId()))
                 .map(w -> new MissingWorkerReport(w.getId(), w.getName()))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public byte[] exportAttendanceToExcel(UUID siteId, LocalDate from, LocalDate to) {
-        List<AttendanceReportRow> rows = getAttendance(siteId, from, to);
+        List<AttendanceReportRow> rows = getAttendance(siteId, null, from, to);
 
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            Sheet sheet = workbook.createSheet("Attendance");
+            Sheet sheet = workbook.createSheet("Присъствие");
             CellStyle headerStyle = buildHeaderStyle(workbook);
 
             writeHeader(sheet, headerStyle);
@@ -104,11 +109,15 @@ public class ReportService {
     // ── Worked Hours ──────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
-    public List<WorkedHoursRow> getWorkedHours(UUID siteId, LocalDate from, LocalDate to) {
+    public List<WorkedHoursRow> getWorkedHours(UUID siteId, UUID companyId, LocalDate from, LocalDate to) {
         validateDateRange(from, to);
         validateSiteExists(siteId);
+        Set<UUID> companyWorkers = workerIdsForCompany(companyId);
         List<Attendance> records = attendanceRepository.findBySiteAndDateRange(
-                siteId, from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)));
+                siteId, from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)))
+                .stream()
+                .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
+                .toList();
 
         Map<CorrectionKey, HoursCorrection> corrections = hoursCorrectionRepository
                 .findBySiteAndPeriod(siteId, from, to).stream()
@@ -121,10 +130,14 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkedHoursSummaryRow> getWorkedHoursSummary(LocalDate from, LocalDate to) {
+    public List<WorkedHoursSummaryRow> getWorkedHoursSummary(UUID companyId, LocalDate from, LocalDate to) {
         validateDateRange(from, to);
+        Set<UUID> companyWorkers = workerIdsForCompany(companyId);
         List<Attendance> records = attendanceRepository.findAllInDateRange(
-                from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)));
+                from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)))
+                .stream()
+                .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
+                .toList();
 
         Map<CorrectionKey, HoursCorrection> corrections = hoursCorrectionRepository
                 .findAllInPeriod(from, to).stream()
@@ -184,16 +197,16 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public byte[] exportWorkedHoursToExcel(UUID siteId, LocalDate from, LocalDate to) {
-        List<WorkedHoursRow> rows = getWorkedHours(siteId, from, to);
+        List<WorkedHoursRow> rows = getWorkedHours(siteId, null, from, to);
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            Sheet sheet = workbook.createSheet("Worked Hours");
+            Sheet sheet = workbook.createSheet("Отработени часове");
             CellStyle headerStyle = buildHeaderStyle(workbook);
             CellStyle warningStyle = buildWarningStyle(workbook);
 
-            String[] headers = {"Worker", "Site", "Date", "Check-In", "Check-Out",
-                                 "Hours", "Corrected Hours", "Note"};
+            String[] headers = {"Работник", "Обект", "Дата", "Начало", "Край",
+                                 "Часове", "Коригирани часове", "Бележка"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -212,7 +225,7 @@ public class ReportService {
                 row.createCell(3).setCellValue(r.checkIn() != null ? r.checkIn().format(TIME_FORMAT) : "");
                 Cell checkOutCell = row.createCell(4);
                 if (openShift) {
-                    checkOutCell.setCellValue("OPEN SHIFT");
+                    checkOutCell.setCellValue("ОТВОРЕНА СМЯНА");
                     checkOutCell.setCellStyle(warningStyle);
                 } else {
                     String checkOutStr = r.checkOut().format(TIME_FORMAT);
@@ -237,15 +250,15 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public byte[] exportWorkedHoursSummaryToExcel(LocalDate from, LocalDate to) {
-        List<WorkedHoursSummaryRow> rows = getWorkedHoursSummary(from, to);
+        List<WorkedHoursSummaryRow> rows = getWorkedHoursSummary(null, from, to);
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            Sheet sheet = workbook.createSheet("Hours Summary");
+            Sheet sheet = workbook.createSheet("Обобщение часове");
             CellStyle headerStyle = buildHeaderStyle(workbook);
 
-            String[] headers = {"Worker", "Site", "Date", "Check-In", "Check-Out",
-                                 "Hours", "Corrected Hours", "Note"};
+            String[] headers = {"Работник", "Обект", "Дата", "Начало", "Край",
+                                 "Часове", "Коригирани часове", "Бележка"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -263,7 +276,7 @@ public class ReportService {
                     row.createCell(2).setCellValue(d.date().toString());
                     row.createCell(3).setCellValue(d.checkIn() != null ? d.checkIn().format(TIME_FORMAT) : "");
                     if (d.checkOut() == null) {
-                        row.createCell(4).setCellValue("OPEN SHIFT");
+                        row.createCell(4).setCellValue("ОТВОРЕНА СМЯНА");
                     } else {
                         String checkOutStr = d.checkOut().format(TIME_FORMAT);
                         if (d.autoCheckout()) checkOutStr += " (AUTO)";
@@ -277,7 +290,7 @@ public class ReportService {
                 // Total row per worker
                 Row totalRow = sheet.createRow(rowNum++);
                 Cell totalLabelCell = totalRow.createCell(0);
-                totalLabelCell.setCellValue(worker.workerName() + " — TOTAL");
+                totalLabelCell.setCellValue(worker.workerName() + " — ОБЩО");
                 totalLabelCell.setCellStyle(totalStyle);
                 Cell totalHoursCell = totalRow.createCell(5);
                 totalHoursCell.setCellValue(worker.totalHours());
@@ -298,8 +311,8 @@ public class ReportService {
 
     private void writeHeader(Sheet sheet, CellStyle style) {
         String[] headers = {
-                "Worker ID", "Worker Name", "Site", "Date",
-                "Type", "Recorded At", "Lat", "Lng", "Location Valid", "Face Confidence", "Manual Override"
+                "ID работник", "Работник", "Обект", "Дата",
+                "Тип", "Записано в", "Ширина", "Дължина", "Валидна локация", "Разпознаване на лице", "Ръчно въведено"
         };
         Row row = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
@@ -351,6 +364,11 @@ public class ReportService {
                 a.getFaceConfidence(),
                 a.isManualOverride()
         );
+    }
+
+    private Set<UUID> workerIdsForCompany(UUID companyId) {
+        if (companyId == null) return null;
+        return companyRepository.findWorkerIdsByCompanyId(companyId);
     }
 
     private void validateSiteExists(UUID siteId) {

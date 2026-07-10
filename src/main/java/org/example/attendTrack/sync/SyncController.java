@@ -3,7 +3,6 @@ package org.example.attendTrack.sync;
 import lombok.RequiredArgsConstructor;
 import org.example.attendTrack.sync.dto.SiteSyncResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -16,7 +15,6 @@ public class SyncController {
     private final SyncService syncService;
 
     @GetMapping("/site/{siteId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SiteSyncResponse> getSiteSync(@PathVariable UUID siteId) {
         return ResponseEntity.ok(syncService.getSiteSync(siteId));
     }

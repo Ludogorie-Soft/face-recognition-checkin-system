@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.example.attendTrack.user.Role;
 
+import java.util.List;
+import java.util.UUID;
+
 public record UserRequest(
         @NotBlank
         String name,
@@ -13,7 +16,8 @@ public record UserRequest(
 
         String phone,
 
-        String company,
+        // Company IDs this worker belongs to (only for WORKER role)
+        List<UUID> companyIds,
 
         // Required on create for ADMIN, optional on update (null = keep existing password)
         String password,

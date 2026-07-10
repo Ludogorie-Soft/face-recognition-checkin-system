@@ -9,11 +9,15 @@ import { MapPin, Loader2, Trash2 } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { TimePicker } from './TimePicker'
 import { useCreateSite, useUpdateSite } from '@/hooks/useSites'
+import { useCompanies } from '@/hooks/useCompanies'
 import { apiErrorMessage } from '@/lib/errors'
 import type { SiteResponse, SiteRequest } from '@/types/site'
 import type { CheckpointDraft } from './MapPicker'
@@ -61,9 +65,11 @@ export function SiteDialog({ open, onClose, site }: Props) {
 
   const createMutation = useCreateSite()
   const updateMutation = useUpdateSite(site?.id ?? '')
+  const { data: companies = [] } = useCompanies()
 
   const [checkpoints, setCheckpoints] = useState<CheckpointDraft[]>([])
   const [selectedCpId, setSelectedCpId] = useState<string | null>(null)
+  const [companyId, setCompanyId] = useState('')
 
   useEffect(() => {
     if (!open) return
@@ -73,6 +79,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
       workStartTime: toTimeInput(site?.workStartTime),
       workEndTime: toTimeInput(site?.workEndTime),
     })
+    setCompanyId('')
 
     if (site?.checkpoints?.length) {
       const drafts: CheckpointDraft[] = site.checkpoints.map((cp) => ({
@@ -138,6 +145,10 @@ export function SiteDialog({ open, onClose, site }: Props) {
   }
 
   const onSubmit = async (data: FormValues) => {
+    if (!site && !companyId) {
+      toast.error(t('companyRequired'))
+      return
+    }
     if (checkpoints.length === 0) {
       toast.error(t('noCheckpointsError'))
       return
@@ -162,6 +173,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
         lng: cp.lng,
         radiusMeters: cp.radiusMeters,
       })),
+      ...(!site && { companyId }),
     }
     try {
       if (site) {
@@ -185,6 +197,23 @@ export function SiteDialog({ open, onClose, site }: Props) {
           <DialogTitle>{site ? t('editSite') : t('addSite')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 py-2">
+          {/* Company — only on create */}
+          {!site && companies.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <Label>{t('company')}<span className="text-destructive ml-0.5">*</span></Label>
+              <Select value={companyId} onValueChange={setCompanyId} disabled={loading}>
+                <SelectTrigger className={!companyId ? 'border-muted-foreground/40' : ''}>
+                  <SelectValue placeholder={t('selectCompany')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {companies.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Name */}
           <div className="flex flex-col gap-1.5">
             <Label>{t('name')}</Label>

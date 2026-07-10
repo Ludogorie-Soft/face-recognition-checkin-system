@@ -21,7 +21,6 @@ public class SiteController {
     private final SiteService siteService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SiteResponse>> getAll() {
         return ResponseEntity.ok(siteService.getAll());
     }

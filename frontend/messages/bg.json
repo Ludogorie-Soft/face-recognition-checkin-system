@@ -36,8 +36,9 @@
   },
   "nav": {
     "dashboard": "Табло",
-    "sites": "Обекти",
-    "workers": "Работници",
+    "companies": "Управление на фирми",
+    "sites": "Управление на обекти",
+    "workers": "Управление на работници",
     "reports": "Справки",
     "verify": "Верификация",
     "settings": "Настройки"
@@ -76,6 +77,9 @@
     "address": "Адрес",
     "coordinates": "Координати",
     "radius": "Радиус (метри)",
+    "company": "Фирма",
+    "selectCompany": "Избери фирма...",
+    "companyRequired": "Моля, изберете фирма",
     "workStart": "Начало на смяна",
     "workEnd": "Край на смяна",
     "managers": "Мениджъри",
@@ -91,6 +95,25 @@
     "checkpointName": "Наименование на точката (незадължително)",
     "noCheckpointsError": "Добавете поне една контролна точка",
     "checkpointRadiusError": "Всяка контролна точка трябва да има радиус поне 1 метър"
+  },
+  "companies": {
+    "title": "Фирми",
+    "addCompany": "Добави фирма",
+    "editCompany": "Редактирай фирма",
+    "deleteConfirm": "Сигурни ли сте, че искате да деактивирате тази фирма?",
+    "name": "Наименование",
+    "registrationNumber": "ЕИК/Булстат",
+    "mol": "МОЛ",
+    "address": "Адрес",
+    "phone": "Телефон",
+    "email": "Имейл",
+    "sitesCount": "Обекти",
+    "workersCount": "Работници",
+    "manageSites": "Управление на обекти",
+    "manageWorkers": "Управление на работници",
+    "assignedSites": "Назначени обекти",
+    "availableSites": "Налични обекти",
+    "assignedWorkers": "Назначени работници"
   },
   "workers": {
     "title": "Работници",
@@ -114,10 +137,13 @@
     "searchSite": "Търси обект...",
     "searchWorker": "Търси работник...",
     "allAssigned": "Всички работници са вече присъединени към този обект",
+    "noFace": "без лице",
     "faceConflict": "Лицето вече е регистрирано за: {name}",
     "company": "Фирма",
     "confirmPassword": "Потвърди парола",
-    "passwordMismatch": "Паролите не съвпадат"
+    "passwordMismatch": "Паролите не съвпадат",
+    "companiesLabel": "Фирми",
+    "selectCompany": "Избери фирма..."
   },
   "verify": {
     "title": "Верификация",
@@ -160,10 +186,12 @@
     "ALREADY_ASSIGNED": "Вече е назначен към този обект",
     "ASSIGNMENT_NOT_FOUND": "Назначението не е намерено",
     "SITE_NOT_ASSIGNED": "Не сте назначен към този обект",
+    "WORKER_NOT_IN_COMPANY": "Работникът трябва да е в някоя от фирмите, свързани с обекта",
     "FACE_ALREADY_REGISTERED": "Това лице вече е регистрирано за друг работник",
     "DUPLICATE_ATTENDANCE": "Записът за присъствие вече съществува",
     "VALIDATION_ERROR": "Изпратените данни са невалидни",
     "INTERNAL_ERROR": "Сървърна грешка, моля опитайте по-късно",
+    "COMPANY_NOT_FOUND": "Фирмата не е намерена",
     "UNKNOWN": "Възникна неочаквана грешка"
   },
   "reports": {
@@ -206,6 +234,8 @@
     "periodWeek": "Тази седмица",
     "periodMonth": "Този месец",
     "periodCustom": "Персонализиран",
-    "autoCheckout": "Автоматичен или ръчен чекаут"
+    "autoCheckout": "Автоматичен или ръчен чекаут",
+    "company": "Фирма",
+    "allCompanies": "Всички фирми"
   }
 }

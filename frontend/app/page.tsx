@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default function RootPage() {
-  redirect('/bg/login')
+  redirect('/bg/verify')
 }

@@ -1147,6 +1147,477 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T16:26:40.212Z"
+    },
+    {
+      "id": "bug-072",
+      "timestamp": "2026-07-10T09:39:32.620Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(admin)/workers/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T09:39:32.620Z"
+    },
+    {
+      "id": "bug-073",
+      "timestamp": "2026-07-10T09:39:37.154Z",
+      "error_message": "CSS fix: length",
+      "file": "frontend/app/[locale]/(admin)/workers/page.tsx",
+      "root_cause": "length: 6 → 7",
+      "fix": "Changed length: 6 → 7",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-10T09:41:04.681Z"
+    },
+    {
+      "id": "bug-074",
+      "timestamp": "2026-07-10T09:45:52.311Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→10 lines (2 removed) | Also: public List<WorkedHoursSummaryRow> getWorkedHoursS; from.atStartOfDay(), to.plusDays(1).atTime(LocalTi",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-10T09:45:57.511Z"
+    },
+    {
+      "id": "bug-075",
+      "timestamp": "2026-07-10T09:46:10.037Z",
+      "error_message": "Missing guard clause",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "No early return/throw for edge case: companyId == null",
+      "fix": "Added guard clause: if (companyId == null)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T09:46:10.037Z"
+    },
+    {
+      "id": "bug-076",
+      "timestamp": "2026-07-10T09:50:12.416Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/en.json",
+      "root_cause": "Had \"UNKNOWN\"",
+      "fix": "Changed to \"COMPANY_NOT_FOUND\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T09:50:12.416Z"
+    },
+    {
+      "id": "bug-077",
+      "timestamp": "2026-07-10T09:50:16.898Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/bg.json",
+      "root_cause": "Had \"UNKNOWN\"",
+      "fix": "Changed to \"COMPANY_NOT_FOUND\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T09:50:16.898Z"
+    },
+    {
+      "id": "bug-078",
+      "timestamp": "2026-07-10T09:50:30.032Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/components/companies/CompanySiteModal.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T09:50:30.032Z"
+    },
+    {
+      "id": "bug-079",
+      "timestamp": "2026-07-10T09:50:40.269Z",
+      "error_message": "Wrong reference: company should be liveCompany",
+      "file": "frontend/components/companies/CompanySiteModal.tsx",
+      "root_cause": "Used \"company\" instead of \"liveCompany\"",
+      "fix": "Changed company → liveCompany",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T09:50:40.269Z"
+    },
+    {
+      "id": "bug-080",
+      "timestamp": "2026-07-10T09:50:52.186Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/components/companies/CompanyWorkerModal.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T09:50:52.186Z"
+    },
+    {
+      "id": "bug-081",
+      "timestamp": "2026-07-10T09:54:49.434Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/main/java/org/example/attendTrack/site/SiteWorkerRepository.java",
+      "root_cause": "Had \"SELECT sw FROM SiteWorker sw WHERE sw.site.id = :",
+      "fix": "Changed to \"SELECT sw FROM SiteWorker sw JOIN FETCH sw.user W",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T09:54:49.434Z"
+    },
+    {
+      "id": "bug-082",
+      "timestamp": "2026-07-10T10:03:11.976Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/components/workers/WorkerDialog.tsx",
+      "root_cause": "10 lines replaced/restructured",
+      "fix": "Rewrote 20→37 lines (10 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:03:11.976Z"
+    },
+    {
+      "id": "bug-083",
+      "timestamp": "2026-07-10T10:06:48.677Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:06:48.677Z"
+    },
+    {
+      "id": "bug-084",
+      "timestamp": "2026-07-10T10:09:03.684Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/bg.json",
+      "root_cause": "Had \"Фирми\"",
+      "fix": "Changed to \"Управление на фирми\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:09:03.684Z"
+    },
+    {
+      "id": "bug-085",
+      "timestamp": "2026-07-10T10:09:06.633Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/en.json",
+      "root_cause": "Had \"Companies\"",
+      "fix": "Changed to \"Company Management\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:09:06.633Z"
+    },
+    {
+      "id": "bug-086",
+      "timestamp": "2026-07-10T10:09:26.671Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Had \"Attendance\"",
+      "fix": "Changed to \"Присъствие\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-07-10T10:10:00.868Z"
+    },
+    {
+      "id": "bug-087",
+      "timestamp": "2026-07-10T10:12:29.616Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→14 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:12:29.616Z"
+    },
+    {
+      "id": "bug-088",
+      "timestamp": "2026-07-10T10:25:58.404Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceController.java",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→4 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:25:58.404Z"
+    },
+    {
+      "id": "bug-089",
+      "timestamp": "2026-07-10T10:40:32.642Z",
+      "error_message": "Wrong reference: SiteWorkerRepository should be SiteWorker",
+      "file": "src/main/java/org/example/attendTrack/user/UserService.java",
+      "root_cause": "Used \"SiteWorkerRepository\" instead of \"SiteWorker\"",
+      "fix": "Changed SiteWorkerRepository → SiteWorker",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:40:32.642Z"
+    },
+    {
+      "id": "bug-090",
+      "timestamp": "2026-07-10T10:41:00.109Z",
+      "error_message": "CSS fix: data",
+      "file": "frontend/components/sites/SiteAssignModal.tsx",
+      "root_cause": "data: allWorkers = [] → allCompanies = []",
+      "fix": "Changed data: allWorkers = [] → allCompanies = []",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:41:00.109Z"
+    },
+    {
+      "id": "bug-091",
+      "timestamp": "2026-07-10T10:41:04.809Z",
+      "error_message": "CSS fix: data",
+      "file": "frontend/components/workers/WorkerSiteModal.tsx",
+      "root_cause": "data: allSites = [], isLoading → allCompanies = []",
+      "fix": "Changed data: allSites = [], isLoading → allCompanies = []",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:41:04.809Z"
+    },
+    {
+      "id": "bug-092",
+      "timestamp": "2026-07-10T10:41:09.396Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/workers/WorkerSiteModal.tsx",
+      "root_cause": "Had '@/lib/axios'",
+      "fix": "Changed to '@/hooks/useCompanies'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:41:09.396Z"
+    },
+    {
+      "id": "bug-093",
+      "timestamp": "2026-07-10T00:00:00.000Z",
+      "error_message": "Removing a site from a company left workers orphaned on that site",
+      "file": "CompanyService.java",
+      "root_cause": "removeSite() only deleted from company_sites join table but did not cascade-remove workers from the site who no longer had company access",
+      "fix": "After removeSiteFromCompany(), query remaining company IDs for the site, then remove any worker whose companies no longer intersect with those IDs",
+      "tags": [
+        "cascade",
+        "company",
+        "site",
+        "worker",
+        "data-integrity"
+      ],
+      "related_bugs": [
+        "bug-094",
+        "bug-095"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T00:00:00.000Z"
+    },
+    {
+      "id": "bug-094",
+      "timestamp": "2026-07-10T00:00:00.000Z",
+      "error_message": "Removing a worker from a company left the worker assigned to that company's sites",
+      "file": "CompanyService.java",
+      "root_cause": "removeWorker() only deleted from company_workers join table but did not cascade-remove the worker from sites they accessed through that company",
+      "fix": "After removeWorkerFromCompany(), for each site the worker is on, check if remaining company access covers the site; if not, delete the site_worker row",
+      "tags": [
+        "cascade",
+        "company",
+        "worker",
+        "site",
+        "data-integrity"
+      ],
+      "related_bugs": [
+        "bug-093",
+        "bug-095"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T00:00:00.000Z"
+    },
+    {
+      "id": "bug-095",
+      "timestamp": "2026-07-10T00:00:00.000Z",
+      "error_message": "Updating a worker's companies did not clean up site assignments for removed companies",
+      "file": "UserService.java",
+      "root_cause": "updateCompanyMemberships() cleared and re-added company_workers rows but never removed the worker from sites belonging to companies that were removed",
+      "fix": "Capture old company IDs before clearing, then after setting new IDs, remove worker from any site whose companies no longer intersect with the new company set",
+      "tags": [
+        "cascade",
+        "user",
+        "company",
+        "site",
+        "data-integrity"
+      ],
+      "related_bugs": [
+        "bug-093",
+        "bug-094"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T00:00:00.000Z"
+    },
+    {
+      "id": "bug-096",
+      "timestamp": "2026-07-10T00:00:00.000Z",
+      "error_message": "SiteAssignModal showed all WORKER-role users, not filtered to workers in the site's companies",
+      "file": "frontend/components/sites/SiteAssignModal.tsx",
+      "root_cause": "unassignedWorkers was derived from all workers globally, ignoring company-site-worker relationship",
+      "fix": "Added useCompanies(); computed siteCompanyWorkerIds from companies that have the site; filtered unassigned workers to only those in that set",
+      "tags": [
+        "frontend",
+        "filter",
+        "company",
+        "site",
+        "worker"
+      ],
+      "related_bugs": [
+        "bug-097"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T00:00:00.000Z"
+    },
+    {
+      "id": "bug-097",
+      "timestamp": "2026-07-10T00:00:00.000Z",
+      "error_message": "WorkerSiteModal showed all sites globally, not filtered to sites in the worker's companies",
+      "file": "frontend/components/workers/WorkerSiteModal.tsx",
+      "root_cause": "availableSites was derived from all sites globally, ignoring which companies the worker belongs to",
+      "fix": "Added useCompanies(); computed eligibleSiteIds from companies the worker belongs to; filtered available sites to only those in that set",
+      "tags": [
+        "frontend",
+        "filter",
+        "company",
+        "site",
+        "worker"
+      ],
+      "related_bugs": [
+        "bug-096"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T00:00:00.000Z"
+    },
+    {
+      "id": "bug-098",
+      "timestamp": "2026-07-10T10:43:14.254Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/app/page.tsx",
+      "root_cause": "Had '/bg/login'",
+      "fix": "Changed to '/bg/verify'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-10T10:43:20.894Z"
+    },
+    {
+      "id": "bug-099",
+      "timestamp": "2026-07-10T10:47:59.344Z",
+      "error_message": "Wrong reference: span should be tw",
+      "file": "frontend/components/sites/SiteAssignModal.tsx",
+      "root_cause": "Used \"span\" instead of \"tw\"",
+      "fix": "Changed span → tw",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T10:47:59.344Z"
     }
   ]
 }

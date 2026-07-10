@@ -1,63 +1,76 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { SyncBanner } from '@/components/offline/SyncBanner'
-import { useAuth } from '@/hooks/useAuth'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { LanguageToggle } from '@/components/layout/LanguageToggle'
-import { LogOut, ClipboardCheck, LayoutDashboard } from 'lucide-react'
+import { LogOut, ClipboardCheck, LayoutDashboard, LogIn } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { prefetchModels } from '@/lib/prefetchModels'
+import { getToken, isTokenValid, getUserRole, removeToken } from '@/lib/auth'
 
 export default function VerifyLayout({ children }: { children: React.ReactNode }) {
-  const { ready, logout } = useAuth('ADMIN')
   const params = useParams()
+  const router = useRouter()
   const locale = (params?.locale as string) ?? 'bg'
 
-  // Warm the Service Worker cache with all face recognition assets as soon
-  // as the manager is authenticated — enables full offline use from then on.
+  const [isAdmin, setIsAdmin] = useState(false)
+
   useEffect(() => {
-    if (ready) prefetchModels()
-  }, [ready])
+    const token = getToken()
+    if (isTokenValid(token) && getUserRole() === 'ADMIN') {
+      setIsAdmin(true)
+    }
+    prefetchModels()
+  }, [])
 
-
-  if (!ready) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-      </div>
-    )
+  const logout = () => {
+    removeToken()
+    setIsAdmin(false)
+    router.push(`/${locale}/login`)
   }
 
   return (
     <div className="h-dvh flex flex-col bg-background overflow-hidden">
       <header className="flex items-center justify-between px-4 py-3 bg-card border-b border-border">
         <div className="flex items-center gap-3">
-          <Link
-            href={`/${locale}/dashboard`}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Back to dashboard"
-          >
-            <LayoutDashboard size={16} />
-          </Link>
+          {isAdmin && (
+            <Link
+              href={`/${locale}/dashboard`}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Back to dashboard"
+            >
+              <LayoutDashboard size={16} />
+            </Link>
+          )}
           <div className="flex items-center gap-2">
             <ClipboardCheck size={20} className="text-primary" />
             <span className="text-sm font-bold tracking-tight text-foreground">AttendTrack</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <NotificationBell />
+          {isAdmin && <NotificationBell />}
           <LanguageToggle />
           <ThemeToggle />
-          <button
-            onClick={logout}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-            aria-label="Logout"
-          >
-            <LogOut size={16} />
-          </button>
+          {isAdmin ? (
+            <button
+              onClick={logout}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              aria-label="Logout"
+            >
+              <LogOut size={16} />
+            </button>
+          ) : (
+            <Link
+              href={`/${locale}/login`}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              aria-label="Login"
+            >
+              <LogIn size={16} />
+            </Link>
+          )}
         </div>
       </header>
       <SyncBanner />

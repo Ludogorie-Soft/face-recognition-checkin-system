@@ -3,18 +3,19 @@ package org.example.attendTrack.user;
 import lombok.RequiredArgsConstructor;
 import org.example.attendTrack.common.exception.ApiException;
 import org.example.attendTrack.common.exception.ErrorCode;
+import org.example.attendTrack.company.CompanyRepository;
+import org.example.attendTrack.site.SiteWorker;
+import org.example.attendTrack.site.SiteWorkerRepository;
 import org.example.attendTrack.user.dto.UserRequest;
 import org.example.attendTrack.user.dto.UserResponse;
+import org.example.attendTrack.user.dto.UserResponse.CompanyRef;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
@@ -26,23 +27,34 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FaceDescriptorRepository faceDescriptorRepository;
+    private final CompanyRepository companyRepository;
+    private final SiteWorkerRepository siteWorkerRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     public List<UserResponse> getAll(Role role) {
         List<User> users = (role != null)
                 ? userRepository.findAllByRoleAndActiveTrue(role)
                 : userRepository.findAllByActiveTrue();
 
         Set<UUID> faceUserIds = new HashSet<>(faceDescriptorRepository.findAllUserIdsWithFace());
+
+        // Bulk-load company memberships to avoid N+1
+        List<UUID> userIds = users.stream().map(User::getId).toList();
+        Map<UUID, List<CompanyRef>> companyMap = buildCompanyMap(userIds);
+
         return users.stream()
-                .map(u -> UserResponse.from(u, faceUserIds.contains(u.getId())))
+                .map(u -> UserResponse.from(u, faceUserIds.contains(u.getId()),
+                        companyMap.getOrDefault(u.getId(), List.of())))
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public UserResponse getById(UUID id) {
         User user = findOrThrow(id);
         boolean faceRegistered = faceDescriptorRepository.findByUserId(id).isPresent();
-        return UserResponse.from(user, faceRegistered);
+        List<CompanyRef> companies = buildCompanyMap(List.of(id)).getOrDefault(id, List.of());
+        return UserResponse.from(user, faceRegistered, companies);
     }
 
     @Transactional
@@ -63,12 +75,16 @@ public class UserService {
                 .name(request.name())
                 .email(email)
                 .phone(StringUtils.hasText(request.phone()) ? request.phone() : null)
-                .company(request.role() == Role.WORKER && StringUtils.hasText(request.company()) ? request.company() : null)
                 .passwordHash(passwordEncoder.encode(rawPassword))
                 .role(request.role())
                 .build();
 
-        return UserResponse.from(userRepository.save(user), false);
+        User saved = userRepository.save(user);
+        updateCompanyMemberships(saved.getId(), request);
+
+        List<CompanyRef> companies = buildCompanyMap(List.of(saved.getId()))
+                .getOrDefault(saved.getId(), List.of());
+        return UserResponse.from(saved, false, companies);
     }
 
     @Transactional
@@ -81,13 +97,17 @@ public class UserService {
                 request.name(),
                 email,
                 StringUtils.hasText(request.phone()) ? request.phone() : null,
-                request.role() == Role.WORKER && StringUtils.hasText(request.company()) ? request.company() : null,
                 request.role(),
                 StringUtils.hasText(request.password()) ? passwordEncoder.encode(request.password()) : null
         );
 
+        User saved = userRepository.save(user);
+        updateCompanyMemberships(saved.getId(), request);
+
         boolean faceRegistered = faceDescriptorRepository.findByUserId(id).isPresent();
-        return UserResponse.from(userRepository.save(user), faceRegistered);
+        List<CompanyRef> companies = buildCompanyMap(List.of(saved.getId()))
+                .getOrDefault(saved.getId(), List.of());
+        return UserResponse.from(saved, faceRegistered, companies);
     }
 
     @Transactional
@@ -96,14 +116,54 @@ public class UserService {
         user.deactivate();
         userRepository.save(user);
         faceDescriptorRepository.deleteByUserId(id);
+        companyRepository.removeWorkerFromAllCompanies(id);
+        siteWorkerRepository.deleteByUserId(id);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    /**
-     * For WORKER: email is optional — generates a placeholder if not provided.
-     * For ADMIN: email is required and must be unique.
-     */
+    private void updateCompanyMemberships(UUID userId, UserRequest request) {
+        // Capture old memberships before clearing — needed for cascade site cleanup
+        Set<UUID> oldCompanyIds = companyRepository.findCompanyIdsByWorkerId(userId);
+        companyRepository.removeWorkerFromAllCompanies(userId);
+
+        Set<UUID> newCompanyIds = new HashSet<>();
+        if (request.role() == Role.WORKER
+                && request.companyIds() != null
+                && !request.companyIds().isEmpty()) {
+            newCompanyIds.addAll(request.companyIds());
+            for (UUID companyId : newCompanyIds) {
+                companyRepository.addWorkerToCompany(companyId, userId);
+            }
+        }
+
+        // C4: cascade — remove from sites that now belong to no remaining company of the worker
+        if (!oldCompanyIds.isEmpty()) {
+            List<SiteWorker> assignments = siteWorkerRepository.findByUserIdWithSite(userId);
+            for (SiteWorker sw : assignments) {
+                UUID siteId = sw.getSite().getId();
+                Set<UUID> siteCompanyIds = companyRepository.findCompanyIdsBySiteId(siteId);
+                if (Collections.disjoint(siteCompanyIds, newCompanyIds)) {
+                    siteWorkerRepository.deleteBySiteIdAndUserId(siteId, userId);
+                }
+            }
+        }
+    }
+
+    private Map<UUID, List<CompanyRef>> buildCompanyMap(List<UUID> userIds) {
+        if (userIds.isEmpty()) return Map.of();
+
+        Map<UUID, List<CompanyRef>> map = new HashMap<>();
+        companyRepository.findWorkerCompanyPairs(userIds).forEach(row -> {
+            UUID workerId  = (UUID) row[0];
+            UUID companyId = (UUID) row[1];
+            String name    = (String) row[2];
+            map.computeIfAbsent(workerId, k -> new ArrayList<>())
+               .add(new CompanyRef(companyId, name));
+        });
+        return map;
+    }
+
     private String resolveEmailOnCreate(UserRequest request) {
         if (StringUtils.hasText(request.email())) {
             validateEmailFormat(request.email());
@@ -118,10 +178,6 @@ public class UserService {
         throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, "Email is required for admin users");
     }
 
-    /**
-     * On update: if no email is provided, keeps the existing one (handles workers with placeholder emails).
-     * If a new email is provided, validates format and checks uniqueness.
-     */
     private String resolveEmailOnUpdate(UserRequest request, User existing) {
         if (!StringUtils.hasText(request.email())) {
             return existing.getEmail();

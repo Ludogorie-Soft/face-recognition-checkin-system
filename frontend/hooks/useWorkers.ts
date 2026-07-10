@@ -19,7 +19,10 @@ export function useCreateWorker() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (body: UserRequest) => api.post<UserResponse>('/api/users', body).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [QUERY_KEY] })
+      qc.invalidateQueries({ queryKey: ['companies'] })
+    },
   })
 }
 
@@ -28,7 +31,10 @@ export function useUpdateWorker(id: string) {
   return useMutation({
     mutationFn: (body: UserRequest) =>
       api.put<UserResponse>(`/api/users/${id}`, body).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [QUERY_KEY] })
+      qc.invalidateQueries({ queryKey: ['companies'] })
+    },
   })
 }
 
@@ -36,7 +42,10 @@ export function useDeactivateWorker() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => api.delete(`/api/users/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [QUERY_KEY] })
+      qc.invalidateQueries({ queryKey: ['companies'] })
+    },
   })
 }
 

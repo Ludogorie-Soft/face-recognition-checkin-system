@@ -4,6 +4,7 @@ import org.example.attendTrack.user.Role;
 import org.example.attendTrack.user.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public record UserResponse(
@@ -11,23 +12,29 @@ public record UserResponse(
         String name,
         String email,
         String phone,
-        String company,
+        List<CompanyRef> companies,
         Role role,
         boolean active,
         boolean faceRegistered,
         LocalDateTime createdAt
 ) {
-    public static UserResponse from(User user, boolean faceRegistered) {
+    public record CompanyRef(UUID id, String name) {}
+
+    public static UserResponse from(User user, boolean faceRegistered, List<CompanyRef> companies) {
         return new UserResponse(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.getPhone(),
-                user.getCompany(),
+                companies,
                 user.getRole(),
                 user.isActive(),
                 faceRegistered,
                 user.getCreatedAt()
         );
+    }
+
+    public static UserResponse from(User user, boolean faceRegistered) {
+        return from(user, faceRegistered, List.of());
     }
 }

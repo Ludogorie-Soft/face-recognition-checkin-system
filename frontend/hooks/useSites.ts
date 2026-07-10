@@ -23,7 +23,10 @@ export function useCreateSite() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (body: SiteRequest) => api.post<SiteResponse>('/api/sites', body).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [QK] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [QK] })
+      qc.invalidateQueries({ queryKey: ['companies'] })
+    },
   })
 }
 

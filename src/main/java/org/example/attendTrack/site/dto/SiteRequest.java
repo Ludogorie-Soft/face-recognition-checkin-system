@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 public record SiteRequest(
         @NotBlank
@@ -26,5 +27,8 @@ public record SiteRequest(
         LocalTime workEndTime,
 
         @Valid
-        List<CheckpointDto> checkpoints
+        List<CheckpointDto> checkpoints,
+
+        /** Required on create, ignored on update (company managed via CompanyService). */
+        UUID companyId
 ) {}

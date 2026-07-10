@@ -1,32 +1,28 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
-import { Loader2 } from 'lucide-react'
+import { ChevronDown, Loader2 } from 'lucide-react'
+import {
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem,
+} from '@/components/ui/dropdown-menu'
 import { useCreateWorker, useUpdateWorker } from '@/hooks/useWorkers'
+import { useCompanies } from '@/hooks/useCompanies'
 import { apiErrorMessage } from '@/lib/errors'
 import type { UserResponse, UserRequest, Role } from '@/types/user'
 
-interface FormValues extends UserRequest {
+interface FormValues extends Omit<UserRequest, 'companyIds'> {
   confirmPassword?: string
 }
 
@@ -55,6 +51,9 @@ export function WorkerDialog({ open, onClose, user }: Props) {
   const isAdmin = role === 'ADMIN'
   const isCreate = !user
 
+  const [selectedCompanyIds, setSelectedCompanyIds] = useState<string[]>([])
+
+  const { data: companies = [] } = useCompanies()
   const createMutation = useCreateWorker()
   const updateMutation = useUpdateWorker(user?.id ?? '')
 
@@ -63,16 +62,21 @@ export function WorkerDialog({ open, onClose, user }: Props) {
       reset(user
         ? {
             name: user.name,
-            // Hide auto-generated placeholder emails from the form
             email: user.email?.endsWith('@worker.local') ? '' : (user.email ?? ''),
             phone: user.phone ?? '',
-            company: user.company ?? '',
             role: user.role,
           }
-        : { name: '', email: '', phone: '', company: '', password: '', confirmPassword: '', role: 'WORKER' }
+        : { name: '', email: '', phone: '', password: '', confirmPassword: '', role: 'WORKER' }
       )
+      setSelectedCompanyIds(user?.companies?.map((c) => c.id) ?? [])
     }
   }, [open, user, reset])
+
+  const toggleCompany = (id: string) => {
+    setSelectedCompanyIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    )
+  }
 
   const onSubmit = async (data: FormValues) => {
     if (isCreate && isAdmin && data.password !== data.confirmPassword) {
@@ -80,11 +84,15 @@ export function WorkerDialog({ open, onClose, user }: Props) {
       return
     }
 
-    const { confirmPassword, ...payload } = data
+    const { confirmPassword, ...rest } = data
 
-    // Company is only for workers; password is never sent for workers
-    if (payload.role === 'ADMIN') {
-      delete payload.company
+    const payload: UserRequest = {
+      ...rest,
+      companyIds: !isAdmin ? selectedCompanyIds : undefined,
+    }
+
+    if (isAdmin) {
+      delete payload.companyIds
     } else {
       delete payload.password
     }
@@ -112,7 +120,6 @@ export function WorkerDialog({ open, onClose, user }: Props) {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 py-2">
 
-          {/* Name — always required */}
           <div className="flex flex-col gap-1.5">
             <Label>{t('name')}<Req /></Label>
             <Input
@@ -122,7 +129,6 @@ export function WorkerDialog({ open, onClose, user }: Props) {
             />
           </div>
 
-          {/* Email — required for ADMIN, optional for WORKER */}
           <div className="flex flex-col gap-1.5">
             <Label>{t('email')}{isAdmin && <Req />}</Label>
             <Input
@@ -133,7 +139,6 @@ export function WorkerDialog({ open, onClose, user }: Props) {
             />
           </div>
 
-          {/* Phone — required for ADMIN, optional for WORKER */}
           <div className="flex flex-col gap-1.5">
             <Label>{t('phone')}{isAdmin && <Req />}</Label>
             <Input
@@ -143,15 +148,44 @@ export function WorkerDialog({ open, onClose, user }: Props) {
             />
           </div>
 
-          {/* Company — only for WORKER, always optional */}
-          {!isAdmin && (
+          {/* Companies — multi-select dropdown, only for WORKER */}
+          {!isAdmin && companies.length > 0 && (
             <div className="flex flex-col gap-1.5">
-              <Label>{t('company')}</Label>
-              <Input {...register('company')} disabled={loading} />
+              <Label>{t('companiesLabel')}</Label>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={loading}
+                    className="w-full justify-between font-normal"
+                  >
+                    <span className="truncate">
+                      {selectedCompanyIds.length === 0
+                        ? t('selectCompany')
+                        : companies
+                            .filter((c) => selectedCompanyIds.includes(c.id))
+                            .map((c) => c.name)
+                            .join(', ')}
+                    </span>
+                    <ChevronDown size={15} className="ml-2 shrink-0 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+                  {companies.map((c) => (
+                    <DropdownMenuCheckboxItem
+                      key={c.id}
+                      checked={selectedCompanyIds.includes(c.id)}
+                      onCheckedChange={() => toggleCompany(c.id)}
+                    >
+                      {c.name}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
 
-          {/* Password — required for new ADMIN only */}
           {isCreate && isAdmin && (
             <>
               <div className="flex flex-col gap-1.5">
@@ -175,7 +209,6 @@ export function WorkerDialog({ open, onClose, user }: Props) {
             </>
           )}
 
-          {/* Role */}
           <div className="flex flex-col gap-1.5">
             <Label>{t('role')}</Label>
             <Select value={role} onValueChange={(v) => setValue('role', v as Role)} disabled={loading || !isCreate}>

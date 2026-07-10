@@ -51,12 +51,28 @@ public class AutoCheckoutScheduler {
 
         int created = 0;
         for (Attendance checkIn : candidates) {
-            LocalDateTime checkOutTime = yesterday.atTime(checkIn.getSite().getWorkEndTime());
+            LocalTime endTime = checkIn.getSite().getWorkEndTime();
+            // Try checkout on the same day first; if that is not after check-in
+            // (overnight shift), place it on the following day instead.
+            LocalDateTime checkOutTime = yesterday.atTime(endTime);
+            if (!checkOutTime.isAfter(checkIn.getRecordedAt())) {
+                checkOutTime = yesterday.plusDays(1).atTime(endTime);
+            }
 
-            // Skip if worker checked in after the site's workEndTime
+            // Final safety: if still not after check-in, skip (misconfigured site)
             if (!checkOutTime.isAfter(checkIn.getRecordedAt())) {
                 log.debug("Auto-checkout skipped: workEndTime {} is not after checkIn {} for worker {}",
                         checkOutTime, checkIn.getRecordedAt(), checkIn.getWorker().getId());
+                continue;
+            }
+
+            // Guard against duplicate auto-checkouts (e.g. scheduler restart or overnight
+            // checkout time falling exactly on the checkOutTo boundary of the search window)
+            if (attendanceRepository.existsDuplicate(
+                    checkIn.getWorker().getId(), checkIn.getSite().getId(),
+                    AttendanceType.CHECK_OUT, checkOutTime)) {
+                log.debug("Auto-checkout skipped: duplicate already exists for worker {} at {}",
+                        checkIn.getWorker().getId(), checkOutTime);
                 continue;
             }
 

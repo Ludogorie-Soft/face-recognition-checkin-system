@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSites } from '@/hooks/useSites'
+import { useCompanies } from '@/hooks/useCompanies'
 import api from '@/lib/axios'
 import { apiErrorMessage } from '@/lib/errors'
 import type { UserResponse } from '@/types/user'
@@ -33,6 +34,7 @@ export function WorkerSiteModal({ open, onClose, worker }: Props) {
   const [pendingRemove, setPendingRemove] = useState<string | null>(null)
 
   const { data: allSites = [], isLoading } = useSites()
+  const { data: allCompanies = [] } = useCompanies()
   const qc = useQueryClient()
 
   const refetch = () => {
@@ -85,8 +87,16 @@ export function WorkerSiteModal({ open, onClose, worker }: Props) {
   const assignedSites = allSites.filter((s) => s.workers.some((w) => w.id === worker.id))
   const assignedIds = new Set(assignedSites.map((s) => s.id))
 
+  // Only show sites that belong to a company the worker is in
+  const workerCompanyIds = new Set(worker.companies.map((c) => c.id))
+  const eligibleSiteIds = new Set(
+    allCompanies
+      .filter((c) => workerCompanyIds.has(c.id))
+      .flatMap((c) => c.sites.map((s) => s.id))
+  )
   const availableSites = allSites
     .filter((s) => !assignedIds.has(s.id))
+    .filter((s) => eligibleSiteIds.has(s.id))
     .filter((s) => s.name.toLowerCase().includes(siteSearch.toLowerCase()))
 
   const handleAdd = async (siteId: string) => {

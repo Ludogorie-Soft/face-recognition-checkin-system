@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T16:26:40.189Z
-> Files: 118 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-10T10:47:59.324Z
+> Files: 136 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -36,10 +36,15 @@
 ## frontend/app/
 
 - `globals.css` — Styles: 5 rules, 61 vars (~976 tok)
+- `page.tsx` — RootPage (~31 tok)
 
 ## frontend/app/[locale]/
 
 - `page.tsx` — LocalePage (~61 tok)
+
+## frontend/app/[locale]/(admin)/companies/
+
+- `page.tsx` — CompaniesPage — renders table (~2246 tok)
 
 ## frontend/app/[locale]/(admin)/dashboard/
 
@@ -47,7 +52,7 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~8968 tok)
+- `page.tsx` — fmtLocal (~9361 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
@@ -55,7 +60,7 @@
 
 ## frontend/app/[locale]/(admin)/workers/
 
-- `page.tsx` — ROLE_VARIANT — renders table (~2825 tok)
+- `page.tsx` — ROLE_VARIANT — renders table (~2916 tok)
 
 ## frontend/app/[locale]/(auth)/login/
 
@@ -63,7 +68,7 @@
 
 ## frontend/app/[locale]/(manager)/
 
-- `layout.tsx` — VerifyLayout (~749 tok)
+- `layout.tsx` — VerifyLayout (~855 tok)
 
 ## frontend/app/[locale]/(manager)/verify/
 
@@ -77,16 +82,22 @@
 
 - `providers.tsx` — Providers (~296 tok)
 
+## frontend/components/companies/
+
+- `CompanyDialog.tsx` — Req — renders form, modal (~1198 tok)
+- `CompanySiteModal.tsx` — CompanySiteModal — renders modal (~1236 tok)
+- `CompanyWorkerModal.tsx` — CompanyWorkerModal — renders modal (~1450 tok)
+
 ## frontend/components/layout/
 
-- `AdminSidebar.tsx` — AdminSidebar (~911 tok)
+- `AdminSidebar.tsx` — AdminSidebar (~937 tok)
 - `ThemeToggle.tsx` — ThemeToggle (~197 tok)
 
 ## frontend/components/sites/
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~1205 tok)
-- `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~1909 tok)
-- `SiteDialog.tsx` — MapPicker — renders form, modal (~3223 tok)
+- `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~2024 tok)
+- `SiteDialog.tsx` — MapPicker — renders form, modal (~3560 tok)
 
 ## frontend/components/ui/
 
@@ -99,23 +110,26 @@
 ## frontend/components/workers/
 
 - `FaceRegisterModal.tsx` — FaceRegisterModal — renders modal (~1849 tok)
-- `WorkerDialog.tsx` — ROLES — renders form, modal (~1884 tok)
-- `WorkerSiteModal.tsx` — WorkerSiteModal — renders modal (~2333 tok)
+- `WorkerDialog.tsx` — ROLES — renders form, modal (~2332 tok)
+- `WorkerSiteModal.tsx` — WorkerSiteModal — renders modal (~2458 tok)
 
 ## frontend/hooks/
 
 - `useAuth.ts` — Exports useAuth (~278 tok)
+- `useCompanies.ts` — API routes: GET, DELETE, POST (6 endpoints) (~693 tok)
 - `useDashboard.ts` — API routes: GET (2 endpoints) (~382 tok)
 - `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
 - `useGeoLocation.ts` — Exports GeoState, useGeoLocation (~435 tok)
-- `useSites.ts` — API routes: GET, DELETE, POST (5 endpoints) (~567 tok)
+- `useSites.ts` — API routes: GET, DELETE, POST (5 endpoints) (~587 tok)
 - `useSiteSync.ts` — Exports SyncResult, SyncStatus, useSiteSync (~670 tok)
+- `useWorkers.ts` — API routes: GET, DELETE, POST (4 endpoints) (~574 tok)
 
 ## frontend/lib/
 
 - `auth.ts` — Exports TOKEN_KEY, getToken, setToken, removeToken + 5 more (~400 tok)
 - `axios.ts` — Declares api (~267 tok)
 - `db.ts` — Exports WorkerRecord, CheckpointInfo, SiteInfo, PendingAttendance, db (~629 tok)
+- `errors.ts` — Known error codes from the backend ErrorCode enum (~302 tok)
 - `faceAlignment.ts` — Face alignment: transforms a raw video frame into a normalized (~1112 tok)
 - `faceMatcher.ts` — Cosine-similarity 1:N face matcher. (~613 tok)
 - `geo.ts` — Exports haversineDistance, isWithinRadius, isWithinAnyCheckpoint (~273 tok)
@@ -123,8 +137,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~2130 tok)
-- `en.json` (~2031 tok)
+- `bg.json` (~2447 tok)
+- `en.json` (~2346 tok)
 
 ## frontend/scripts/
 
@@ -132,8 +146,9 @@
 
 ## frontend/types/
 
-- `site.ts` — Exports CheckpointResponse, CheckpointRequest, SiteResponse, SiteRequest (~252 tok)
-- `user.ts` — Exports Role, UserResponse, UserRequest (~108 tok)
+- `company.ts` — Exports CompanyResponse, CompanyRequest (~133 tok)
+- `site.ts` — Exports CheckpointResponse, CheckpointRequest, SiteResponse, SiteRequest (~264 tok)
+- `user.ts` — Exports Role, CompanyRef, UserResponse, UserRequest (~127 tok)
 
 ## src/main/java/org/example/ (legacy)
 
@@ -141,14 +156,31 @@
 
 ## src/main/java/org/example/attendTrack/attendance/
 
-- `AttendanceController.java` — RestController: AttendanceController (3 endpoints) (~407 tok)
+- `AttendanceController.java` — RestController: AttendanceController (3 endpoints) (~321 tok)
 - `AttendanceRepository.java` — Class: AttendanceRepository (~1470 tok)
 - `AttendanceService.java` — Service: AttendanceService (~1614 tok)
-- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~938 tok)
+- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~1189 tok)
+
+## src/main/java/org/example/attendTrack/common/exception/
+
+- `ErrorCode.java` — Class: ErrorCode (~146 tok)
+
+## src/main/java/org/example/attendTrack/company/
+
+- `Company.java` — Entity: Company (~547 tok)
+- `CompanyController.java` — RestController: CompanyController (10 endpoints) (~763 tok)
+- `CompanyRepository.java` — Class: CompanyRepository (~798 tok)
+- `CompanyService.java` — Service: CompanyService (~1812 tok)
+
+## src/main/java/org/example/attendTrack/company/dto/
+
+- `CompanyRequest.java` — Class: CompanyRequest (~76 tok)
+- `CompanyResponse.java` — CompanyResponse: SiteRef, WorkerRef, from (~381 tok)
 
 ## src/main/java/org/example/attendTrack/config/
 
 - `CorsConfig.java` — ", config); (~342 tok)
+- `SecurityConfig.java` — ").permitAll() (~955 tok)
 
 ## src/main/java/org/example/attendTrack/dashboard/
 
@@ -167,8 +199,8 @@
 
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
-- `ReportController.java` — RestController: ReportController (9 endpoints) (~1423 tok)
-- `ReportService.java` — Service: ReportService (~6287 tok)
+- `ReportController.java` — RestController: ReportController (9 endpoints) (~1498 tok)
+- `ReportService.java` — Service: ReportService (~6594 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
@@ -180,19 +212,19 @@
 
 - `SiteCheckpoint.java` — Entity: SiteCheckpoint (~232 tok)
 - `SiteCheckpointRepository.java` — Class: SiteCheckpointRepository (~210 tok)
-- `SiteController.java` — RestController: SiteController (11 endpoints) (~902 tok)
-- `SiteService.java` — Service: SiteService (~2580 tok)
-- `SiteWorkerRepository.java` — Class: SiteWorkerRepository (~379 tok)
+- `SiteController.java` — RestController: SiteController (11 endpoints) (~892 tok)
+- `SiteService.java` — Service: SiteService (~2901 tok)
+- `SiteWorkerRepository.java` — Class: SiteWorkerRepository (~464 tok)
 
 ## src/main/java/org/example/attendTrack/site/dto/
 
 - `CheckpointDto.java` — CheckpointDto: from (~131 tok)
-- `SiteRequest.java` — Class: SiteRequest (~147 tok)
+- `SiteRequest.java` — Required on create, ignored on update (company managed via CompanyService). (~184 tok)
 - `SiteResponse.java` — SiteResponse: from, summary (~368 tok)
 
 ## src/main/java/org/example/attendTrack/sync/
 
-- `SyncController.java` — RestController: SyncController (2 endpoints) (~187 tok)
+- `SyncController.java` — RestController: SyncController (2 endpoints) (~160 tok)
 - `SyncService.java` — Service: SyncService (~727 tok)
 
 ## src/main/java/org/example/attendTrack/sync/dto/
@@ -204,14 +236,14 @@
 - `FaceDescriptorRepository.java` — Class: FaceDescriptorRepository (~271 tok)
 - `FaceDescriptorService.java` — Service: FaceDescriptorService (~881 tok)
 - `Role.java` — Class: Role (~22 tok)
-- `User.java` — Entity: User (~581 tok)
-- `UserService.java` — For WORKER: email is optional — generates a placeholder if not provided. (~1546 tok)
+- `User.java` — Entity: User (~560 tok)
+- `UserService.java` — Service: UserService (~2240 tok)
 
 ## src/main/java/org/example/attendTrack/user/dto/
 
 - `FaceDescriptorRequest.java` — Class: FaceDescriptorRequest (~84 tok)
-- `UserRequest.java` — Class: UserRequest (~158 tok)
-- `UserResponse.java` — UserResponse: from (~227 tok)
+- `UserRequest.java` — Class: UserRequest (~190 tok)
+- `UserResponse.java` — UserResponse: CompanyRef, from, from (~292 tok)
 
 ## src/main/java/org/example/garant/
 
@@ -258,3 +290,4 @@
 - `V5__site_checkpoints.sql` — Creates site_checkpoints table; migrates existing site lat/lng/radius as first checkpoint (~80 tok)
 - `V5__site_checkpoints.sql` — SQL: tables: site_checkpoints (~174 tok)
 - `V6__add_company_to_users.sql` (~14 tok)
+- `V7__companies.sql` — SQL: tables: companies, company_sites, company_workers (~252 tok)
