@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
-  Camera, CheckCircle2, XCircle, MapPin,
-  Loader2, UserX, RefreshCw,
+  Camera, CheckCircle2, XCircle, MapPin, MapPinOff,
+  Loader2, UserX, RefreshCw, Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useFaceApi, getMeshConnections } from '@/hooks/useFaceApi'
 import type { NormalizedLandmark } from '@/hooks/useFaceApi'
 import { useGeoLocation } from '@/hooks/useGeoLocation'
+import { isWithinAnyCheckpoint, isWithinRadius } from '@/lib/geo'
 import { ManualOverrideModal } from './ManualOverrideModal'
 import type { SiteInfo, WorkerRecord } from '@/lib/db'
 
@@ -20,12 +21,13 @@ interface DetectionResult {
 }
 
 interface Props {
-  site: SiteInfo
+  sites: Map<string, SiteInfo>
   workers: WorkerRecord[]
   sessionLog: Map<string, 'CHECK_IN' | 'CHECK_OUT'>
   onRecord: (params: {
     workerId: string
     workerName: string
+    siteId: string
     type: 'CHECK_IN' | 'CHECK_OUT'
     lat: number
     lng: number
@@ -35,7 +37,7 @@ interface Props {
   }) => Promise<void>
 }
 
-// ── Face mesh drawing ─────────────────────────────────────────────────────────
+// ── Face mesh drawing ──────────────────────────────────────────────────────────
 
 function drawFaceMesh(
   canvas: HTMLCanvasElement,
@@ -46,9 +48,6 @@ function drawFaceMesh(
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  // Sync canvas intrinsic size to its CSS display size.
-  // Guard against zero dimensions — can happen on the very first render
-  // before the browser has completed layout.
   const displayW = canvas.clientWidth
   const displayH = canvas.clientHeight
   if (displayW === 0 || displayH === 0) return
@@ -64,7 +63,6 @@ function drawFaceMesh(
   const connections = getMeshConnections()
   if (!connections) return
 
-  // Compute object-cover transform: scale + offset to match video display within canvas
   const cw = canvas.width
   const ch = canvas.height
   const scale = Math.max(cw / videoWidth, ch / videoHeight)
@@ -93,17 +91,12 @@ function drawFaceMesh(
     ctx.stroke()
   }
 
-  // Background tessellation (subtle mesh)
   drawConnections(connections.tesselation, 'rgba(0, 200, 255, 0.10)', 0.5)
-  // Face oval
   drawConnections(connections.faceOval, 'rgba(0, 220, 255, 0.55)', 1.5)
-  // Eyes
   drawConnections(connections.leftEye, 'rgba(0, 240, 255, 0.80)', 1.5)
   drawConnections(connections.rightEye, 'rgba(0, 240, 255, 0.80)', 1.5)
-  // Eyebrows
   drawConnections(connections.leftEyebrow, 'rgba(0, 220, 255, 0.55)', 1.5)
   drawConnections(connections.rightEyebrow, 'rgba(0, 220, 255, 0.55)', 1.5)
-  // Lips
   drawConnections(connections.lips, 'rgba(80, 210, 255, 0.70)', 1.5)
 }
 
@@ -113,9 +106,36 @@ function clearMeshCanvas(canvas: HTMLCanvasElement | null) {
   if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────────
 
-export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
+// For a detected worker (who may be assigned to multiple sites), find which
+// site the device is currently within. Falls back to the worker's first site
+// assignment if no geo match is found.
+function resolveWorkerSite(
+  workerId: string,
+  workers: WorkerRecord[],
+  sites: Map<string, SiteInfo>,
+  lat: number,
+  lng: number,
+): { siteId: string; locationValid: boolean } | null {
+  const entries = workers.filter((w) => w.id === workerId)
+  if (entries.length === 0) return null
+
+  const inZone = entries.find((w) => {
+    const site = sites.get(w.siteId)
+    if (!site) return false
+    return site.checkpoints?.length
+      ? isWithinAnyCheckpoint(lat, lng, site.checkpoints)
+      : isWithinRadius(lat, lng, site.lat, site.lng, site.radiusMeters)
+  })
+
+  if (inZone) return { siteId: inZone.siteId, locationValid: true }
+  return { siteId: entries[0].siteId, locationValid: false }
+}
+
+// ── Component ──────────────────────────────────────────────────────────────────
+
+export function VerifyCamera({ sites, workers, sessionLog, onRecord }: Props) {
   const t = useTranslations('verify')
 
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -133,15 +153,34 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
   const [cameraError, setCameraError] = useState<string | null>(null)
 
   const { state: faceState, detectWithMesh, buildMatcher } = useFaceApi()
-  const geo = useGeoLocation(site)
+  const geo = useGeoLocation()
+
+  // Workers deduplicated by id — for ManualOverrideModal which shows a flat list
+  const uniqueWorkers = useMemo(() => {
+    const seen = new Set<string>()
+    return workers.filter((w) => {
+      if (seen.has(w.id)) return false
+      seen.add(w.id)
+      return true
+    })
+  }, [workers])
 
   const matcher = useMemo(
-    () => buildMatcher(workers),
+    () => buildMatcher(uniqueWorkers),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [workers, faceState]
+    [uniqueWorkers, faceState],
   )
 
-  // ── Camera ──────────────────────────────────────────────────────────────────
+  // Geo info for the currently detected worker: which site are they at + in-zone?
+  // We always compute this (even while GPS is loading) so the confirm button is
+  // never blocked by a slow GPS fix — locationValid will simply be false until
+  // a real position arrives.
+  const detectedWorkerGeo = useMemo(() => {
+    if (!detected) return null
+    return resolveWorkerSite(detected.workerId, workers, sites, geo.lat, geo.lng)
+  }, [detected, geo.lat, geo.lng, workers, sites])
+
+  // ── Camera ───────────────────────────────────────────────────────────────────
 
   const startCamera = useCallback(async () => {
     setCameraError(null)
@@ -159,10 +198,10 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
     } catch {
       setCameraError(t('cameraError'))
     }
-  }, [])
+  }, [t])
 
   const stopCamera = useCallback(() => {
-    streamRef.current?.getTracks().forEach((t) => t.stop())
+    streamRef.current?.getTracks().forEach((track) => track.stop())
     streamRef.current = null
     if (videoRef.current) videoRef.current.srcObject = null
     clearMeshCanvas(meshCanvasRef.current)
@@ -174,7 +213,7 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
 
   useEffect(() => () => stopCamera(), [stopCamera])
 
-  // ── Detection loop ───────────────────────────────────────────────────────────
+  // ── Detection loop ────────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (!cameraActive || faceState !== 'ready' || confirming) return
@@ -193,7 +232,6 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
           const { descriptor, landmarks } = await detectWithMesh(videoRef.current)
           if (!active) break
 
-          // Draw face mesh whenever landmarks are detected
           if (landmarks && landmarks.length > 0 && meshCanvasRef.current && videoRef.current) {
             drawFaceMesh(
               meshCanvasRef.current,
@@ -214,7 +252,7 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
           } else if (matcher) {
             const best = matcher.findBestMatch(descriptor)
             if (best.label !== 'unknown') {
-              const worker = workers.find((w) => w.id === best.label)
+              const worker = uniqueWorkers.find((w) => w.id === best.label)
               if (worker) {
                 missCountRef.current = 0
                 setFaceVisible(true)
@@ -239,8 +277,6 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
             }
           }
         } catch {
-          // Inference error (ORT/MediaPipe internal failure) — clear mesh and
-          // let the loop continue. Next cycle will retry automatically.
           clearMeshCanvas(meshCanvasRef.current)
         } finally {
           detectingRef.current = false
@@ -252,55 +288,65 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
 
     runDetection()
     return () => { active = false }
-  }, [cameraActive, faceState, confirming, detectWithMesh, matcher, workers])
+  }, [cameraActive, faceState, confirming, detectWithMesh, matcher, uniqueWorkers])
 
-  // ── Confirm ──────────────────────────────────────────────────────────────────
+  // ── Confirm ───────────────────────────────────────────────────────────────────
 
-  const handleConfirm = useCallback(async (type: 'CHECK_IN' | 'CHECK_OUT') => {
-    if (!detected) return
-    setConfirming(true)
-    try {
-      await onRecord({
-        workerId: detected.workerId,
-        workerName: detected.workerName,
-        type,
-        lat: geo.lat,
-        lng: geo.lng,
-        locationValid: geo.locationValid,
-        faceConfidence: detected.confidence,
-        manualOverride: false,
-      })
-      setDetected(null)
-      setFaceVisible(false)
-      missCountRef.current = 0
-    } finally {
-      setConfirming(false)
-    }
-  }, [detected, geo, onRecord])
+  const handleConfirm = useCallback(
+    async (type: 'CHECK_IN' | 'CHECK_OUT') => {
+      if (!detected || !detectedWorkerGeo) return
+      setConfirming(true)
+      try {
+        await onRecord({
+          workerId: detected.workerId,
+          workerName: detected.workerName,
+          siteId: detectedWorkerGeo.siteId,
+          type,
+          lat: geo.lat,
+          lng: geo.lng,
+          locationValid: detectedWorkerGeo.locationValid,
+          faceConfidence: detected.confidence,
+          manualOverride: false,
+        })
+        setDetected(null)
+        setFaceVisible(false)
+        missCountRef.current = 0
+      } finally {
+        setConfirming(false)
+      }
+    },
+    [detected, detectedWorkerGeo, geo.lat, geo.lng, onRecord],
+  )
 
-  const handleManualRecord = useCallback(async (workerId: string, type: 'CHECK_IN' | 'CHECK_OUT') => {
-    const worker = workers.find((w) => w.id === workerId)
-    if (!worker) return
-    setConfirming(true)
-    try {
-      await onRecord({
-        workerId,
-        workerName: worker.name,
-        type,
-        lat: geo.lat,
-        lng: geo.lng,
-        locationValid: geo.locationValid,
-        faceConfidence: null,
-        manualOverride: true,
-      })
-    } finally {
-      setConfirming(false)
-    }
-  }, [workers, geo, onRecord])
+  const handleManualRecord = useCallback(
+    async (workerId: string, type: 'CHECK_IN' | 'CHECK_OUT') => {
+      const geoInfo = resolveWorkerSite(workerId, workers, sites, geo.lat, geo.lng)
+      if (!geoInfo) return
+      const workerRecord = workers.find((w) => w.id === workerId)
+      if (!workerRecord) return
+      setConfirming(true)
+      try {
+        await onRecord({
+          workerId,
+          workerName: workerRecord.name,
+          siteId: geoInfo.siteId,
+          type,
+          lat: geo.lat,
+          lng: geo.lng,
+          locationValid: geoInfo.locationValid,
+          faceConfidence: null,
+          manualOverride: true,
+        })
+      } finally {
+        setConfirming(false)
+      }
+    },
+    [workers, sites, geo.lat, geo.lng, onRecord],
+  )
 
-  // ── Derived ──────────────────────────────────────────────────────────────────
+  // ── Derived ───────────────────────────────────────────────────────────────────
 
-  const workersWithFace = workers.filter((w) => w.descriptor !== null)
+  const workersWithFace = workers.some((w) => w.descriptor !== null)
   const lastAction = detected ? sessionLog.get(detected.workerId) : undefined
 
   const ovalStroke = detected
@@ -309,13 +355,90 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
     ? '#facc15'
     : 'rgba(255,255,255,0.65)'
 
-  // ── Render ───────────────────────────────────────────────────────────────────
+  // Top bar geo status
+  const geoBarColor = geo.permissionDenied
+    ? 'text-red-400'
+    : geo.loading
+    ? 'text-white/70'
+    : geo.error
+    ? 'text-red-400'
+    : detectedWorkerGeo?.locationValid
+    ? 'text-green-400'
+    : detected && detectedWorkerGeo && !detectedWorkerGeo.locationValid
+    ? 'text-amber-400'
+    : 'text-white/70'
+
+  const geoBarLabel = geo.permissionDenied
+    ? t('locationError')
+    : geo.loading
+    ? t('locationLoading')
+    : geo.error
+    ? t('locationError')
+    : detectedWorkerGeo?.locationValid
+    ? t('locationValid')
+    : detected && detectedWorkerGeo && !detectedWorkerGeo.locationValid
+    ? t('locationInvalid')
+    : t('locationActive')
+
+  // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
 
-      {/* ── Camera area ── */}
-      <div className="relative flex-1 bg-black overflow-hidden min-h-0">
+      {/* ── Location permission blocked overlay ── */}
+      {geo.permissionDenied && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background px-8 text-center">
+          <div className="rounded-2xl bg-destructive/10 p-6">
+            <MapPinOff size={48} className="text-destructive mx-auto" />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h3 className="text-lg font-bold text-foreground">
+              {t('locationPermissionTitle')}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {t('locationPermissionBody')}
+            </p>
+          </div>
+
+          <ol className="flex flex-col gap-2 text-left w-full max-w-xs">
+            {([
+              t('locationPermissionStep1'),
+              t('locationPermissionStep2'),
+              t('locationPermissionStep3'),
+            ] as string[]).map((step, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <span className="shrink-0 mt-0.5 w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center">
+                  {i + 1}
+                </span>
+                <span className="text-sm text-foreground">{step}</span>
+              </li>
+            ))}
+          </ol>
+
+          <div className="flex flex-col items-center gap-3 mt-2">
+            <Button onClick={() => window.location.reload()} className="gap-2">
+              <RefreshCw size={16} />
+              {t('locationPermissionRetry')}
+            </Button>
+            <button
+              onClick={() => setManualOpen(true)}
+              className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
+            >
+              {t('manualConfirm')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Camera area ──
+          Когато е активна: фиксирана на ~52% от родителската височина,
+          оставяйки bottom panel-а видим без скролване.
+          Когато е неактивна: заема цялото налично място (flex-1)
+          за да са центрирани "Start camera" / loading state-овете. */}
+      <div className={`relative bg-black overflow-hidden ${
+        cameraActive ? 'h-[52%] shrink-0 grow-0' : 'flex-1 min-h-0'
+      }`}>
         <video
           ref={videoRef}
           playsInline
@@ -323,7 +446,7 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
           className="w-full h-full object-cover scale-x-[-1]"
         />
 
-        {/* Face mesh overlay — mirrors video with scale-x-[-1] */}
+        {/* Face mesh overlay */}
         {cameraActive && (
           <canvas
             ref={meshCanvasRef}
@@ -333,40 +456,51 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
 
         {/* Camera off state */}
         {!cameraActive && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-background">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-background px-8">
             {faceState === 'loading' && (
-              <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                <Loader2 size={40} className="animate-spin text-primary" />
+              <div className="flex flex-col items-center gap-4 text-muted-foreground">
+                <div className="rounded-2xl bg-muted/40 p-6">
+                  <Loader2 size={36} className="animate-spin text-primary" />
+                </div>
                 <p className="text-sm">{t('modelsLoading')}</p>
               </div>
             )}
             {faceState === 'error' && (
-              <p className="text-sm text-destructive">{t('modelsError')}</p>
+              <div className="flex flex-col items-center gap-3">
+                <div className="rounded-2xl bg-destructive/10 p-6">
+                  <Camera size={36} className="text-destructive" />
+                </div>
+                <p className="text-sm text-destructive text-center">{t('modelsError')}</p>
+              </div>
             )}
             {(faceState === 'ready' || faceState === 'idle') && (
               <>
-                <Camera size={64} className="text-muted-foreground opacity-30" />
-                {cameraError && (
-                  <p className="text-sm text-destructive px-4 text-center">{cameraError}</p>
-                )}
+                <div className="flex flex-col items-center gap-4">
+                  <div className="rounded-2xl bg-muted/40 p-7">
+                    <Camera size={44} className="text-muted-foreground opacity-60" />
+                  </div>
+                  {cameraError && (
+                    <p className="text-sm text-destructive text-center">{cameraError}</p>
+                  )}
+                </div>
                 <Button
                   onClick={startCamera}
                   size="lg"
-                  className="gap-2"
+                  className="gap-2 px-8"
                   disabled={faceState !== 'ready'}
                 >
                   <Camera size={18} />
                   {t('startCamera')}
                 </Button>
-                {workersWithFace.length === 0 && (
-                  <p className="text-xs text-muted-foreground">{t('noDescriptors')}</p>
+                {!workersWithFace && (
+                  <p className="text-xs text-muted-foreground text-center">{t('noDescriptors')}</p>
                 )}
               </>
             )}
           </div>
         )}
 
-        {/* Face guide oval — purely visual */}
+        {/* Face guide oval */}
         {cameraActive && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <svg viewBox="0 0 200 240" className="w-[45%] max-w-[220px]" xmlns="http://www.w3.org/2000/svg">
@@ -382,23 +516,12 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
           </div>
         )}
 
-        {/* Top bar: GPS + close */}
+        {/* Top bar: GPS status + close */}
         {cameraActive && (
           <div className="absolute top-0 inset-x-0 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/70 to-transparent">
-            <div className={`flex items-center gap-1.5 text-xs font-medium ${
-              geo.loading ? 'text-white/70'
-              : geo.error ? 'text-red-400'
-              : geo.locationValid ? 'text-green-400'
-              : 'text-amber-400'
-            }`}>
+            <div className={`flex items-center gap-1.5 text-xs font-medium ${geoBarColor}`}>
               <MapPin size={13} />
-              {geo.loading
-                ? t('locationLoading')
-                : geo.error
-                ? t('locationError')
-                : geo.locationValid
-                ? t('locationValid')
-                : t('locationInvalid')}
+              {geoBarLabel}
             </div>
             <button onClick={stopCamera} className="text-white/70 hover:text-white transition-colors">
               <XCircle size={22} />
@@ -407,88 +530,110 @@ export function VerifyCamera({ site, workers, sessionLog, onRecord }: Props) {
         )}
       </div>
 
-      {/* ── Bottom panel ── */}
+      {/* ── Bottom panel ──
+          flex-1 min-h-0: заема оставащите ~48% от екрана след камерата.
+          overflow-y-auto: scroll само на много малки устройства ако все пак не се събира. */}
       {cameraActive && (
-        <div className="shrink-0 bg-card border-t border-border px-4 pt-4 pb-safe-4 flex flex-col gap-3">
-          {confirming ? (
-            <div className="flex items-center justify-center py-4">
-              <Loader2 size={24} className="animate-spin text-primary" />
-            </div>
-          ) : detected ? (
-            <>
-              {/* Worker info */}
-              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/60">
-                <CheckCircle2 size={22} className="text-green-500 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground truncate">{detected.workerName}</p>
-                  <p className="text-xs text-muted-foreground">{t('confidence', { value: detected.confidence })}</p>
-                </div>
-                {lastAction === 'CHECK_IN' && (
-                  <span className="shrink-0 text-xs font-medium px-2 py-1 rounded-full bg-green-500/15 text-green-600 dark:text-green-400">
-                    {t('alreadyCheckedIn')}
-                  </span>
-                )}
-                {lastAction === 'CHECK_OUT' && (
-                  <span className="shrink-0 text-xs font-medium px-2 py-1 rounded-full bg-red-500/15 text-red-600 dark:text-red-400">
-                    {t('alreadyCheckedOut')}
-                  </span>
-                )}
-              </div>
+        <div className="flex-1 min-h-0 overflow-y-auto bg-card border-t border-border flex flex-col">
 
-              {/* Smart action buttons */}
-              {lastAction === 'CHECK_IN' ? (
-                <Button
-                  className="h-14 text-base font-bold w-full bg-red-600 hover:bg-red-700"
-                  onClick={() => handleConfirm('CHECK_OUT')}
-                >
-                  {t('checkOut')}
-                </Button>
-              ) : lastAction === 'CHECK_OUT' ? (
-                <Button
-                  className="h-14 text-base font-bold w-full bg-green-600 hover:bg-green-700"
-                  onClick={() => handleConfirm('CHECK_IN')}
-                >
-                  {t('checkIn')}
-                </Button>
-              ) : (
-                <Button
-                  className="h-14 text-base font-bold w-full bg-green-600 hover:bg-green-700"
-                  onClick={() => handleConfirm('CHECK_IN')}
-                >
-                  {t('checkIn')}
-                </Button>
-              )}
-            </>
-          ) : faceVisible ? (
-            <div className="flex items-center justify-center gap-2 py-3 text-amber-500">
-              <UserX size={18} />
-              <span className="text-sm font-medium">{t('unknownFace')}</span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center gap-2 py-3 text-muted-foreground">
-              <RefreshCw size={14} className="animate-spin" />
-              <span className="text-sm">{t('scanning')}</span>
+          {/* Session log strip */}
+          {sessionLog.size > 0 && (
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-border/60 overflow-x-auto">
+              <Users size={12} className="text-muted-foreground shrink-0" />
+              <div className="flex gap-1.5">
+                {Array.from(sessionLog.entries()).map(([workerId, type]) => {
+                  const worker = uniqueWorkers.find((w) => w.id === workerId)
+                  if (!worker) return null
+                  return (
+                    <span
+                      key={workerId}
+                      className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
+                        type === 'CHECK_IN'
+                          ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                          : 'bg-red-500/15 text-red-600 dark:text-red-400'
+                      }`}
+                    >
+                      {worker.name.split(' ')[0]}
+                    </span>
+                  )
+                })}
+              </div>
             </div>
           )}
 
-          {/* Manual override */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground gap-2 w-full"
-            onClick={() => setManualOpen(true)}
-            disabled={confirming}
-          >
-            <UserX size={15} />
-            {t('manualConfirm')}
-          </Button>
+          <div className="px-4 pt-3 pb-4 flex flex-col gap-3">
+            {confirming ? (
+              <div className="flex items-center justify-center py-5">
+                <Loader2 size={28} className="animate-spin text-primary" />
+              </div>
+            ) : detected ? (
+              <>
+                <div className="flex items-center gap-4 px-4 py-4 rounded-2xl bg-green-500/10 border border-green-500/30 dark:bg-green-500/10 dark:border-green-500/25">
+                  <CheckCircle2 size={32} className="text-green-500 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-foreground text-xl truncate leading-tight">{detected.workerName}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t('confidence', { value: detected.confidence })}</p>
+                  </div>
+                  {lastAction === 'CHECK_IN' && (
+                    <span className="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-green-500/20 text-green-700 dark:text-green-400">
+                      {t('alreadyCheckedIn')}
+                    </span>
+                  )}
+                  {lastAction === 'CHECK_OUT' && (
+                    <span className="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-red-500/15 text-red-600 dark:text-red-400">
+                      {t('alreadyCheckedOut')}
+                    </span>
+                  )}
+                </div>
+
+                {lastAction === 'CHECK_IN' ? (
+                  <Button
+                    className="h-14 text-base font-bold w-full bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+                    onClick={() => handleConfirm('CHECK_OUT')}
+                    disabled={!detectedWorkerGeo}
+                  >
+                    {t('checkOut')}
+                  </Button>
+                ) : (
+                  <Button
+                    className="h-14 text-base font-bold w-full bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
+                    onClick={() => handleConfirm('CHECK_IN')}
+                    disabled={!detectedWorkerGeo}
+                  >
+                    {t('checkIn')}
+                  </Button>
+                )}
+              </>
+            ) : faceVisible ? (
+              <div className="flex items-center justify-center gap-2 py-4 text-amber-500">
+                <UserX size={18} />
+                <span className="text-sm font-medium">{t('unknownFace')}</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2 py-4 text-muted-foreground">
+                <RefreshCw size={13} className="animate-spin" />
+                <span className="text-sm">{t('scanning')}</span>
+              </div>
+            )}
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground gap-2 w-full"
+              onClick={() => setManualOpen(true)}
+              disabled={confirming}
+            >
+              <Users size={14} />
+              {t('manualConfirm')}
+            </Button>
+          </div>
         </div>
       )}
 
       <ManualOverrideModal
         open={manualOpen}
         onClose={() => setManualOpen(false)}
-        workers={workers}
+        workers={uniqueWorkers}
         onConfirm={handleManualRecord}
       />
     </div>

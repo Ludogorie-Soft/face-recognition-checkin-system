@@ -25,14 +25,17 @@ public class AutoCheckoutScheduler {
      * Runs at 00:01 every day. For each worker who checked in yesterday at a site
      * with a configured workEndTime but never checked out, creates an automatic
      * CHECK_OUT at the site's workEndTime.
+     *
+     * Running at midnight ensures offline sync records (which may arrive the next day
+     * with yesterday's recordedAt timestamps) are still processed correctly.
      */
     @Scheduled(cron = "0 1 0 * * *")
     @Transactional
     public void autoCheckoutMissedWorkers() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         LocalDateTime from = yesterday.atStartOfDay();
-        LocalDateTime to = yesterday.plusDays(1).atStartOfDay();          // today 00:00 — CHECK_IN window
-        LocalDateTime checkOutTo = yesterday.plusDays(1).atTime(LocalTime.of(6, 0)); // today 06:00 — catches late checkouts
+        LocalDateTime to = yesterday.plusDays(1).atStartOfDay();
+        LocalDateTime checkOutTo = yesterday.plusDays(1).atTime(LocalTime.of(6, 0));
 
         List<Attendance> unclosed = attendanceRepository.findUnclosedCheckIns(from, to, checkOutTo);
         if (unclosed.isEmpty()) return;
@@ -52,22 +55,17 @@ public class AutoCheckoutScheduler {
         int created = 0;
         for (Attendance checkIn : candidates) {
             LocalTime endTime = checkIn.getSite().getWorkEndTime();
-            // Try checkout on the same day first; if that is not after check-in
-            // (overnight shift), place it on the following day instead.
             LocalDateTime checkOutTime = yesterday.atTime(endTime);
             if (!checkOutTime.isAfter(checkIn.getRecordedAt())) {
                 checkOutTime = yesterday.plusDays(1).atTime(endTime);
             }
 
-            // Final safety: if still not after check-in, skip (misconfigured site)
             if (!checkOutTime.isAfter(checkIn.getRecordedAt())) {
-                log.debug("Auto-checkout skipped: workEndTime {} is not after checkIn {} for worker {}",
+                log.debug("Auto-checkout skipped: workEndTime {} not after checkIn {} for worker {}",
                         checkOutTime, checkIn.getRecordedAt(), checkIn.getWorker().getId());
                 continue;
             }
 
-            // Guard against duplicate auto-checkouts (e.g. scheduler restart or overnight
-            // checkout time falling exactly on the checkOutTo boundary of the search window)
             if (attendanceRepository.existsDuplicate(
                     checkIn.getWorker().getId(), checkIn.getSite().getId(),
                     AttendanceType.CHECK_OUT, checkOutTime)) {

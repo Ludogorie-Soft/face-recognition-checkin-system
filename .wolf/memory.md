@@ -893,3 +893,139 @@
 | 13:47 | Edited frontend/messages/en.json | 1→2 lines | ~27 |
 | 13:47 | Edited frontend/components/sites/SiteAssignModal.tsx | 3→3 lines | ~68 |
 | 13:48 | Session end: 18 writes across 8 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 22 reads | ~11956 tok |
+| 13:55 | Session end: 18 writes across 8 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 24 reads | ~14138 tok |
+| 13:59 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | 2→2 lines | ~39 |
+| 13:59 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | 2→2 lines | ~23 |
+| 13:59 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | modified if() | ~156 |
+| 13:59 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | CSS: group-hover | ~520 |
+| 13:59 | Edited frontend/components/verify/VerifyCamera.tsx | 4→4 lines | ~31 |
+| 14:00 | Edited frontend/components/verify/VerifyCamera.tsx | added 1 condition(s) | ~1497 |
+| 14:00 | Edited frontend/components/verify/VerifyCamera.tsx | expanded (+11 lines) | ~568 |
+| 14:01 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | 4→1 lines | ~20 |
+| 14:01 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | 4→1 lines | ~24 |
+| 14:01 | Verify page UI improvements: session log chips, site cards with icons, empty state polish, nav.workers bug fix | verify/page.tsx, VerifyCamera.tsx | complete | ~600 |
+| 14:02 | Session end: 27 writes across 9 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 26 reads | ~17016 tok |
+| 14:02 | Session end: 27 writes across 9 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 26 reads | ~17016 tok |
+| 14:07 | Edited frontend/components/verify/VerifyCamera.tsx | reduced (-8 lines) | ~100 |
+| 14:07 | Session end: 28 writes across 9 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 26 reads | ~17116 tok |
+| 14:11 | Edited frontend/app/[locale]/(manager)/layout.tsx | added 1 import(s) | ~175 |
+| 14:11 | Edited frontend/app/[locale]/(manager)/layout.tsx | modified VerifyLayout() | ~66 |
+| 14:11 | Edited frontend/app/[locale]/(manager)/layout.tsx | 15→20 lines | ~248 |
+| 14:11 | Session end: 31 writes across 10 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 26 reads | ~17605 tok |
+| 14:12 | Created frontend/app/[locale]/(auth)/layout.tsx | — | ~413 |
+| 14:12 | Created frontend/app/[locale]/(auth)/layout.tsx | — | ~455 |
+| 14:13 | Session end: 33 writes across 10 files (SiteWorkerRepository.java, CompanyService.java, UserService.java, SiteAssignModal.tsx, WorkerSiteModal.tsx) | 27 reads | ~18473 tok |
+
+## Session: 2026-07-10 16:54
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-10 17:05
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:18 | Edited frontend/hooks/useSites.ts | expanded (+6 lines) | ~93 |
+| 17:18 | Edited frontend/hooks/useSites.ts | added 1 condition(s) | ~157 |
+| 17:19 | Created frontend/components/sites/SiteDialog.tsx | — | ~3916 |
+| 17:19 | Edited frontend/components/sites/TimePicker.tsx | 2→2 lines | ~47 |
+| 17:19 | Edited frontend/messages/bg.json | 1→2 lines | ~48 |
+| 17:19 | Edited frontend/messages/en.json | 1→2 lines | ~49 |
+
+| 17:20 | Fix site edit: company field in edit mode + useMoveSiteCompany hook + TimePicker 5-min intervals | SiteDialog.tsx, useSites.ts, TimePicker.tsx, bg.json, en.json | Completed | ~800 |
+| 17:20 | Session end: 6 writes across 5 files (useSites.ts, SiteDialog.tsx, TimePicker.tsx, bg.json, en.json) | 22 reads | ~16239 tok |
+| 17:23 | Session end: 6 writes across 5 files (useSites.ts, SiteDialog.tsx, TimePicker.tsx, bg.json, en.json) | 30 reads | ~22175 tok |
+| 17:24 | Created src/main/java/org/example/attendTrack/dashboard/OutOfZoneEntry.java | — | ~46 |
+| 17:25 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+16 lines) | ~273 |
+| 17:25 | Created src/main/java/org/example/attendTrack/dashboard/DashboardExtended.java | — | ~92 |
+| 17:25 | Created src/main/java/org/example/attendTrack/dashboard/DashboardController.java | — | ~1251 |
+| 17:25 | Created frontend/hooks/useDashboard.ts | — | ~369 |
+| 17:25 | Edited frontend/messages/bg.json | 5→3 lines | ~45 |
+| 17:25 | Edited frontend/messages/en.json | 5→3 lines | ~48 |
+| 17:26 | Created frontend/app/[locale]/(admin)/dashboard/page.tsx | — | ~3889 |
+| 17:27 | Dashboard refactor: replace TopAbsentees+inactiveSites with OutOfZoneList; add findOutOfZoneCheckInsToday query | DashboardController.java, DashboardExtended.java, OutOfZoneEntry.java, AttendanceRepository.java, useDashboard.ts, page.tsx, bg.json, en.json | Completed | ~600 |
+| 17:27 | Session end: 14 writes across 11 files (useSites.ts, SiteDialog.tsx, TimePicker.tsx, bg.json, en.json) | 30 reads | ~28329 tok |
+
+## Session: 2026-07-10 17:40
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:44 | Edited src/main/java/org/example/attendTrack/site/SiteCheckpointRepository.java | 3→3 lines | ~52 |
+| 17:45 | Session end: 1 writes across 1 files (SiteCheckpointRepository.java) | 8 reads | ~10289 tok |
+| 17:48 | Session end: 1 writes across 1 files (SiteCheckpointRepository.java) | 8 reads | ~10289 tok |
+| 17:51 | Session end: 1 writes across 1 files (SiteCheckpointRepository.java) | 11 reads | ~19060 tok |
+| 17:52 | Session end: 1 writes across 1 files (SiteCheckpointRepository.java) | 12 reads | ~25654 tok |
+| 17:58 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | expanded (+7 lines) | ~468 |
+| 17:59 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 2 condition(s) | ~2055 |
+| 17:59 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified sessionRow() | ~185 |
+| 18:00 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified for() | ~696 |
+| 18:00 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 3 condition(s) | ~606 |
+| 18:01 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 3 condition(s) | ~813 |
+| 18:01 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: pairIndex | ~120 |
+| 18:01 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: null | ~1028 |
+| 18:01 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: null | ~1230 |
+| 18:02 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 4→6 lines | ~117 |
+| 18:02 | Session end: 11 writes across 4 files (SiteCheckpointRepository.java, WorkedHoursRow.java, ReportService.java, page.tsx) | 15 reads | ~43962 tok |
+| 18:06 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+24 lines) | ~454 |
+| 18:06 | Created src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | — | ~1387 |
+| 18:06 | Session end: 13 writes across 6 files (SiteCheckpointRepository.java, WorkedHoursRow.java, ReportService.java, page.tsx, AttendanceRepository.java) | 17 reads | ~47123 tok |
+| 18:09 | Session end: 13 writes across 6 files (SiteCheckpointRepository.java, WorkedHoursRow.java, ReportService.java, page.tsx, AttendanceRepository.java) | 17 reads | ~47123 tok |
+| 18:10 | Created src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | — | ~1127 |
+| 18:10 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | 26→22 lines | ~230 |
+| 18:10 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | — | ~0 |
+| 18:10 | Session end: 16 writes across 6 files (SiteCheckpointRepository.java, WorkedHoursRow.java, ReportService.java, page.tsx, AttendanceRepository.java) | 17 reads | ~48578 tok |
+| 18:12 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 3→2 lines | ~31 |
+| 18:12 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 3→2 lines | ~26 |
+| 18:12 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 11→11 lines | ~126 |
+
+## Session: 2026-07-10 18:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:15 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified if() | ~51 |
+| 18:15 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: companyId | ~196 |
+| 18:15 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added 1 condition(s) | ~129 |
+| 18:15 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~24 |
+| 18:15 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | removed 20 lines | ~6 |
+| 18:15 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 15→15 lines | ~164 |
+| 18:15 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 2→6 lines | ~67 |
+| 18:15 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 6→2 lines | ~17 |
+| 18:16 | Edited frontend/messages/en.json | 2→3 lines | ~26 |
+| 18:16 | Edited frontend/messages/bg.json | 2→3 lines | ~27 |
+| 18:16 | Session end: 10 writes across 3 files (page.tsx, en.json, bg.json) | 3 reads | ~12594 tok |
+
+## Session: 2026-07-31 13:13
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:01 | Created frontend/hooks/useGeoLocation.ts | — | ~684 |
+| 14:01 | Created frontend/hooks/useSiteSync.ts | — | ~1011 |
+| 14:01 | Edited frontend/messages/bg.json | expanded (+10 lines) | ~222 |
+| 14:02 | Edited frontend/messages/en.json | expanded (+10 lines) | ~194 |
+| 14:02 | Created frontend/app/[locale]/(manager)/verify/page.tsx | — | ~1964 |
+| 14:04 | Created frontend/components/verify/VerifyCamera.tsx | — | ~6392 |
+| 14:04 | Edited frontend/components/verify/VerifyCamera.tsx | 5→8 lines | ~138 |
+| 14:05 | Edited frontend/components/verify/VerifyCamera.tsx | CSS: hover | ~541 |
+| 14:06 | auto-sync all sites on login (no site selection); per-worker geo validation in VerifyCamera; location permission denied overlay | useSiteSync.ts, useGeoLocation.ts, verify/page.tsx, VerifyCamera.tsx, bg.json, en.json | completed | ~3500 |
+| 14:07 | Session end: 8 writes across 6 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~16178 tok |
+| 14:09 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | expanded (+6 lines) | ~134 |
+| 14:09 | Edited frontend/components/verify/VerifyCamera.tsx | 5→5 lines | ~46 |
+| 14:10 | Session end: 10 writes across 6 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~22876 tok |
+| 14:13 | Created frontend/components/verify/SyncLoader.tsx | — | ~887 |
+| 14:13 | Edited frontend/hooks/useSiteSync.ts | added optional chaining | ~220 |
+| 14:13 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | added 1 import(s) | ~71 |
+| 14:13 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | CSS: done, total | ~101 |
+| 14:13 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | CSS: done, total | ~66 |
+| 14:13 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | modified if() | ~50 |
+| 14:14 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | CSS: total | ~148 |
+| 14:14 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | inline fix | ~14 |
+| 14:14 | Session end: 18 writes across 7 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~24433 tok |
+| 14:14 | Session end: 18 writes across 7 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~24433 tok |
+| 14:18 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | 4→4 lines | ~61 |
+| 14:18 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | 6→10 lines | ~104 |
+| 14:19 | Edited frontend/components/verify/VerifyCamera.tsx | expanded (+6 lines) | ~124 |
+| 14:19 | Edited frontend/components/verify/VerifyCamera.tsx | CSS: min-h-0, overflow-y-auto | ~93 |
+| 14:19 | Edited frontend/components/verify/VerifyCamera.tsx | 19→19 lines | ~346 |
+| 14:20 | Session end: 23 writes across 7 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~27505 tok |
+| 14:20 | Edited frontend/components/verify/VerifyCamera.tsx | 15→15 lines | ~130 |
+| 14:21 | Session end: 24 writes across 7 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~27635 tok |

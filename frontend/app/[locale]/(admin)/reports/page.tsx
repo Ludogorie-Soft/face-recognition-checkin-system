@@ -52,6 +52,7 @@ interface WorkedHoursRow {
   siteId: string
   siteName: string
   date: string
+  pairIndex: number          // ≥0 = session row; -1 = day-total row
   checkIn: string | null
   checkOut: string | null
   inferredCheckOut: boolean
@@ -78,8 +79,7 @@ interface CorrectionTarget {
   currentHours: number | null
 }
 
-type Tab = 'attendance' | 'missing' | 'hours'
-type HoursView = 'site' | 'summary'
+type Tab = 'attendance' | 'missing' | 'hours' | 'summary'
 type Period = 'day' | 'week' | 'month' | 'custom'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -133,7 +133,6 @@ export default function ReportsPage() {
   const { data: companies = [] } = useCompanies()
 
   const [tab, setTab] = useState<Tab>('hours')
-  const [hoursView, setHoursView] = useState<HoursView>('site')
   const [siteId, setSiteId] = useState('')
   const [companyId, setCompanyId] = useState('')
   const [period, setPeriod] = useState<Period>('day')
@@ -184,7 +183,7 @@ export default function ReportsPage() {
       api.get('/api/reports/hours', {
         params: { siteId, companyId: companyId || undefined, from: dateFrom, to: dateTo },
       }).then((r) => r.data),
-    enabled: tab === 'hours' && hoursView === 'site' && !!siteId && queryKey > 0,
+    enabled: tab === 'hours' && !!siteId && queryKey > 0,
   })
 
   const hoursSummaryQuery = useQuery<WorkedHoursSummaryRow[]>({
@@ -193,7 +192,7 @@ export default function ReportsPage() {
       api.get('/api/reports/hours/summary', {
         params: { companyId: companyId || undefined, from: dateFrom, to: dateTo },
       }).then((r) => r.data),
-    enabled: tab === 'hours' && hoursView === 'summary' && queryKey > 0,
+    enabled: tab === 'summary' && queryKey > 0,
   })
 
   // ── Correction mutation ────────────────────────────────────────────────────
@@ -237,7 +236,7 @@ export default function ReportsPage() {
   // ── Actions ────────────────────────────────────────────────────────────────
 
   const handleSearch = () => {
-    if (tab !== 'hours' || hoursView !== 'summary') {
+    if (tab !== 'missing' && tab !== 'summary') {
       if (!siteId) { toast.warning(t('site')); return }
     }
     setQueryKey((k) => k + 1)
@@ -256,21 +255,19 @@ export default function ReportsPage() {
         url = URL.createObjectURL(response.data)
         filename = `attendance_${dateFrom}_${dateTo}.xlsx`
       } else if (tab === 'hours') {
-        if (hoursView === 'site') {
-          const response = await api.get('/api/reports/hours/export', {
-            params: { siteId, from: dateFrom, to: dateTo },
-            responseType: 'blob',
-          })
-          url = URL.createObjectURL(response.data)
-          filename = `worked_hours_${dateFrom}_${dateTo}.xlsx`
-        } else {
-          const response = await api.get('/api/reports/hours/summary/export', {
-            params: { from: dateFrom, to: dateTo },
-            responseType: 'blob',
-          })
-          url = URL.createObjectURL(response.data)
-          filename = `worked_hours_summary_${dateFrom}_${dateTo}.xlsx`
-        }
+        const response = await api.get('/api/reports/hours/export', {
+          params: { siteId, from: dateFrom, to: dateTo },
+          responseType: 'blob',
+        })
+        url = URL.createObjectURL(response.data)
+        filename = `worked_hours_${dateFrom}_${dateTo}.xlsx`
+      } else if (tab === 'summary') {
+        const response = await api.get('/api/reports/hours/summary/export', {
+          params: { companyId: companyId || undefined, from: dateFrom, to: dateTo },
+          responseType: 'blob',
+        })
+        url = URL.createObjectURL(response.data)
+        filename = `worked_hours_summary_${dateFrom}_${dateTo}.xlsx`
       }
       const a = document.createElement('a')
       a.href = url
@@ -315,16 +312,17 @@ export default function ReportsPage() {
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
-  const needsSite = tab !== 'hours' || hoursView !== 'summary'
+  const needsSite = tab !== 'missing' && tab !== 'summary'
 
   let activeQuery
   if (tab === 'attendance') activeQuery = attendanceQuery
   else if (tab === 'missing') activeQuery = missingQuery
-  else activeQuery = hoursView === 'site' ? hoursQuery : hoursSummaryQuery
+  else if (tab === 'summary') activeQuery = hoursSummaryQuery
+  else activeQuery = hoursQuery
 
   const isLoading = activeQuery.isLoading
   const rows = activeQuery.data ?? []
-  const showExport = tab === 'attendance' || tab === 'hours'
+  const showExport = tab === 'attendance' || tab === 'hours' || tab === 'summary'
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -335,7 +333,7 @@ export default function ReportsPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">
-        {(['hours', 'attendance', 'missing'] as Tab[]).map((tabKey) => (
+        {(['hours', 'summary', 'attendance', 'missing'] as Tab[]).map((tabKey) => (
           <button
             key={tabKey}
             onClick={() => setTab(tabKey)}
@@ -364,25 +362,6 @@ export default function ReportsPage() {
               }`}
             >
               {t(p === 'day' ? 'periodDay' : p === 'week' ? 'periodWeek' : p === 'month' ? 'periodMonth' : 'periodCustom')}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Hours sub-toggle */}
-      {tab === 'hours' && (
-        <div className="flex gap-1 p-1 bg-muted/50 border border-border rounded-lg w-fit">
-          {(['site', 'summary'] as HoursView[]).map((v) => (
-            <button
-              key={v}
-              onClick={() => { setHoursView(v); setQueryKey(0) }}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                hoursView === v
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {t(v === 'site' ? 'hoursBySite' : 'hoursOverall')}
             </button>
           ))}
         </div>
@@ -471,7 +450,7 @@ export default function ReportsPage() {
         <AttendanceTable rows={rows as AttendanceRow[]} t={t} />
       ) : tab === 'missing' ? (
         <MissingTable rows={rows as MissingRow[]} t={t} />
-      ) : hoursView === 'site' ? (
+      ) : tab === 'hours' ? (
         <WorkedHoursTable rows={rows as WorkedHoursRow[]} t={t} onCorrect={openCorrection} />
       ) : (
         <WorkedHoursSummaryTable
@@ -661,18 +640,30 @@ function WorkedHoursTable({
         </TableHeader>
         <TableBody>
           {rows.map((row, i) => {
-            const openShift = row.checkOut === null && !row.inferredCheckOut
+            const isTotalRow = row.pairIndex === -1
+            const openShift = !isTotalRow && row.checkOut === null && !row.inferredCheckOut
             const hasCorrection = row.correctedHours !== null
             return (
-              <TableRow key={i} className={openShift ? 'bg-amber-50/40 dark:bg-amber-900/10' : ''}>
+              <TableRow
+                key={i}
+                className={
+                  isTotalRow
+                    ? 'bg-muted/40 font-semibold'
+                    : openShift
+                    ? 'bg-amber-50/40 dark:bg-amber-900/10'
+                    : ''
+                }
+              >
                 <TableCell className="font-medium">{row.workerName}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">{row.siteName}</TableCell>
                 <TableCell className="text-sm">{row.date}</TableCell>
                 <TableCell className="font-mono text-sm">
-                  {row.checkIn ? formatTime(row.checkIn) : '—'}
+                  {isTotalRow
+                    ? <span className="text-xs text-muted-foreground">{t('total')}</span>
+                    : row.checkIn ? formatTime(row.checkIn) : '—'}
                 </TableCell>
                 <TableCell className="font-mono text-sm">
-                  {openShift ? (
+                  {isTotalRow ? null : openShift ? (
                     <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
                       <AlertCircle size={13} />
                       {t('openShift')}
@@ -692,19 +683,21 @@ function WorkedHoursTable({
                 <TableCell className="text-sm">
                   {openShift ? (
                     <span className="text-muted-foreground">—</span>
-                  ) : (
-                    <span className={hasCorrection ? 'text-blue-600 dark:text-blue-400 font-medium' : ''}>
+                  ) : isTotalRow ? (
+                    <span className={hasCorrection ? 'text-blue-600 dark:text-blue-400 font-medium' : 'font-semibold'}>
                       {row.effectiveHours}h
                       {hasCorrection && (
-                        <span className="ml-1 text-xs text-muted-foreground line-through">
+                        <span className="ml-1 text-xs text-muted-foreground line-through font-normal">
                           {row.calculatedHours}h
                         </span>
                       )}
                     </span>
+                  ) : (
+                    <span className="text-muted-foreground">{row.calculatedHours}h</span>
                   )}
                 </TableCell>
                 <TableCell>
-                  {!openShift && (
+                  {(isTotalRow || (!isTotalRow && row.effectiveHours !== null)) && !openShift && (
                     <Button
                       size="icon"
                       variant="ghost"
@@ -781,17 +774,29 @@ function WorkedHoursSummaryTable({
                   </TableHeader>
                   <TableBody>
                     {worker.details.map((row, i) => {
-                      const openShift = row.checkOut === null && !row.inferredCheckOut
+                      const isTotalRow = row.pairIndex === -1
+                      const openShift = !isTotalRow && row.checkOut === null && !row.inferredCheckOut
                       const hasCorrection = row.correctedHours !== null
                       return (
-                        <TableRow key={i} className={openShift ? 'bg-amber-50/40 dark:bg-amber-900/10' : ''}>
+                        <TableRow
+                          key={i}
+                          className={
+                            isTotalRow
+                              ? 'bg-muted/40 font-semibold'
+                              : openShift
+                              ? 'bg-amber-50/40 dark:bg-amber-900/10'
+                              : ''
+                          }
+                        >
                           <TableCell className="text-sm text-muted-foreground">{row.siteName}</TableCell>
                           <TableCell className="text-sm">{row.date}</TableCell>
                           <TableCell className="font-mono text-sm">
-                            {row.checkIn ? formatTime(row.checkIn) : '—'}
+                            {isTotalRow
+                              ? <span className="text-xs text-muted-foreground">{t('total')}</span>
+                              : row.checkIn ? formatTime(row.checkIn) : '—'}
                           </TableCell>
                           <TableCell className="font-mono text-sm">
-                            {openShift ? (
+                            {isTotalRow ? null : openShift ? (
                               <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium text-xs">
                                 <AlertCircle size={12} />
                                 {t('openShift')}
@@ -811,19 +816,21 @@ function WorkedHoursSummaryTable({
                           <TableCell className="text-sm">
                             {openShift ? (
                               <span className="text-muted-foreground">—</span>
-                            ) : (
-                              <span className={hasCorrection ? 'text-blue-600 dark:text-blue-400 font-medium' : ''}>
+                            ) : isTotalRow ? (
+                              <span className={hasCorrection ? 'text-blue-600 dark:text-blue-400 font-medium' : 'font-semibold'}>
                                 {row.effectiveHours}h
                                 {hasCorrection && (
-                                  <span className="ml-1 text-xs text-muted-foreground line-through">
+                                  <span className="ml-1 text-xs text-muted-foreground line-through font-normal">
                                     {row.calculatedHours}h
                                   </span>
                                 )}
                               </span>
+                            ) : (
+                              <span className="text-muted-foreground">{row.calculatedHours}h</span>
                             )}
                           </TableCell>
                           <TableCell>
-                            {!openShift && (
+                            {(isTotalRow || (!isTotalRow && row.effectiveHours !== null)) && !openShift && (
                               <Button
                                 size="icon"
                                 variant="ghost"

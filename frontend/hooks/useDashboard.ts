@@ -27,11 +27,10 @@ export interface ActivityEntry {
   recordedAt: string
 }
 
-export interface AbsenteeRow {
+export interface OutOfZoneEntry {
   workerName: string
-  daysPresent: number
-  totalDays: number
-  absenceDays: number
+  siteName: string
+  recordedAt: string
 }
 
 export interface DashboardExtended {
@@ -39,9 +38,8 @@ export interface DashboardExtended {
   lastWeek: DayAttendance[]
   sites: SiteAttendance[]
   recentActivity: ActivityEntry[]
-  inactiveSiteNames: string[]
   autoCheckoutsLastNight: number
-  topAbsentees: AbsenteeRow[]
+  outOfZoneToday: OutOfZoneEntry[]
 }
 
 export function useDashboardStats() {

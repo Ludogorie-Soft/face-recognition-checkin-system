@@ -63,10 +63,8 @@
     "noAlerts": "No alerts today",
     "inactiveSites": "Sites with no activity today",
     "autoCheckoutsLastNight": "{count} automatic check-out(s) last night",
-    "topAbsentees": "Most Absent This Month",
-    "noAbsentees": "No absences recorded",
-    "absenceDays": "{count} days absent",
-    "daysPresent": "{present}/{total} days present"
+    "outOfZoneToday": "Out-of-zone check-ins today",
+    "noOutOfZone": "No irregularities"
   },
   "sites": {
     "title": "Sites",
@@ -94,7 +92,8 @@
     "noCheckpoints": "No checkpoints added",
     "checkpointName": "Checkpoint name (optional)",
     "noCheckpointsError": "Add at least one checkpoint",
-    "checkpointRadiusError": "Every checkpoint must have a radius of at least 1 metre"
+    "checkpointRadiusError": "Every checkpoint must have a radius of at least 1 metre",
+    "changeCompanyHint": "Changing will reassign the site to the selected company"
   },
   "companies": {
     "title": "Companies",
@@ -173,7 +172,17 @@
     "noDescriptors": "No workers with registered face",
     "modelsLoading": "Loading models...",
     "modelsError": "Failed to load models",
-    "cameraError": "Camera could not be started"
+    "cameraError": "Camera could not be started",
+    "syncingAllSites": "Syncing sites...",
+    "syncAllError": "Sync failed",
+    "sitesCount": "{count} sites",
+    "locationActive": "GPS active",
+    "locationPermissionTitle": "Location access is blocked",
+    "locationPermissionBody": "To continue, allow location access in your device settings:",
+    "locationPermissionStep1": "Open your device Settings",
+    "locationPermissionStep2": "Find your browser app (Chrome / Safari)",
+    "locationPermissionStep3": "Allow access to Location",
+    "locationPermissionRetry": "Try again"
   },
   "errors": {
     "INVALID_CREDENTIALS": "Invalid email or password",
@@ -199,6 +208,7 @@
     "attendance": "Attendance",
     "missing": "Missing workers",
     "hours": "Worked Hours",
+    "summary": "Total Hours",
     "hoursBySite": "By site",
     "hoursOverall": "Overall",
     "dateFrom": "From date",

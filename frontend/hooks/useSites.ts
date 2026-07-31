@@ -4,6 +4,12 @@ import type { SiteResponse, SiteRequest } from '@/types/site'
 
 const QK = 'sites'
 
+interface MoveSiteCompanyArgs {
+  siteId: string
+  fromCompanyId: string | null  // null = site had no company
+  toCompanyId: string
+}
+
 export function useSites() {
   return useQuery<SiteResponse[]>({
     queryKey: [QK],
@@ -35,6 +41,22 @@ export function useUpdateSite(id: string) {
   return useMutation({
     mutationFn: (body: SiteRequest) => api.put<SiteResponse>(`/api/sites/${id}`, body).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: [QK] }),
+  })
+}
+
+export function useMoveSiteCompany() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ siteId, fromCompanyId, toCompanyId }: MoveSiteCompanyArgs) => {
+      if (fromCompanyId) {
+        await api.delete(`/api/companies/${fromCompanyId}/sites/${siteId}`)
+      }
+      await api.post(`/api/companies/${toCompanyId}/sites/${siteId}`)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['companies'] })
+      qc.invalidateQueries({ queryKey: [QK] })
+    },
   })
 }
 

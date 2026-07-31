@@ -63,10 +63,8 @@
     "noAlerts": "Няма предупреждения днес",
     "inactiveSites": "Обекти без отбелязване днес",
     "autoCheckoutsLastNight": "{count} автоматични чекаута снощи",
-    "topAbsentees": "Най-чести отсъствия този месец",
-    "noAbsentees": "Няма отсъствия",
-    "absenceDays": "{count} дни отсъствие",
-    "daysPresent": "{present}/{total} дни присъствие"
+    "outOfZoneToday": "Чекирани извън зоната днес",
+    "noOutOfZone": "Няма нередности"
   },
   "sites": {
     "title": "Обекти",
@@ -94,7 +92,8 @@
     "noCheckpoints": "Няма добавени точки",
     "checkpointName": "Наименование на точката (незадължително)",
     "noCheckpointsError": "Добавете поне една контролна точка",
-    "checkpointRadiusError": "Всяка контролна точка трябва да има радиус поне 1 метър"
+    "checkpointRadiusError": "Всяка контролна точка трябва да има радиус поне 1 метър",
+    "changeCompanyHint": "Промяната ще преназначи обекта към избраната фирма"
   },
   "companies": {
     "title": "Фирми",
@@ -173,7 +172,17 @@
     "noDescriptors": "Няма работници с регистрирано лице",
     "modelsLoading": "Зареждане на модели...",
     "modelsError": "Неуспешно зареждане на модели",
-    "cameraError": "Камерата не може да бъде стартирана"
+    "cameraError": "Камерата не може да бъде стартирана",
+    "syncingAllSites": "Синхронизиране на обекти...",
+    "syncAllError": "Неуспешна синхронизация",
+    "sitesCount": "{count} обекта",
+    "locationActive": "GPS активен",
+    "locationPermissionTitle": "Достъпът до местоположение е блокиран",
+    "locationPermissionBody": "За да продължите, разрешете достъп в настройките на устройството:",
+    "locationPermissionStep1": "Отворете Настройки на устройството",
+    "locationPermissionStep2": "Намерете приложението на браузъра (Chrome / Safari)",
+    "locationPermissionStep3": "Разрешете достъп до Местоположение",
+    "locationPermissionRetry": "Опитай отново"
   },
   "errors": {
     "INVALID_CREDENTIALS": "Невалиден имейл или парола",
@@ -199,6 +208,7 @@
     "attendance": "Присъствие",
     "missing": "Липсващи работници",
     "hours": "Отработени часове",
+    "summary": "Общо часове",
     "hoursBySite": "По обект",
     "hoursOverall": "Обща",
     "dateFrom": "От дата",

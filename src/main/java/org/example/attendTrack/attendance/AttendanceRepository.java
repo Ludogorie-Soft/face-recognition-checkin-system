@@ -103,6 +103,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             @Param("checkOutTo") LocalDateTime checkOutTo
     );
 
+
     // ── Dashboard extended ────────────────────────────────────────────────────
 
     @Query("""
@@ -162,6 +163,22 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             GROUP BY a.worker.id
             """)
     List<Object[]> countDistinctDaysPresentPerWorker(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
+
+    @Query("""
+            SELECT new org.example.attendTrack.dashboard.OutOfZoneEntry(
+                a.worker.name, a.site.name, a.recordedAt
+            )
+            FROM Attendance a
+            WHERE a.locationValid = false
+              AND a.type = 'CHECK_IN'
+              AND a.recordedAt >= :from
+              AND a.recordedAt < :to
+            ORDER BY a.recordedAt DESC
+            """)
+    List<org.example.attendTrack.dashboard.OutOfZoneEntry> findOutOfZoneCheckInsToday(
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to
     );

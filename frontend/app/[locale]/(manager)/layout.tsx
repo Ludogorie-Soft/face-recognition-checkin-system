@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { SyncBanner } from '@/components/offline/SyncBanner'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { LanguageToggle } from '@/components/layout/LanguageToggle'
-import { LogOut, ClipboardCheck, LayoutDashboard, LogIn } from 'lucide-react'
+import { LogOut, ClipboardCheck, LayoutDashboard, LogIn, ScanFace } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { prefetchModels } from '@/lib/prefetchModels'
 import { getToken, isTokenValid, getUserRole, removeToken } from '@/lib/auth'
@@ -15,6 +16,7 @@ export default function VerifyLayout({ children }: { children: React.ReactNode }
   const params = useParams()
   const router = useRouter()
   const locale = (params?.locale as string) ?? 'bg'
+  const t = useTranslations('verify')
 
   const [isAdmin, setIsAdmin] = useState(false)
 
@@ -48,6 +50,11 @@ export default function VerifyLayout({ children }: { children: React.ReactNode }
           <div className="flex items-center gap-2">
             <ClipboardCheck size={20} className="text-primary" />
             <span className="text-sm font-bold tracking-tight text-foreground">AttendTrack</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div className="flex items-center gap-1.5 text-sm font-medium text-primary">
+            <ScanFace size={15} />
+            <span>{t('title')}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">

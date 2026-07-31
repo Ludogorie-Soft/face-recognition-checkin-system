@@ -23,6 +23,8 @@
 
 <!-- [2026-07-09] @Modifying bulk JPQL DELETE must use clearAutomatically = true to avoid stale first-level cache when followed by inserts in the same transaction. -->
 
+<!-- [2026-07-10] @Modifying(clearAutomatically = true) WITHOUT flushAutomatically = true is dangerous when other entities are dirty in the same transaction. Spring's FlushModeType.AUTO does NOT flush dirty entities from unrelated tables before a @Modifying query. This means pending UPDATEs on entity A can be evicted by clearAutomatically after a DELETE on entity B, silently discarding changes. Always pair clearAutomatically = true with flushAutomatically = true when other entities may be dirty in the same transaction. -->
+
 <!-- [2026-07-09] All read methods in @Service classes that make multiple DB queries should have @Transactional(readOnly = true) — not just getAll() but also getById() and any helper that chains repository calls. -->
 
 <!-- [2026-06-18] React Query cache invalidation: always invalidate the LIST query key [QK], not just the detail [QK, id]. The list and detail are separate cache entries. Invalidating [QK] covers both due to partial matching. -->
@@ -45,6 +47,12 @@
 <!-- [2026-06-22] IndexedDB workers table must use compound primary key [id+siteId]. Using only 'id' causes BulkError when the same worker is synced for a second site — the catch block falls to offline cache which returns empty workers, breaking face detection. Always use bulkPut (not bulkAdd) for worker persistence. -->
 
 <!-- [2026-06-22] DELETE /api/users/{id} is a SOFT-DELETE (deactivate, not real delete). Face descriptors are NOT cascade-deleted because the user row still exists. Always call faceDescriptorRepository.deleteByUserId() inside deactivate(). -->
+
+<!-- [2026-07-31] useGeoLocation no longer accepts a site param. It only tracks raw position + permissionDenied. Per-worker geo validation (which site the worker belongs to, and whether the device is within that site's zone) is done in VerifyCamera via resolveWorkerSite(). This allows one-to-many: same worker in multiple sites → pick the site the device is currently within. -->
+
+<!-- [2026-07-31] verify/page.tsx no longer has a 'select' phase. On mount it auto-syncs ALL assigned sites via syncAll() and goes directly to camera. Workers from all sites are flattened into one array; siteId is derived at record time from the matched worker. -->
+
+<!-- [2026-07-31] When location permission is PERMISSION_DENIED (GeolocationPositionError.code === 1), show a full-screen overlay in VerifyCamera (not just the top bar text). The overlay includes numbered steps for enabling location in device settings. navigator.permissions.query({name:'geolocation'}) pre-detects the denied state before watchPosition fires its error. -->
 
 ## Decision Log
 

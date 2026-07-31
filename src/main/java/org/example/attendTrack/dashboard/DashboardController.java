@@ -19,12 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -66,11 +61,7 @@ public class DashboardController {
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
-        List<Site> activeSites = siteRepository.findAllByActiveTrue();
-        Set<UUID> siteIdsWithActivity = new HashSet<>(
-                attendanceRepository.findSiteIdsWithActivity(startOfDay, endOfDay));
-
-        List<SiteAttendance> sites = activeSites.stream()
+        List<SiteAttendance> sites = siteRepository.findAllByActiveTrue().stream()
                 .map(site -> {
                     long present = attendanceRepository.countDistinctWorkersPresentBySite(
                             site.getId(), startOfDay, endOfDay);
@@ -78,13 +69,6 @@ public class DashboardController {
                     return new SiteAttendance(site.getId(), site.getName(), present, total);
                 })
                 .sorted(Comparator.comparing(SiteAttendance::siteName))
-                .toList();
-
-        // ── Inactive sites ────────────────────────────────────────────────────
-        List<String> inactiveSiteNames = activeSites.stream()
-                .filter(s -> !siteIdsWithActivity.contains(s.getId()))
-                .map(Site::getName)
-                .sorted()
                 .toList();
 
         // ── Recent activity ───────────────────────────────────────────────────
@@ -95,32 +79,13 @@ public class DashboardController {
         long autoCheckoutsLastNight = attendanceRepository.countAutoCheckouts(
                 yesterday.atStartOfDay(), today.atStartOfDay());
 
-        // ── Top absentees this month ──────────────────────────────────────────
-        LocalDate firstOfMonth = today.withDayOfMonth(1);
-        long totalDays = today.getDayOfMonth();
-
-        Map<UUID, Long> presentMap = attendanceRepository
-                .countDistinctDaysPresentPerWorker(firstOfMonth.atStartOfDay(), endOfDay)
-                .stream()
-                .collect(Collectors.toMap(
-                        row -> (UUID) row[0],
-                        row -> (Long) row[1]
-                ));
-
-        List<AbsenteeRow> topAbsentees = userRepository.findAllByRoleAndActiveTrue(Role.WORKER)
-                .stream()
-                .map(w -> {
-                    long days = presentMap.getOrDefault(w.getId(), 0L);
-                    return new AbsenteeRow(w.getName(), days, totalDays, totalDays - days);
-                })
-                .filter(r -> r.absenceDays() > 0)
-                .sorted(Comparator.comparingLong(AbsenteeRow::absenceDays).reversed())
-                .limit(5)
-                .toList();
+        // ── Out-of-zone check-ins today ───────────────────────────────────────
+        List<OutOfZoneEntry> outOfZoneToday =
+                attendanceRepository.findOutOfZoneCheckInsToday(startOfDay, endOfDay);
 
         return ResponseEntity.ok(new DashboardExtended(
                 thisWeek, lastWeek, sites, recentActivity,
-                inactiveSiteNames, autoCheckoutsLastNight, topAbsentees
+                autoCheckoutsLastNight, outOfZoneToday
         ));
     }
 

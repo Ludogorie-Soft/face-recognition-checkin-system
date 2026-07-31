@@ -15,7 +15,7 @@ public interface SiteCheckpointRepository extends JpaRepository<SiteCheckpoint, 
     @Query("SELECT sc FROM SiteCheckpoint sc WHERE sc.site.id IN :siteIds")
     List<SiteCheckpoint> findBySiteIdIn(@Param("siteIds") List<UUID> siteIds);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM SiteCheckpoint sc WHERE sc.site.id = :siteId")
     void deleteBySiteId(@Param("siteId") UUID siteId);
 }

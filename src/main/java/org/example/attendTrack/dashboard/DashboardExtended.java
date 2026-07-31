@@ -7,7 +7,6 @@ public record DashboardExtended(
         List<DayAttendance> lastWeek,
         List<SiteAttendance> sites,
         List<ActivityEntry> recentActivity,
-        List<String> inactiveSiteNames,
         long autoCheckoutsLastNight,
-        List<AbsenteeRow> topAbsentees
+        List<OutOfZoneEntry> outOfZoneToday
 ) {}

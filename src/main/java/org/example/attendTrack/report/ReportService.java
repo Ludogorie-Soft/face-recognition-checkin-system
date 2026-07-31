@@ -214,28 +214,43 @@ public class ReportService {
                 cell.setCellStyle(headerStyle);
             }
 
+            CellStyle totalStyle = buildTotalStyle(workbook);
             int rowNum = 1;
             for (WorkedHoursRow r : rows) {
                 Row row = sheet.createRow(rowNum++);
-                boolean openShift = r.checkOut() == null;
+                boolean isTotalRow = r.pairIndex() == -1;
+                boolean openShift = !isTotalRow && r.checkOut() == null && !r.inferredCheckOut();
 
                 row.createCell(0).setCellValue(r.workerName());
                 row.createCell(1).setCellValue(r.siteName());
                 row.createCell(2).setCellValue(r.date().toString());
-                row.createCell(3).setCellValue(r.checkIn() != null ? r.checkIn().format(TIME_FORMAT) : "");
-                Cell checkOutCell = row.createCell(4);
-                if (openShift) {
-                    checkOutCell.setCellValue("ОТВОРЕНА СМЯНА");
-                    checkOutCell.setCellStyle(warningStyle);
+
+                if (isTotalRow) {
+                    Cell startCell = row.createCell(3);
+                    startCell.setCellValue("ОБЩО");
+                    startCell.setCellStyle(totalStyle);
+                    row.createCell(4).setCellValue("");
+                    Cell hoursCell = row.createCell(5);
+                    hoursCell.setCellValue(r.effectiveHours() != null ? r.effectiveHours() : 0.0);
+                    hoursCell.setCellStyle(totalStyle);
+                    if (r.correctedHours() != null) row.createCell(6).setCellValue(r.correctedHours());
+                    if (r.correctionNote() != null) row.createCell(7).setCellValue(r.correctionNote());
                 } else {
-                    String checkOutStr = r.checkOut().format(TIME_FORMAT);
-                    if (r.autoCheckout()) checkOutStr += " (AUTO)";
-                    else if (r.inferredCheckOut()) checkOutStr += " (→)";
-                    checkOutCell.setCellValue(checkOutStr);
+                    row.createCell(3).setCellValue(r.checkIn() != null ? r.checkIn().format(TIME_FORMAT) : "");
+                    Cell checkOutCell = row.createCell(4);
+                    if (openShift) {
+                        checkOutCell.setCellValue("ОТВОРЕНА СМЯНА");
+                        checkOutCell.setCellStyle(warningStyle);
+                    } else {
+                        String checkOutStr = r.checkOut().format(TIME_FORMAT);
+                        if (r.autoCheckout()) checkOutStr += " (AUTO)";
+                        else if (r.inferredCheckOut()) checkOutStr += " (→)";
+                        checkOutCell.setCellValue(checkOutStr);
+                    }
+                    row.createCell(5).setCellValue(r.calculatedHours() != null ? r.calculatedHours() : 0.0);
+                    if (r.correctedHours() != null) row.createCell(6).setCellValue(r.correctedHours());
+                    if (r.correctionNote() != null) row.createCell(7).setCellValue(r.correctionNote());
                 }
-                row.createCell(5).setCellValue(r.calculatedHours() != null ? r.calculatedHours() : 0.0);
-                if (r.correctedHours() != null) row.createCell(6).setCellValue(r.correctedHours());
-                if (r.correctionNote() != null) row.createCell(7).setCellValue(r.correctionNote());
             }
 
             for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
@@ -267,27 +282,46 @@ public class ReportService {
             }
 
             CellStyle totalStyle = buildTotalStyle(workbook);
+            CellStyle warningStyle = buildWarningStyle(workbook);
             int rowNum = 1;
             for (WorkedHoursSummaryRow worker : rows) {
                 for (WorkedHoursRow d : worker.details()) {
                     Row row = sheet.createRow(rowNum++);
+                    boolean isTotalRow = d.pairIndex() == -1;
+                    boolean openShift = !isTotalRow && d.checkOut() == null && !d.inferredCheckOut();
+
                     row.createCell(0).setCellValue(worker.workerName());
                     row.createCell(1).setCellValue(d.siteName());
                     row.createCell(2).setCellValue(d.date().toString());
-                    row.createCell(3).setCellValue(d.checkIn() != null ? d.checkIn().format(TIME_FORMAT) : "");
-                    if (d.checkOut() == null) {
-                        row.createCell(4).setCellValue("ОТВОРЕНА СМЯНА");
+
+                    if (isTotalRow) {
+                        Cell startCell = row.createCell(3);
+                        startCell.setCellValue("ОБЩО");
+                        startCell.setCellStyle(totalStyle);
+                        row.createCell(4).setCellValue("");
+                        Cell hoursCell = row.createCell(5);
+                        hoursCell.setCellValue(d.effectiveHours() != null ? d.effectiveHours() : 0.0);
+                        hoursCell.setCellStyle(totalStyle);
+                        if (d.correctedHours() != null) row.createCell(6).setCellValue(d.correctedHours());
+                        if (d.correctionNote() != null) row.createCell(7).setCellValue(d.correctionNote());
                     } else {
-                        String checkOutStr = d.checkOut().format(TIME_FORMAT);
-                        if (d.autoCheckout()) checkOutStr += " (AUTO)";
-                        else if (d.inferredCheckOut()) checkOutStr += " (→)";
-                        row.createCell(4).setCellValue(checkOutStr);
+                        row.createCell(3).setCellValue(d.checkIn() != null ? d.checkIn().format(TIME_FORMAT) : "");
+                        Cell checkOutCell = row.createCell(4);
+                        if (openShift) {
+                            checkOutCell.setCellValue("ОТВОРЕНА СМЯНА");
+                            checkOutCell.setCellStyle(warningStyle);
+                        } else {
+                            String checkOutStr = d.checkOut().format(TIME_FORMAT);
+                            if (d.autoCheckout()) checkOutStr += " (AUTO)";
+                            else if (d.inferredCheckOut()) checkOutStr += " (→)";
+                            checkOutCell.setCellValue(checkOutStr);
+                        }
+                        row.createCell(5).setCellValue(d.calculatedHours() != null ? d.calculatedHours() : 0.0);
+                        if (d.correctedHours() != null) row.createCell(6).setCellValue(d.correctedHours());
+                        if (d.correctionNote() != null) row.createCell(7).setCellValue(d.correctionNote());
                     }
-                    row.createCell(5).setCellValue(d.calculatedHours() != null ? d.calculatedHours() : 0.0);
-                    if (d.correctedHours() != null) row.createCell(6).setCellValue(d.correctedHours());
-                    if (d.correctionNote() != null) row.createCell(7).setCellValue(d.correctionNote());
                 }
-                // Total row per worker
+                // Grand-total row per worker
                 Row totalRow = sheet.createRow(rowNum++);
                 Cell totalLabelCell = totalRow.createCell(0);
                 totalLabelCell.setCellValue(worker.workerName() + " — ОБЩО");
@@ -390,6 +424,13 @@ public class ReportService {
 
     /**
      * Pairs CHECK_IN / CHECK_OUT records per (worker, site, date) and builds WorkedHoursRow list.
+     *
+     * Each sequential IN/OUT pair within a shift-day becomes its own session row (pairIndex ≥ 0).
+     * When a worker has more than one session on the same day at the same site, an extra
+     * day-total row (pairIndex = -1) is appended that holds the sum of all session hours
+     * and any day-level correction. Session rows in a multi-session day have effectiveHours = null
+     * so that summary totals (which sum effectiveHours) do not double-count.
+     *
      * Open shifts (CHECK_IN without subsequent CHECK_OUT) are included with null checkOut/hours.
      */
     private List<WorkedHoursRow> buildWorkedHoursRows(
@@ -407,89 +448,119 @@ public class ReportService {
 
         for (Map.Entry<GroupKey, List<Attendance>> entry : grouped.entrySet()) {
             GroupKey key = entry.getKey();
-            List<Attendance> dayRecords = entry.getValue();
+            List<Attendance> dayRecords = entry.getValue().stream()
+                    .sorted(Comparator.comparing(Attendance::getRecordedAt))
+                    .toList();
 
-            Optional<Attendance> checkIn = dayRecords.stream()
-                    .filter(a -> a.getType() == AttendanceType.CHECK_IN)
-                    .min(Comparator.comparing(Attendance::getRecordedAt));
+            // ── Sequential pairing ────────────────────────────────────────────
+            List<WorkedHoursRow> sessionRows = new ArrayList<>();
+            Attendance openIn = null;
 
-            if (checkIn.isEmpty()) continue; // no CHECK_IN — skip anomaly
+            for (Attendance a : dayRecords) {
+                if (a.getType() == AttendanceType.CHECK_IN) {
+                    if (openIn != null) {
+                        // Consecutive CHECK_IN without a CHECK_OUT: emit as open shift
+                        sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size()));
+                    }
+                    openIn = a;
+                } else { // CHECK_OUT
+                    if (openIn != null) {
+                        long minutes = Duration.between(openIn.getRecordedAt(), a.getRecordedAt()).toMinutes();
+                        boolean auto = a.isManualOverride() && a.getManager() == null;
+                        sessionRows.add(sessionRow(key.date(), openIn, a, false, auto, roundToQuarter(minutes), sessionRows.size()));
+                        openIn = null;
+                    }
+                    // Orphan CHECK_OUT (no preceding open CHECK_IN): ignore
+                }
+            }
 
-            Optional<Attendance> checkOut = dayRecords.stream()
-                    .filter(a -> a.getType() == AttendanceType.CHECK_OUT
-                            && a.getRecordedAt().isAfter(checkIn.get().getRecordedAt()))
-                    .min(Comparator.comparing(Attendance::getRecordedAt));
-
-            LocalTime checkInTime = checkIn.get().getRecordedAt().toLocalTime();
-            LocalTime checkOutTime = null;
-            LocalDateTime inferredEndDt = null;
-            boolean inferredCheckOut = false;
-            boolean autoCheckout = false;
-
-            if (checkOut.isPresent()) {
-                checkOutTime = checkOut.get().getRecordedAt().toLocalTime();
-                // Auto-checkout = scheduler-generated (manualOverride=true, manager=null).
-                // Manually-confirmed checkouts also have manualOverride=true but have a manager set.
-                autoCheckout = checkOut.get().isManualOverride() && checkOut.get().getManager() == null;
-            } else {
-                // AUTO-CLOSE: worker moved to another site without checking out.
-                // Find the earliest CHECK_IN at a different site on the same shift-day,
-                // occurring after the current CHECK_IN. This is only effective when
-                // 'records' contains data from multiple sites (summary mode).
-                Optional<LocalDateTime> nextSiteCheckIn = records.stream()
+            // Handle the last open CHECK_IN: try inferred checkout from another site, else open shift
+            if (openIn != null) {
+                final Attendance finalOpenIn = openIn;
+                Optional<LocalDateTime> nextSiteIn = records.stream()
                         .filter(a -> a.getWorker().getId().equals(key.workerId())
                                 && !a.getSite().getId().equals(key.siteId())
                                 && normalizeShiftDate(a.getRecordedAt()).equals(key.date())
                                 && a.getType() == AttendanceType.CHECK_IN
-                                && a.getRecordedAt().isAfter(checkIn.get().getRecordedAt()))
+                                && a.getRecordedAt().isAfter(finalOpenIn.getRecordedAt()))
                         .map(Attendance::getRecordedAt)
                         .min(Comparator.naturalOrder());
 
-                if (nextSiteCheckIn.isPresent()) {
-                    checkOutTime = nextSiteCheckIn.get().toLocalTime();
-                    inferredEndDt = nextSiteCheckIn.get();
-                    inferredCheckOut = true;
+                if (nextSiteIn.isPresent()) {
+                    long minutes = Duration.between(openIn.getRecordedAt(), nextSiteIn.get()).toMinutes();
+                    sessionRows.add(new WorkedHoursRow(
+                            openIn.getWorker().getId(), openIn.getWorker().getName(),
+                            openIn.getSite().getId(), openIn.getSite().getName(),
+                            key.date(), sessionRows.size(),
+                            openIn.getRecordedAt().toLocalTime(),
+                            nextSiteIn.get().toLocalTime(),
+                            true, false, roundToQuarter(minutes), null, null, null));
+                } else {
+                    sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size()));
                 }
             }
 
-            Double calculatedHours = null;
-            if (checkOutTime != null && !inferredCheckOut && checkOut.isPresent()) {
-                long minutes = Duration.between(
-                        checkIn.get().getRecordedAt(), checkOut.get().getRecordedAt()).toMinutes();
-                calculatedHours = roundToQuarter(minutes);
-            } else if (checkOutTime != null && inferredCheckOut) {
-                // Use the actual next-site CHECK_IN datetime to avoid negative duration
-                // when the inferred checkout crosses midnight into the next day.
-                long minutes = Duration.between(checkIn.get().getRecordedAt(), inferredEndDt).toMinutes();
-                calculatedHours = roundToQuarter(minutes);
-            }
+            if (sessionRows.isEmpty()) continue;
 
+            // ── Apply day-level correction ────────────────────────────────────
             CorrectionKey corrKey = new CorrectionKey(key.workerId(), key.siteId(), key.date());
             HoursCorrection correction = corrections.get(corrKey);
             Double correctedHours = correction != null ? correction.getCorrectedHours() : null;
-            Double effectiveHours = correctedHours != null ? correctedHours : calculatedHours;
+            String corrNote = correction != null ? correction.getNote() : null;
 
-            rows.add(new WorkedHoursRow(
-                    key.workerId(),
-                    checkIn.get().getWorker().getName(),
-                    key.siteId(),
-                    checkIn.get().getSite().getName(),
-                    key.date(),
-                    checkInTime,
-                    checkOutTime,
-                    inferredCheckOut,
-                    autoCheckout,
-                    calculatedHours,
-                    effectiveHours,
-                    correctedHours,
-                    correction != null ? correction.getNote() : null
-            ));
+            if (sessionRows.size() == 1) {
+                // Single session: embed correction directly on the row
+                WorkedHoursRow s = sessionRows.get(0);
+                boolean openShift = s.checkOut() == null && !s.inferredCheckOut();
+                Double effectiveHours = openShift ? null
+                        : (correctedHours != null ? correctedHours : s.calculatedHours());
+                rows.add(new WorkedHoursRow(
+                        s.workerId(), s.workerName(), s.siteId(), s.siteName(), s.date(),
+                        0, s.checkIn(), s.checkOut(), s.inferredCheckOut(), s.autoCheckout(),
+                        s.calculatedHours(), effectiveHours, correctedHours, corrNote));
+            } else {
+                // Multiple sessions: session rows carry no effectiveHours (prevents double-counting);
+                // a day-total row (pairIndex = -1) carries the sum and any correction.
+                rows.addAll(sessionRows);
+
+                double daySum = sessionRows.stream()
+                        .filter(r -> r.calculatedHours() != null)
+                        .mapToDouble(WorkedHoursRow::calculatedHours)
+                        .sum();
+                daySum = Math.round(daySum * 100.0) / 100.0;
+                Double effectiveDay = correctedHours != null ? correctedHours : (daySum == 0 ? null : daySum);
+
+                rows.add(new WorkedHoursRow(
+                        key.workerId(), sessionRows.get(0).workerName(),
+                        key.siteId(), sessionRows.get(0).siteName(),
+                        key.date(), -1,
+                        null, null, false, false,
+                        daySum == 0 ? null : daySum, effectiveDay,
+                        correctedHours, corrNote));
+            }
         }
 
+        // pairIndex == -1 (day-total) must sort AFTER session rows (≥0) for the same day.
+        // Replace -1 with Integer.MAX_VALUE for ordering purposes only.
         rows.sort(Comparator.comparing(WorkedHoursRow::workerName)
                 .thenComparing(WorkedHoursRow::siteName)
-                .thenComparing(WorkedHoursRow::date));
+                .thenComparing(WorkedHoursRow::date)
+                .thenComparingInt(r -> r.pairIndex() == -1 ? Integer.MAX_VALUE : r.pairIndex()));
         return rows;
+    }
+
+    private static WorkedHoursRow sessionRow(
+            LocalDate shiftDate, Attendance checkIn, Attendance checkOut,
+            boolean inferredCheckOut, boolean autoCheckout,
+            Double calculatedHours, int pairIdx) {
+        return new WorkedHoursRow(
+                checkIn.getWorker().getId(), checkIn.getWorker().getName(),
+                checkIn.getSite().getId(), checkIn.getSite().getName(),
+                shiftDate, pairIdx,
+                checkIn.getRecordedAt().toLocalTime(),
+                checkOut != null ? checkOut.getRecordedAt().toLocalTime() : null,
+                inferredCheckOut, autoCheckout,
+                calculatedHours, null, null, null);
     }
 
     /** Rounds total minutes to the nearest quarter-hour (0.25h increments). */

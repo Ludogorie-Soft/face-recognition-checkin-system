@@ -3,10 +3,10 @@
 import { useTranslations, useLocale } from 'next-intl'
 import {
   Building2, Users, UserCheck, UserX, Loader2,
-  AlertTriangle, Clock, TrendingUp, Activity, TriangleAlert,
+  Clock, TrendingUp, Activity, TriangleAlert, ShieldAlert,
 } from 'lucide-react'
 import { useDashboardStats, useDashboardExtended } from '@/hooks/useDashboard'
-import type { DayAttendance, SiteAttendance, ActivityEntry, AbsenteeRow } from '@/hooks/useDashboard'
+import type { DayAttendance, SiteAttendance, ActivityEntry, OutOfZoneEntry } from '@/hooks/useDashboard'
 
 // ── StatCard ──────────────────────────────────────────────────────────────────
 
@@ -192,9 +192,9 @@ function RecentActivity({ entries }: { entries: ActivityEntry[] }) {
 
 // ── Alerts ────────────────────────────────────────────────────────────────────
 
-function Alerts({ inactiveSites, autoCheckouts }: { inactiveSites: string[], autoCheckouts: number }) {
+function Alerts({ autoCheckouts, outOfZoneCount }: { autoCheckouts: number, outOfZoneCount: number }) {
   const t = useTranslations('dashboard')
-  const hasAlerts = inactiveSites.length > 0 || autoCheckouts > 0
+  const hasAlerts = outOfZoneCount > 0 || autoCheckouts > 0
 
   return (
     <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
@@ -212,23 +212,20 @@ function Alerts({ inactiveSites, autoCheckouts }: { inactiveSites: string[], aut
         )
         : (
           <div className="flex flex-col gap-3">
+            {outOfZoneCount > 0 && (
+              <div className="flex items-start gap-2 text-sm text-destructive">
+                <ShieldAlert size={14} className="mt-0.5 shrink-0" />
+                <span>
+                  {outOfZoneCount === 1
+                    ? '1 чекин извън зоната днес'
+                    : `${outOfZoneCount} чекина извън зоната днес`}
+                </span>
+              </div>
+            )}
             {autoCheckouts > 0 && (
               <div className="flex items-start gap-2 text-sm text-orange-600 dark:text-orange-400">
                 <Clock size={14} className="mt-0.5 shrink-0" />
                 <span>{t('autoCheckoutsLastNight', { count: autoCheckouts })}</span>
-              </div>
-            )}
-            {inactiveSites.length > 0 && (
-              <div className="flex flex-col gap-1.5">
-                <p className="text-sm text-yellow-600 dark:text-yellow-400 flex items-center gap-2">
-                  <AlertTriangle size={14} className="shrink-0" />
-                  {t('inactiveSites')}
-                </p>
-                <ul className="pl-5 flex flex-col gap-0.5">
-                  {inactiveSites.map(name => (
-                    <li key={name} className="text-sm text-muted-foreground list-disc">{name}</li>
-                  ))}
-                </ul>
               </div>
             )}
           </div>
@@ -237,36 +234,42 @@ function Alerts({ inactiveSites, autoCheckouts }: { inactiveSites: string[], aut
   )
 }
 
-// ── TopAbsentees ──────────────────────────────────────────────────────────────
+// ── OutOfZoneList ─────────────────────────────────────────────────────────────
 
-function TopAbsentees({ rows }: { rows: AbsenteeRow[] }) {
+function OutOfZoneList({ entries }: { entries: OutOfZoneEntry[] }) {
   const t = useTranslations('dashboard')
+  const locale = useLocale()
+
+  function formatTime(dt: string) {
+    return new Date(dt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+  }
 
   return (
     <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
       <h2 className="font-semibold text-foreground flex items-center gap-2">
-        <UserX size={16} className="text-muted-foreground" />
-        {t('topAbsentees')}
+        <ShieldAlert size={16} className="text-muted-foreground" />
+        {t('outOfZoneToday')}
       </h2>
 
-      {rows.length === 0
-        ? <p className="text-sm text-muted-foreground">{t('noAbsentees')}</p>
+      {entries.length === 0
+        ? (
+          <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-2">
+            <UserCheck size={14} />
+            {t('noOutOfZone')}
+          </p>
+        )
         : (
-          <div className="flex flex-col gap-3">
-            {rows.map((row, i) => (
-              <div key={i} className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs text-muted-foreground w-4 shrink-0">{i + 1}.</span>
-                  <span className="text-sm font-medium text-foreground truncate">{row.workerName}</span>
+          <div className="flex flex-col divide-y divide-border">
+            {entries.map((entry, i) => (
+              <div key={i} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{entry.workerName}</p>
+                  <p className="text-xs text-muted-foreground truncate">{entry.siteName}</p>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-semibold text-destructive">
-                    {t('absenceDays', { count: row.absenceDays })}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {t('daysPresent', { present: row.daysPresent, total: row.totalDays })}
-                  </p>
-                </div>
+                <p className="text-xs font-medium text-muted-foreground shrink-0">
+                  {formatTime(entry.recordedAt)}
+                </p>
               </div>
             ))}
           </div>
@@ -337,13 +340,13 @@ export default function DashboardPage() {
               <RecentActivity entries={ext.recentActivity} />
             </div>
 
-            {/* Alerts + Top absentees */}
+            {/* Alerts + Out-of-zone list */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Alerts
-                inactiveSites={ext.inactiveSiteNames}
                 autoCheckouts={ext.autoCheckoutsLastNight}
+                outOfZoneCount={ext.outOfZoneToday.length}
               />
-              <TopAbsentees rows={ext.topAbsentees} />
+              <OutOfZoneList entries={ext.outOfZoneToday} />
             </div>
           </>
         )}

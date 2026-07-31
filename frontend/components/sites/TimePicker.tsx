@@ -12,7 +12,7 @@ interface Props {
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
-const MINUTES = ['00', '15', '30', '45']
+const MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'))
 
 export function TimePicker({ value, onChange, disabled, placeholder }: Props) {
   const parts = value ? value.split(':') : []

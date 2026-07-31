@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { TimePicker } from './TimePicker'
-import { useCreateSite, useUpdateSite } from '@/hooks/useSites'
+import { useCreateSite, useUpdateSite, useMoveSiteCompany } from '@/hooks/useSites'
 import { useCompanies } from '@/hooks/useCompanies'
 import { apiErrorMessage } from '@/lib/errors'
 import type { SiteResponse, SiteRequest } from '@/types/site'
@@ -65,6 +65,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
 
   const createMutation = useCreateSite()
   const updateMutation = useUpdateSite(site?.id ?? '')
+  const moveCompanyMutation = useMoveSiteCompany()
   const { data: companies = [] } = useCompanies()
 
   const [checkpoints, setCheckpoints] = useState<CheckpointDraft[]>([])
@@ -79,7 +80,17 @@ export function SiteDialog({ open, onClose, site }: Props) {
       workStartTime: toTimeInput(site?.workStartTime),
       workEndTime: toTimeInput(site?.workEndTime),
     })
-    setCompanyId('')
+
+    // For edit: pre-select the site's current company. For create: clear.
+    // `companies` is intentionally read from the current closure but omitted from deps —
+    // we only want to re-initialise when the dialog opens or switches sites, not on every
+    // background cache refresh.
+    if (site) {
+      const currentCo = companies.find((c) => c.sites.some((s) => s.id === site.id))
+      setCompanyId(currentCo?.id ?? '')
+    } else {
+      setCompanyId('')
+    }
 
     if (site?.checkpoints?.length) {
       const drafts: CheckpointDraft[] = site.checkpoints.map((cp) => ({
@@ -96,7 +107,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
       setCheckpoints([])
       setSelectedCpId(null)
     }
-  }, [open, site, reset])
+  }, [open, site, reset]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddCheckpoint = (lat: number, lng: number) => {
     const localId = crypto.randomUUID()
@@ -157,6 +168,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
       toast.error(t('checkpointRadiusError'))
       return
     }
+
     const first = checkpoints[0]
     const body: SiteRequest = {
       name: data.name,
@@ -175,9 +187,20 @@ export function SiteDialog({ open, onClose, site }: Props) {
       })),
       ...(!site && { companyId }),
     }
+
     try {
       if (site) {
         await updateMutation.mutateAsync(body)
+
+        // Reassign company if the user selected a different one
+        const currentCoId = companies.find((c) => c.sites.some((s) => s.id === site.id))?.id ?? ''
+        if (companyId && companyId !== currentCoId) {
+          await moveCompanyMutation.mutateAsync({
+            siteId: site.id,
+            fromCompanyId: currentCoId || null,
+            toCompanyId: companyId,
+          })
+        }
       } else {
         await createMutation.mutateAsync(body)
       }
@@ -188,7 +211,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
     }
   }
 
-  const loading = createMutation.isPending || updateMutation.isPending
+  const loading = createMutation.isPending || updateMutation.isPending || moveCompanyMutation.isPending
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -197,12 +220,15 @@ export function SiteDialog({ open, onClose, site }: Props) {
           <DialogTitle>{site ? t('editSite') : t('addSite')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 py-2">
-          {/* Company — only on create */}
-          {!site && companies.length > 0 && (
+          {/* Company — required on create, optional change on edit */}
+          {companies.length > 0 && (
             <div className="flex flex-col gap-1.5">
-              <Label>{t('company')}<span className="text-destructive ml-0.5">*</span></Label>
+              <Label>
+                {t('company')}
+                {!site && <span className="text-destructive ml-0.5">*</span>}
+              </Label>
               <Select value={companyId} onValueChange={setCompanyId} disabled={loading}>
-                <SelectTrigger className={!companyId ? 'border-muted-foreground/40' : ''}>
+                <SelectTrigger className={!companyId && !site ? 'border-muted-foreground/40' : ''}>
                   <SelectValue placeholder={t('selectCompany')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -211,6 +237,9 @@ export function SiteDialog({ open, onClose, site }: Props) {
                   ))}
                 </SelectContent>
               </Select>
+              {site && (
+                <p className="text-xs text-muted-foreground -mt-0.5">{t('changeCompanyHint')}</p>
+              )}
             </div>
           )}
 

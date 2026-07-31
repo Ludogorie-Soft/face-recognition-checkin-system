@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-10T10:47:59.324Z
-> Files: 136 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T11:20:47.589Z
+> Files: 141 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -48,11 +48,11 @@
 
 ## frontend/app/[locale]/(admin)/dashboard/
 
-- `page.tsx` — StatCard (~3901 tok)
+- `page.tsx` — StatCard (~3889 tok)
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~9361 tok)
+- `page.tsx` — fmtLocal (~9543 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
@@ -62,17 +62,21 @@
 
 - `page.tsx` — ROLE_VARIANT — renders table (~2916 tok)
 
+## frontend/app/[locale]/(auth)/
+
+- `layout.tsx` — AuthLayout (~455 tok)
+
 ## frontend/app/[locale]/(auth)/login/
 
 - `page.tsx` — LoginPage — renders form (~1233 tok)
 
 ## frontend/app/[locale]/(manager)/
 
-- `layout.tsx` — VerifyLayout (~855 tok)
+- `layout.tsx` — VerifyLayout (~946 tok)
 
 ## frontend/app/[locale]/(manager)/verify/
 
-- `page.tsx` — VerifyPage (~2182 tok)
+- `page.tsx` — VerifyPage (~2259 tok)
 
 ## frontend/app/api/[...path]/
 
@@ -97,7 +101,8 @@
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~1205 tok)
 - `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~2024 tok)
-- `SiteDialog.tsx` — MapPicker — renders form, modal (~3560 tok)
+- `SiteDialog.tsx` — MapPicker — renders form, modal (~3916 tok)
+- `TimePicker.tsx` — HOURS (~502 tok)
 
 ## frontend/components/ui/
 
@@ -105,7 +110,9 @@
 
 ## frontend/components/verify/
 
-- `VerifyCamera.tsx` — drawFaceMesh (~4928 tok)
+- `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal (~705 tok)
+- `SyncLoader.tsx` — Segmented SVG ring loader; determinate (progress 0-1) + indeterminate sweep animation (~887 tok)
+- `VerifyCamera.tsx` — drawFaceMesh (~6683 tok)
 
 ## frontend/components/workers/
 
@@ -117,11 +124,11 @@
 
 - `useAuth.ts` — Exports useAuth (~278 tok)
 - `useCompanies.ts` — API routes: GET, DELETE, POST (6 endpoints) (~693 tok)
-- `useDashboard.ts` — API routes: GET (2 endpoints) (~382 tok)
+- `useDashboard.ts` — API routes: GET (2 endpoints) (~369 tok)
 - `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
-- `useGeoLocation.ts` — Exports GeoState, useGeoLocation (~435 tok)
-- `useSites.ts` — API routes: GET, DELETE, POST (5 endpoints) (~587 tok)
-- `useSiteSync.ts` — Exports SyncResult, SyncStatus, useSiteSync (~670 tok)
+- `useGeoLocation.ts` — Exports GeoState (no site param), useGeoLocation(); tracks raw position + permissionDenied flag (~684 tok)
+- `useSites.ts` — API routes: GET, DELETE, POST (7 endpoints) (~772 tok)
+- `useSiteSync.ts` — Exports SyncResult, SyncAllResult, SyncStatus, useSiteSync (~1120 tok)
 - `useWorkers.ts` — API routes: GET, DELETE, POST (4 endpoints) (~574 tok)
 
 ## frontend/lib/
@@ -137,8 +144,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~2447 tok)
-- `en.json` (~2346 tok)
+- `bg.json` (~2626 tok)
+- `en.json` (~2506 tok)
 
 ## frontend/scripts/
 
@@ -157,9 +164,9 @@
 ## src/main/java/org/example/attendTrack/attendance/
 
 - `AttendanceController.java` — RestController: AttendanceController (3 endpoints) (~321 tok)
-- `AttendanceRepository.java` — Class: AttendanceRepository (~1470 tok)
+- `AttendanceRepository.java` — Class: AttendanceRepository (~1627 tok)
 - `AttendanceService.java` — Service: AttendanceService (~1614 tok)
-- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~1189 tok)
+- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~1099 tok)
 
 ## src/main/java/org/example/attendTrack/common/exception/
 
@@ -186,9 +193,10 @@
 
 - `AbsenteeRow.java` — Class: AbsenteeRow (~39 tok)
 - `ActivityEntry.java` — Class: ActivityEntry (~67 tok)
-- `DashboardController.java` — RestController: DashboardController (3 endpoints) (~1642 tok)
-- `DashboardExtended.java` — Class: DashboardExtended (~101 tok)
+- `DashboardController.java` — RestController: DashboardController (3 endpoints) (~1251 tok)
+- `DashboardExtended.java` — Class: DashboardExtended (~92 tok)
 - `DayAttendance.java` — Class: DayAttendance (~36 tok)
+- `OutOfZoneEntry.java` — Class: OutOfZoneEntry (~46 tok)
 - `SiteAttendance.java` — Class: SiteAttendance (~45 tok)
 
 ## src/main/java/org/example/attendTrack/notification/
@@ -200,18 +208,18 @@
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints) (~1498 tok)
-- `ReportService.java` — Service: ReportService (~6594 tok)
+- `ReportService.java` — Service: ReportService (~7792 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
 - `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
-- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~394 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~502 tok)
 - `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
 
 ## src/main/java/org/example/attendTrack/site/
 
 - `SiteCheckpoint.java` — Entity: SiteCheckpoint (~232 tok)
-- `SiteCheckpointRepository.java` — Class: SiteCheckpointRepository (~210 tok)
+- `SiteCheckpointRepository.java` — Class: SiteCheckpointRepository (~217 tok)
 - `SiteController.java` — RestController: SiteController (11 endpoints) (~892 tok)
 - `SiteService.java` — Service: SiteService (~2901 tok)
 - `SiteWorkerRepository.java` — Class: SiteWorkerRepository (~464 tok)
