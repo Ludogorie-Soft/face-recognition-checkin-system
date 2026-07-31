@@ -2076,6 +2076,278 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-31T11:52:12.231Z"
+    },
+    {
+      "id": "bug-128",
+      "timestamp": "2026-07-31T12:02:04.222Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:02:04.222Z"
+    },
+    {
+      "id": "bug-129",
+      "timestamp": "2026-07-31T12:08:26.477Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:08:26.477Z"
+    },
+    {
+      "id": "bug-130",
+      "timestamp": "2026-07-31T12:08:36.883Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3→6 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:08:36.883Z"
+    },
+    {
+      "id": "bug-131",
+      "timestamp": "2026-07-31T12:09:03.433Z",
+      "error_message": "CSS fix: workerId",
+      "file": "frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "root_cause": "workerId: worker.workerId, siteId, type → worker.workerId, siteId, type, date",
+      "fix": "Changed workerId: worker.workerId, siteId, type → worker.workerId, siteId, type, date",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:09:03.433Z"
+    },
+    {
+      "id": "bug-132",
+      "timestamp": "2026-07-31T12:09:08.015Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "root_cause": "Had \"w-38\"",
+      "fix": "Changed to \"w-40\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:09:08.015Z"
+    },
+    {
+      "id": "bug-133",
+      "timestamp": "2026-07-31",
+      "error_message": "Invalid Tailwind class w-38 on date Input in ManualAttendanceModal — no width applied",
+      "file": "frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "root_cause": "Tailwind spacing scale has no w-38 (goes 36, 40, 44...). Class silently ignored.",
+      "fix": "Changed to w-40",
+      "tags": [
+        "tailwind",
+        "css",
+        "ui"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31"
+    },
+    {
+      "id": "bug-134",
+      "timestamp": "2026-07-31",
+      "error_message": "Manual checkout records show coordinates 0,0 (Gulf of Guinea) in worked hours report",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "manualRecord() saves lat=0.0, lng=0.0. sessionRow() reads these and sets coLat=0.0 (not null), so frontend renders a Maps link to 0,0.",
+      "fix": "Added guard in sessionRow(): only set coLat/coLng when lat!=0.0 OR lng!=0.0",
+      "tags": [
+        "manual-attendance",
+        "coordinates",
+        "reports"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31"
+    },
+    {
+      "id": "bug-135",
+      "timestamp": "2026-07-31",
+      "error_message": "manualRecord() uses LocalDateTime.now() regardless of selected date — record placed on wrong day for past-date corrections",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "recordedAt was hardcoded to now(). Past-date records were saved with today timestamp, so getWorkersDayStatus refetch for the past date would not show the new record.",
+      "fix": "Added date field to ManualAttendanceRequest. Service uses targetDate.atTime(LocalTime.now()) so record lands on the correct day.",
+      "tags": [
+        "manual-attendance",
+        "datetime",
+        "backend"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31"
+    },
+    {
+      "id": "bug-136",
+      "timestamp": "2026-07-31",
+      "error_message": "No backend guard: API allowed consecutive duplicate CHECK_IN or CHECK_OUT for same worker+site+day",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Frontend hid the button but direct API call could create invalid state (two CHECK_IN in a row).",
+      "fix": "manualRecord() now fetches last type for worker+site+day and throws CONFLICT if same type requested twice.",
+      "tags": [
+        "manual-attendance",
+        "validation",
+        "backend"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31"
+    },
+    {
+      "id": "bug-137",
+      "timestamp": "2026-07-31",
+      "error_message": "qc.invalidateQueries used with partial key that never matches the full queryKey (includes counter)",
+      "file": "frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "root_cause": "Query key is [\"manual-attendance\", siteId, date, queryKey(number)]. invalidateQueries called with [\"manual-attendance\", siteId, date] — no match.",
+      "fix": "Removed dead invalidateQueries calls. setQueryKey already triggers refetch. Removed unused useQueryClient import.",
+      "tags": [
+        "react-query",
+        "dead-code",
+        "frontend"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31"
+    },
+    {
+      "id": "bug-138",
+      "timestamp": "2026-07-31T12:14:55.942Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "root_cause": "Had 'noResults'",
+      "fix": "Changed to 'noWorkersAssigned'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:14:55.942Z"
+    },
+    {
+      "id": "bug-139",
+      "timestamp": "2026-07-31T12:45:19.667Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 21→25 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:45:19.667Z"
+    },
+    {
+      "id": "bug-140",
+      "timestamp": "2026-07-31T12:45:32.305Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 20→24 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:45:32.305Z"
+    },
+    {
+      "id": "bug-141",
+      "timestamp": "2026-07-31T12:47:38.073Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/bg.json",
+      "root_cause": "Had \"checkOutLocation\"",
+      "fix": "Changed to \"checkInLocation\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:47:38.073Z"
+    },
+    {
+      "id": "bug-142",
+      "timestamp": "2026-07-31T12:47:50.160Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/en.json",
+      "root_cause": "Had \"checkOutLocation\"",
+      "fix": "Changed to \"checkInLocation\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:47:50.160Z"
+    },
+    {
+      "id": "bug-143",
+      "timestamp": "2026-07-31T12:58:36.827Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/components/verify/VerifyCamera.tsx",
+      "root_cause": "11 lines replaced/restructured",
+      "fix": "Rewrote 15→4 lines (11 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:58:36.827Z"
+    },
+    {
+      "id": "bug-144",
+      "timestamp": "2026-07-31T12:58:58.187Z",
+      "error_message": "CSS fix: http",
+      "file": "frontend/components/verify/VerifyCamera.tsx",
+      "root_cause": "http: //www.w3.org/2000/svg\"> → //www.w3.org/2000/svg\"",
+      "fix": "Changed http: //www.w3.org/2000/svg\"> → //www.w3.org/2000/svg\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T12:58:58.187Z"
     }
   ]
 }

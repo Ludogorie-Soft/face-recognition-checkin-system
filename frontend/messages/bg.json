@@ -64,7 +64,19 @@
     "inactiveSites": "Обекти без отбелязване днес",
     "autoCheckoutsLastNight": "{count} автоматични чекаута снощи",
     "outOfZoneToday": "Чекирани извън зоната днес",
-    "noOutOfZone": "Няма нередности"
+    "noOutOfZone": "Няма нередности",
+    "manualAttendance": "Ръчно отбелязване",
+    "manualAttendanceTitle": "Ръчно отбелязване",
+    "selectSite": "Избери обект",
+    "selectSiteFirst": "Моля, избери обект",
+    "selectSiteAndLoad": "Избери обект и дата, след което натисни Търси",
+    "statusCheckedIn": "Влязъл",
+    "statusCheckedOut": "Излязъл",
+    "statusNoRecord": "Не е отбелязан",
+    "markedSuccess": "{name} е отбелязан успешно",
+    "clearedSuccess": "Записът на {name} е изчистен",
+    "clearRecord": "Изчисти запис",
+    "noWorkersAssigned": "Няма работници, назначени на този обект"
   },
   "sites": {
     "title": "Обекти",
@@ -229,6 +241,7 @@
     "inZone": "В зоната",
     "outOfZone": "Извън зоната",
     "hoursWorked": "Часове",
+    "checkInLocation": "Локация при влизане",
     "checkOutLocation": "Локация при излизане",
     "openShift": "Незатворена смяна",
     "total": "Общо",

@@ -104,6 +104,22 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
     );
 
 
+    @Query("""
+            SELECT a FROM Attendance a
+            WHERE a.worker.id = :workerId
+              AND a.site.id   = :siteId
+              AND a.recordedAt >= :from
+              AND a.recordedAt < :to
+            ORDER BY a.recordedAt DESC
+            """)
+    List<Attendance> findLastForWorkerOnDay(
+            @Param("workerId") UUID workerId,
+            @Param("siteId") UUID siteId,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            Pageable pageable
+    );
+
     // ── Dashboard extended ────────────────────────────────────────────────────
 
     @Query("""

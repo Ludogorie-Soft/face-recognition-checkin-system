@@ -19,8 +19,10 @@ import java.util.UUID;
  * correctedHours and correctionNote are null when no manual correction exists.
  * effectiveHours is set only on single-session rows and day-total rows; null on session rows
  *   that belong to a multi-session day (prevents double-counting in summary totals).
+ * checkInLat/checkInLng are null when the check-in record was created manually (0,0 coords)
+ *   or on day-total rows. Otherwise set from the real CHECK_IN attendance record.
  * checkOutLat/checkOutLng are null for open shifts, inferred checkouts, and day-total rows —
- *   only set when a real CHECK_OUT attendance record exists.
+ *   only set when a real CHECK_OUT attendance record exists with non-zero coordinates.
  */
 public record WorkedHoursRow(
         UUID workerId,
@@ -38,5 +40,7 @@ public record WorkedHoursRow(
         Double correctedHours,     // null → no correction
         String correctionNote,     // null → no correction
         Double checkOutLat,        // null → open shift, inferred checkout, or day-total row
-        Double checkOutLng         // null → same cases as checkOutLat
+        Double checkOutLng,        // null → same cases as checkOutLat
+        Double checkInLat,         // null → manual record (0,0 coords) or day-total row
+        Double checkInLng          // null → same cases as checkInLat
 ) {}

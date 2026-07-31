@@ -64,7 +64,19 @@
     "inactiveSites": "Sites with no activity today",
     "autoCheckoutsLastNight": "{count} automatic check-out(s) last night",
     "outOfZoneToday": "Out-of-zone check-ins today",
-    "noOutOfZone": "No irregularities"
+    "noOutOfZone": "No irregularities",
+    "manualAttendance": "Manual attendance",
+    "manualAttendanceTitle": "Manual attendance",
+    "selectSite": "Select site",
+    "selectSiteFirst": "Please select a site",
+    "selectSiteAndLoad": "Select a site and date, then press Search",
+    "statusCheckedIn": "Checked in",
+    "statusCheckedOut": "Checked out",
+    "statusNoRecord": "No record",
+    "markedSuccess": "{name} marked successfully",
+    "clearedSuccess": "Record for {name} cleared",
+    "clearRecord": "Clear record",
+    "noWorkersAssigned": "No workers assigned to this site"
   },
   "sites": {
     "title": "Sites",
@@ -229,6 +241,7 @@
     "inZone": "In zone",
     "outOfZone": "Out of zone",
     "hoursWorked": "Hours",
+    "checkInLocation": "Check-in location",
     "checkOutLocation": "Checkout location",
     "openShift": "Open shift",
     "total": "Total",

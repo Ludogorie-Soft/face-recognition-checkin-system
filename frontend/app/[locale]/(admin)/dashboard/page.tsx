@@ -1,12 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import {
   Building2, Users, UserCheck, UserX, Loader2,
-  Clock, TrendingUp, Activity, TriangleAlert, ShieldAlert,
+  Clock, TrendingUp, Activity, TriangleAlert, ShieldAlert, ClipboardEdit,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { useDashboardStats, useDashboardExtended } from '@/hooks/useDashboard'
 import type { DayAttendance, SiteAttendance, ActivityEntry, OutOfZoneEntry } from '@/hooks/useDashboard'
+import { ManualAttendanceModal } from '@/components/dashboard/ManualAttendanceModal'
 
 // ── StatCard ──────────────────────────────────────────────────────────────────
 
@@ -284,10 +287,24 @@ export default function DashboardPage() {
   const t = useTranslations('dashboard')
   const { data: stats, isLoading: statsLoading } = useDashboardStats()
   const { data: ext, isLoading: extLoading } = useDashboardExtended()
+  const [manualOpen, setManualOpen] = useState(false)
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('title')}</h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('title')}</h1>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 shrink-0"
+          onClick={() => setManualOpen(true)}
+        >
+          <ClipboardEdit size={15} />
+          {t('manualAttendance')}
+        </Button>
+      </div>
+
+      <ManualAttendanceModal open={manualOpen} onClose={() => setManualOpen(false)} />
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

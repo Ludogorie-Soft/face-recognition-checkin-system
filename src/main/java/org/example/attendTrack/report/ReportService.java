@@ -206,7 +206,8 @@ public class ReportService {
             CellStyle warningStyle = buildWarningStyle(workbook);
 
             String[] headers = {"Работник", "Обект", "Дата", "Начало", "Край",
-                                 "Часове", "Коригирани часове", "Бележка", "Локация при излизане"};
+                                 "Часове", "Коригирани часове", "Бележка",
+                                 "Локация при влизане", "Локация при излизане"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -250,8 +251,12 @@ public class ReportService {
                     row.createCell(5).setCellValue(r.calculatedHours() != null ? r.calculatedHours() : 0.0);
                     if (r.correctedHours() != null) row.createCell(6).setCellValue(r.correctedHours());
                     if (r.correctionNote() != null) row.createCell(7).setCellValue(r.correctionNote());
-                    if (r.checkOutLat() != null) {
+                    if (r.checkInLat() != null) {
                         row.createCell(8).setCellValue(
+                                "https://www.google.com/maps?q=" + r.checkInLat() + "," + r.checkInLng());
+                    }
+                    if (r.checkOutLat() != null) {
+                        row.createCell(9).setCellValue(
                                 "https://www.google.com/maps?q=" + r.checkOutLat() + "," + r.checkOutLng());
                     }
                 }
@@ -277,7 +282,8 @@ public class ReportService {
             CellStyle headerStyle = buildHeaderStyle(workbook);
 
             String[] headers = {"Работник", "Обект", "Дата", "Начало", "Край",
-                                 "Часове", "Коригирани часове", "Бележка", "Локация при излизане"};
+                                 "Часове", "Коригирани часове", "Бележка",
+                                 "Локация при влизане", "Локация при излизане"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -323,8 +329,12 @@ public class ReportService {
                         row.createCell(5).setCellValue(d.calculatedHours() != null ? d.calculatedHours() : 0.0);
                         if (d.correctedHours() != null) row.createCell(6).setCellValue(d.correctedHours());
                         if (d.correctionNote() != null) row.createCell(7).setCellValue(d.correctionNote());
-                        if (d.checkOutLat() != null) {
+                        if (d.checkInLat() != null) {
                             row.createCell(8).setCellValue(
+                                    "https://www.google.com/maps?q=" + d.checkInLat() + "," + d.checkInLng());
+                        }
+                        if (d.checkOutLat() != null) {
+                            row.createCell(9).setCellValue(
                                     "https://www.google.com/maps?q=" + d.checkOutLat() + "," + d.checkOutLng());
                         }
                     }
@@ -496,6 +506,7 @@ public class ReportService {
 
                 if (nextSiteIn.isPresent()) {
                     long minutes = Duration.between(openIn.getRecordedAt(), nextSiteIn.get()).toMinutes();
+                    boolean hasRealCheckInCoords = openIn.getLat() != 0.0 || openIn.getLng() != 0.0;
                     sessionRows.add(new WorkedHoursRow(
                             openIn.getWorker().getId(), openIn.getWorker().getName(),
                             openIn.getSite().getId(), openIn.getSite().getName(),
@@ -503,7 +514,9 @@ public class ReportService {
                             openIn.getRecordedAt().toLocalTime(),
                             nextSiteIn.get().toLocalTime(),
                             true, false, roundToQuarter(minutes), null, null, null,
-                            null, null));  // inferred checkout — no real CHECK_OUT record
+                            null, null,  // inferred checkout — no real CHECK_OUT coords
+                            hasRealCheckInCoords ? openIn.getLat() : null,
+                            hasRealCheckInCoords ? openIn.getLng() : null));
                 } else {
                     sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size()));
                 }
@@ -527,7 +540,7 @@ public class ReportService {
                         s.workerId(), s.workerName(), s.siteId(), s.siteName(), s.date(),
                         0, s.checkIn(), s.checkOut(), s.inferredCheckOut(), s.autoCheckout(),
                         s.calculatedHours(), effectiveHours, correctedHours, corrNote,
-                        s.checkOutLat(), s.checkOutLng()));
+                        s.checkOutLat(), s.checkOutLng(), s.checkInLat(), s.checkInLng()));
             } else {
                 // Multiple sessions: session rows carry no effectiveHours (prevents double-counting);
                 // a day-total row (pairIndex = -1) carries the sum and any correction.
@@ -547,7 +560,7 @@ public class ReportService {
                         null, null, false, false,
                         daySum == 0 ? null : daySum, effectiveDay,
                         correctedHours, corrNote,
-                        null, null));  // day-total row — no single checkout location
+                        null, null, null, null));  // day-total row — no location fields
             }
         }
 
@@ -564,9 +577,16 @@ public class ReportService {
             LocalDate shiftDate, Attendance checkIn, Attendance checkOut,
             boolean inferredCheckOut, boolean autoCheckout,
             Double calculatedHours, int pairIdx) {
-        // Checkout coordinates: only from a real CHECK_OUT record (not inferred)
-        Double coLat = (checkOut != null && !inferredCheckOut) ? checkOut.getLat() : null;
-        Double coLng = (checkOut != null && !inferredCheckOut) ? checkOut.getLng() : null;
+        // Check-in coordinates: null when record was created manually (0,0 coords).
+        boolean hasRealCheckInCoords = checkIn.getLat() != 0.0 || checkIn.getLng() != 0.0;
+        Double ciLat = hasRealCheckInCoords ? checkIn.getLat() : null;
+        Double ciLng = hasRealCheckInCoords ? checkIn.getLng() : null;
+        // Checkout coordinates: only from a real CHECK_OUT record (not inferred),
+        // and only when non-zero (0.0 means the record was created manually without GPS).
+        boolean hasRealCheckOutCoords = checkOut != null && !inferredCheckOut
+                && (checkOut.getLat() != 0.0 || checkOut.getLng() != 0.0);
+        Double coLat = hasRealCheckOutCoords ? checkOut.getLat() : null;
+        Double coLng = hasRealCheckOutCoords ? checkOut.getLng() : null;
         return new WorkedHoursRow(
                 checkIn.getWorker().getId(), checkIn.getWorker().getName(),
                 checkIn.getSite().getId(), checkIn.getSite().getName(),
@@ -575,7 +595,7 @@ public class ReportService {
                 checkOut != null ? checkOut.getRecordedAt().toLocalTime() : null,
                 inferredCheckOut, autoCheckout,
                 calculatedHours, null, null, null,
-                coLat, coLng);
+                coLat, coLng, ciLat, ciLng);
     }
 
     /** Rounds total minutes to the nearest quarter-hour (0.25h increments). */

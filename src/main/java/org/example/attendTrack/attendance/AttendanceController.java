@@ -4,9 +4,17 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.attendTrack.attendance.dto.AttendanceSyncRequest;
 import org.example.attendTrack.attendance.dto.AttendanceSyncResponse;
+import org.example.attendTrack.attendance.dto.ManualAttendanceRequest;
+import org.example.attendTrack.attendance.dto.WorkerDayStatus;
+import org.example.attendTrack.user.User;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,5 +37,31 @@ public class AttendanceController {
     public ResponseEntity<AttendanceSyncResponse> sync(
             @Valid @RequestBody AttendanceSyncRequest request) {
         return ResponseEntity.ok(attendanceService.sync(null, request));
+    }
+
+    // ── Manual attendance — admin only ────────────────────────────────────────
+
+    @GetMapping("/workers-status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<WorkerDayStatus>> getWorkersDayStatus(
+            @RequestParam UUID siteId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(attendanceService.getWorkersDayStatus(siteId, date));
+    }
+
+    @PostMapping("/manual")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> manualRecord(
+            @Valid @RequestBody ManualAttendanceRequest request,
+            @AuthenticationPrincipal User admin) {
+        attendanceService.manualRecord(request, admin);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteAttendance(@PathVariable UUID id) {
+        attendanceService.deleteAttendance(id);
+        return ResponseEntity.noContent().build();
     }
 }

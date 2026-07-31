@@ -26,6 +26,7 @@ public enum ErrorCode {
 
     // Attendance
     DUPLICATE_ATTENDANCE,
+    ATTENDANCE_NOT_FOUND,
 
     // General
     VALIDATION_ERROR,

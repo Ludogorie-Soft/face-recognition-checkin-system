@@ -63,6 +63,8 @@ interface WorkedHoursRow {
   correctionNote: string | null
   checkOutLat: number | null
   checkOutLng: number | null
+  checkInLat: number | null
+  checkInLng: number | null
 }
 
 interface WorkedHoursSummaryRow {
@@ -637,6 +639,7 @@ function WorkedHoursTable({
             <TableHead>{t('checkIn')}</TableHead>
             <TableHead>{t('checkOut')}</TableHead>
             <TableHead>{t('hoursWorked')}</TableHead>
+            <TableHead>{t('checkInLocation')}</TableHead>
             <TableHead>{t('checkOutLocation')}</TableHead>
             <TableHead></TableHead>
           </TableRow>
@@ -697,6 +700,21 @@ function WorkedHoursTable({
                     </span>
                   ) : (
                     <span className="text-muted-foreground">{row.calculatedHours}h</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {!isTotalRow && row.checkInLat != null ? (
+                    <a
+                      href={`https://www.google.com/maps?q=${row.checkInLat},${row.checkInLng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-primary hover:underline underline-offset-2 whitespace-nowrap"
+                    >
+                      <MapPin size={12} />
+                      {row.checkInLat.toFixed(5)}, {row.checkInLng!.toFixed(5)}
+                    </a>
+                  ) : (
+                    <span className="text-muted-foreground text-xs">—</span>
                   )}
                 </TableCell>
                 <TableCell>
@@ -787,6 +805,7 @@ function WorkedHoursSummaryTable({
                       <TableHead className="text-xs">{t('checkIn')}</TableHead>
                       <TableHead className="text-xs">{t('checkOut')}</TableHead>
                       <TableHead className="text-xs">{t('hoursWorked')}</TableHead>
+                      <TableHead className="text-xs">{t('checkInLocation')}</TableHead>
                       <TableHead className="text-xs">{t('checkOutLocation')}</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
@@ -846,6 +865,21 @@ function WorkedHoursSummaryTable({
                               </span>
                             ) : (
                               <span className="text-muted-foreground">{row.calculatedHours}h</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {!isTotalRow && row.checkInLat != null ? (
+                              <a
+                                href={`https://www.google.com/maps?q=${row.checkInLat},${row.checkInLng}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-primary hover:underline underline-offset-2 whitespace-nowrap"
+                              >
+                                <MapPin size={11} />
+                                {row.checkInLat.toFixed(5)}, {row.checkInLng!.toFixed(5)}
+                              </a>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">—</span>
                             )}
                           </TableCell>
                           <TableCell>

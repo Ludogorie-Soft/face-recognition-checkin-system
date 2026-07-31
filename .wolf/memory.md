@@ -1067,3 +1067,92 @@
 | 2026-07-31 | Created OFFLINE_WORKFLOW.md — full offline architecture, 4 phases (setup→offline start→scan→sync), race condition diagram, edge cases, deployment tips | OFFLINE_WORKFLOW.md | success | ~400 |
 | 14:55 | Session end: 15 writes across 7 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx, next.config.ts) | 7 reads | ~31315 tok |
 | 14:57 | Session end: 15 writes across 7 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx, next.config.ts) | 7 reads | ~31315 tok |
+| 14:58 | Session end: 15 writes across 7 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx, next.config.ts) | 7 reads | ~31315 tok |
+| 15:01 | Created src/main/java/org/example/attendTrack/attendance/dto/ManualAttendanceRequest.java | — | ~86 |
+| 15:01 | Created src/main/java/org/example/attendTrack/attendance/dto/WorkerDayStatus.java | — | ~155 |
+| 15:01 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 3 import(s) | ~359 |
+| 15:02 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 3 condition(s) | ~829 |
+| 15:02 | Edited src/main/java/org/example/attendTrack/common/exception/ErrorCode.java | 2→3 lines | ~19 |
+| 15:02 | Created src/main/java/org/example/attendTrack/attendance/AttendanceController.java | — | ~711 |
+| 15:03 | Created frontend/components/dashboard/ManualAttendanceModal.tsx | — | ~2676 |
+| 15:03 | Edited frontend/app/[locale]/(admin)/dashboard/page.tsx | added 3 import(s) | ~163 |
+| 15:03 | Edited frontend/app/[locale]/(admin)/dashboard/page.tsx | modified DashboardPage() | ~238 |
+| 15:04 | Edited frontend/messages/bg.json | expanded (+11 lines) | ~153 |
+| 15:04 | Edited frontend/messages/en.json | expanded (+11 lines) | ~152 |
+| 2026-07-31 | Manual attendance feature: backend (ManualAttendanceRequest, WorkerDayStatus DTOs, 3 new endpoints GET/POST/DELETE, @PreAuthorize ADMIN), frontend (ManualAttendanceModal, dashboard button). Build ✓ | AttendanceController.java, AttendanceService.java, ManualAttendanceModal.tsx, dashboard/page.tsx, bg.json, en.json | success | ~1500 |
+| 15:05 | Session end: 26 writes across 15 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx, next.config.ts) | 14 reads | ~49738 tok |
+| 15:08 | Created src/main/java/org/example/attendTrack/attendance/dto/ManualAttendanceRequest.java | — | ~118 |
+| 15:08 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 2 condition(s) | ~620 |
+| 15:08 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getLat() | ~120 |
+| 15:08 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | inline fix | ~16 |
+| 15:08 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | added 1 condition(s) | ~196 |
+| 15:09 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | 28→26 lines | ~266 |
+| 15:09 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | "w-38" → "w-40" | ~8 |
+| 15:09 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | inline fix | ~14 |
+| 15:09 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | 3→1 lines | ~12 |
+| 2026-07-31 | Audit + 5 fixes: w-38→w-40, 0,0 coords guard in sessionRow(), date field in ManualAttendanceRequest, backend duplicate-type validation, removed dead qc.invalidateQueries + modal state reset on open. Build ✓ | ManualAttendanceModal.tsx, ManualAttendanceRequest.java, AttendanceService.java, ReportService.java | success | ~600 |
+| 15:10 | Session end: 35 writes across 15 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx, next.config.ts) | 16 reads | ~53931 tok |
+
+## Session: 2026-07-31 15:13
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:14 | Edited frontend/messages/bg.json | 2→3 lines | ~31 |
+| 15:14 | Edited frontend/messages/en.json | 2→3 lines | ~29 |
+| 15:14 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | CSS: placeholderData | ~86 |
+| 15:14 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | inline fix | ~4 |
+| 15:14 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | inline fix | ~30 |
+| 15:15 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+16 lines) | ~164 |
+| 15:15 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 7→5 lines | ~82 |
+| 15:15 | Session end: 7 writes across 5 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 3 reads | ~4853 tok |
+| 15:17 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | 8→8 lines | ~146 |
+| 15:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | added 1 import(s) | ~44 |
+| 15:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | 3→2 lines | ~30 |
+| 15:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | 15→15 lines | ~141 |
+| 15:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 1 import(s) | ~85 |
+| 15:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 5→4 lines | ~95 |
+| 15:17 | Session end: 13 writes across 5 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 6 reads | ~8977 tok |
+| 15:19 | Session end: 13 writes across 5 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 6 reads | ~8977 tok |
+| 15:25 | Session end: 13 writes across 5 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 6 reads | ~8977 tok |
+| 15:28 | Session end: 13 writes across 5 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 7 reads | ~9297 tok |
+| 15:45 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | 21→25 lines | ~375 |
+| 15:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified sessionRow() | ~408 |
+| 15:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getLat() | ~264 |
+| 15:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 5→5 lines | ~109 |
+| 15:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 8→8 lines | ~129 |
+| 15:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~887 |
+| 15:46 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~948 |
+| 15:46 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: checkInLat, checkInLng | ~33 |
+| 15:47 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified formatTime() | ~1423 |
+| 15:47 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 5→6 lines | ~134 |
+| 15:47 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | expanded (+15 lines) | ~578 |
+| 15:47 | Edited frontend/messages/bg.json | 1→2 lines | ~27 |
+| 15:47 | Edited frontend/messages/en.json | 1→2 lines | ~26 |
+| 15:47 | Session end: 26 writes across 8 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 10 reads | ~33672 tok |
+| 15:48 | Session end: 26 writes across 8 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 10 reads | ~33672 tok |
+| 15:49 | Session end: 26 writes across 8 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 10 reads | ~33672 tok |
+| 15:54 | Created OFFLINE_WORKFLOW_SIMPLE.md | — | ~785 |
+| 15:54 | Session end: 27 writes across 9 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 11 reads | ~36443 tok |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | 2→1 lines | ~14 |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | removed 70 lines | ~24 |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | 3→2 lines | ~30 |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | 1→2 lines | ~36 |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | 6→5 lines | ~64 |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | modified if() | ~38 |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | 3→3 lines | ~24 |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | removed 9 lines | ~10 |
+| 15:58 | Edited frontend/components/verify/VerifyCamera.tsx | expanded (+22 lines) | ~516 |
+| 15:59 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 12 reads | ~43882 tok |
+| 16:05 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 13 reads | ~44178 tok |
+| 16:13 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 14 reads | ~46001 tok |
+| 16:15 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 14 reads | ~46001 tok |
+| 16:18 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 23 reads | ~50044 tok |
+| 16:56 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 23 reads | ~50044 tok |
+| 16:56 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 23 reads | ~50044 tok |
+| 17:01 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 25 reads | ~50044 tok |
+| 17:04 | Session end: 36 writes across 10 files (bg.json, en.json, ManualAttendanceModal.tsx, AttendanceRepository.java, AttendanceService.java) | 26 reads | ~50044 tok |
+
+## Session: 2026-07-31 17:11
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|

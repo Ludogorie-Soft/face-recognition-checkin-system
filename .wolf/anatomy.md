@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T11:55:02.027Z
-> Files: 143 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T12:58:58.168Z
+> Files: 148 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -14,12 +14,13 @@
 - `GUIDE_BG.md` — AttendTrack — Ръководство за потребителя (~2385 tok)
 - `GUIDE_EN.md` — AttendTrack — User Guide (~2311 tok)
 - `nginx.conf` (~313 tok)
+- `OFFLINE_WORKFLOW_SIMPLE.md` — AttendTrack — Как работи без интернет (~736 tok)
 - `OFFLINE_WORKFLOW.md` — AttendTrack — Офлайн режим (~1930 tok)
+- `OFFLINE_WORKFLOW.md` — Офлайн архитектура: 4 фази, sync flow, race condition защита, ограничения (~800 tok)
 - `PLAN.md` — PLAN: Two-Role Refactor — ADMIN + WORKER only (~1591 tok)
 - `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
 - `README.md` — Project documentation (~2597 tok)
 - `ROADMAP.md` — AttendTrack — Roadmap (~647 tok)
-- `OFFLINE_WORKFLOW.md` — Офлайн архитектура: 4 фази, sync flow, race condition защита, ограничения (~800 tok)
 
 ## .claude/
 
@@ -50,11 +51,11 @@
 
 ## frontend/app/[locale]/(admin)/dashboard/
 
-- `page.tsx` — StatCard (~3889 tok)
+- `page.tsx` — StatCard (~4075 tok)
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~10099 tok)
+- `page.tsx` — fmtLocal (~10648 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
@@ -94,6 +95,10 @@
 - `CompanySiteModal.tsx` — CompanySiteModal — renders modal (~1236 tok)
 - `CompanyWorkerModal.tsx` — CompanyWorkerModal — renders modal (~1450 tok)
 
+## frontend/components/dashboard/
+
+- `ManualAttendanceModal.tsx` — todayStr — renders modal (~2730 tok)
+
 ## frontend/components/layout/
 
 - `AdminSidebar.tsx` — AdminSidebar (~937 tok)
@@ -118,7 +123,7 @@
 
 - `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal (~705 tok)
 - `SyncLoader.tsx` — SVG comet-arc loader; indeterminate: pure CSS spin + feGaussianBlur glow; determinate: smooth strokeDashoffset fill. No JS state. (~620 tok)
-- `VerifyCamera.tsx` — drawFaceMesh (~6683 tok)
+- `VerifyCamera.tsx` — resolveWorkerSite (~6147 tok)
 
 ## frontend/components/workers/
 
@@ -150,8 +155,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~2626 tok)
-- `en.json` (~2506 tok)
+- `bg.json` (~2814 tok)
+- `en.json` (~2690 tok)
 
 ## frontend/scripts/
 
@@ -169,14 +174,19 @@
 
 ## src/main/java/org/example/attendTrack/attendance/
 
-- `AttendanceController.java` — RestController: AttendanceController (3 endpoints) (~321 tok)
-- `AttendanceRepository.java` — Class: AttendanceRepository (~1627 tok)
-- `AttendanceService.java` — Service: AttendanceService (~1614 tok)
+- `AttendanceController.java` — RestController: AttendanceController (6 endpoints) (~711 tok)
+- `AttendanceRepository.java` — Class: AttendanceRepository (~1768 tok)
+- `AttendanceService.java` — Service: AttendanceService (~2761 tok)
 - `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~1099 tok)
+
+## src/main/java/org/example/attendTrack/attendance/dto/
+
+- `ManualAttendanceRequest.java` — Class: ManualAttendanceRequest (~118 tok)
+- `WorkerDayStatus.java` — Status of one worker for a given site + day, used by the admin manual-attendance panel. (~155 tok)
 
 ## src/main/java/org/example/attendTrack/common/exception/
 
-- `ErrorCode.java` — Class: ErrorCode (~146 tok)
+- `ErrorCode.java` — Class: ErrorCode (~153 tok)
 
 ## src/main/java/org/example/attendTrack/company/
 
@@ -214,12 +224,12 @@
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints) (~1498 tok)
-- `ReportService.java` — Service: ReportService (~8076 tok)
+- `ReportService.java` — Service: ReportService (~8456 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
 - `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
-- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~587 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~684 tok)
 - `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
 
 ## src/main/java/org/example/attendTrack/site/
