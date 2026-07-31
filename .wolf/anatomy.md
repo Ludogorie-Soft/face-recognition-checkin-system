@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T11:20:47.589Z
-> Files: 141 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T11:55:02.027Z
+> Files: 143 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -14,10 +14,12 @@
 - `GUIDE_BG.md` — AttendTrack — Ръководство за потребителя (~2385 tok)
 - `GUIDE_EN.md` — AttendTrack — User Guide (~2311 tok)
 - `nginx.conf` (~313 tok)
+- `OFFLINE_WORKFLOW.md` — AttendTrack — Офлайн режим (~1930 tok)
 - `PLAN.md` — PLAN: Two-Role Refactor — ADMIN + WORKER only (~1591 tok)
 - `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
 - `README.md` — Project documentation (~2597 tok)
 - `ROADMAP.md` — AttendTrack — Roadmap (~647 tok)
+- `OFFLINE_WORKFLOW.md` — Офлайн архитектура: 4 фази, sync flow, race condition защита, ограничения (~800 tok)
 
 ## .claude/
 
@@ -52,7 +54,7 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~9543 tok)
+- `page.tsx` — fmtLocal (~10099 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
@@ -97,6 +99,10 @@
 - `AdminSidebar.tsx` — AdminSidebar (~937 tok)
 - `ThemeToggle.tsx` — ThemeToggle (~197 tok)
 
+## frontend/components/offline/
+
+- `SyncBanner.tsx` — SyncBanner (~1336 tok)
+
 ## frontend/components/sites/
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~1205 tok)
@@ -111,7 +117,7 @@
 ## frontend/components/verify/
 
 - `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal (~705 tok)
-- `SyncLoader.tsx` — Segmented SVG ring loader; determinate (progress 0-1) + indeterminate sweep animation (~887 tok)
+- `SyncLoader.tsx` — SVG comet-arc loader; indeterminate: pure CSS spin + feGaussianBlur glow; determinate: smooth strokeDashoffset fill. No JS state. (~620 tok)
 - `VerifyCamera.tsx` — drawFaceMesh (~6683 tok)
 
 ## frontend/components/workers/
@@ -208,12 +214,12 @@
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints) (~1498 tok)
-- `ReportService.java` — Service: ReportService (~7792 tok)
+- `ReportService.java` — Service: ReportService (~8076 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
 - `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
-- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~502 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~587 tok)
 - `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
 
 ## src/main/java/org/example/attendTrack/site/

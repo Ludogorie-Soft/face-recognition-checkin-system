@@ -9,6 +9,7 @@
 - Communication in Bulgarian; code comments and documentation in English
 - Always produce a written plan and wait for user approval before implementing
 - Clean, professional code — no speculative features, no unnecessary abstractions
+- "Индексирай промените" = обнови само OpenWolf файловете (.wolf/anatomy.md, memory.md, cerebrum.md). НЕ прави git commit и НЕ push-вай към GitHub.
 
 ## Key Learnings
 

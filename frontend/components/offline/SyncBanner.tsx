@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { WifiOff, RefreshCw } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { db } from '@/lib/db'
@@ -11,62 +11,105 @@ export function SyncBanner() {
   const [isOnline, setIsOnline] = useState(true)
   const [pendingCount, setPendingCount] = useState(0)
   const [syncing, setSyncing] = useState(false)
+  // Ref-based guard so event handlers always see the current value without
+  // re-registering listeners on every render.
+  const syncingRef = useRef(false)
 
-  useEffect(() => {
-    const updateOnline = () => setIsOnline(navigator.onLine)
-    window.addEventListener('online', updateOnline)
-    window.addEventListener('offline', updateOnline)
-    updateOnline()
-    return () => {
-      window.removeEventListener('online', updateOnline)
-      window.removeEventListener('offline', updateOnline)
-    }
+  const refreshCount = useCallback(async () => {
+    const count = await db.pending.where('status').anyOf('pending', 'syncing').count()
+    setPendingCount(count)
   }, [])
 
-  useEffect(() => {
-    const checkCount = async () => {
-      const count = await db.pending.where('status').equals('pending').count()
-      setPendingCount(count)
-    }
-    checkCount()  // run immediately on mount
-    const interval = setInterval(checkCount, 3000)
-    return () => clearInterval(interval)
-  }, [])
-
-  // Auto-sync when online or when pending records appear
-  useEffect(() => {
-    if (isOnline && pendingCount > 0) {
-      syncNow()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnline, pendingCount])
-
-  const syncNow = async () => {
-    if (syncing) return
+  const syncNow = useCallback(async () => {
+    if (syncingRef.current || !navigator.onLine) return
+    syncingRef.current = true
     setSyncing(true)
+
     try {
       const records = await db.pending.where('status').equals('pending').toArray()
       if (records.length === 0) return
 
-      // Group by siteId
+      // Mark as 'syncing' before upload — prevents a second concurrent syncNow()
+      // from picking up the same records.
+      await db.pending
+        .where('id').anyOf(records.map((r) => r.id!))
+        .modify({ status: 'syncing' })
+
+      // Group by siteId and upload per site. A per-site failure only affects
+      // that site's records — other sites still get uploaded successfully.
       const bySite = records.reduce<Record<string, typeof records>>((acc, r) => {
-        if (!acc[r.siteId]) acc[r.siteId] = []
+        acc[r.siteId] ??= []
         acc[r.siteId].push(r)
         return acc
       }, {})
 
+      const successIds: number[] = []
       for (const [siteId, siteRecords] of Object.entries(bySite)) {
-        await api.post('/api/attendance/sync', { siteId, records: siteRecords })
-        await db.pending.bulkDelete(siteRecords.map((r) => r.id!))
+        try {
+          await api.post('/api/attendance/sync', { siteId, records: siteRecords })
+          successIds.push(...siteRecords.map((r) => r.id!))
+        } catch {
+          // This site failed — its records remain 'syncing' and will be
+          // reset to 'pending' in the finally block so they retry next time.
+        }
       }
 
-      setPendingCount(0)
-    } catch {
-      // Will retry next cycle
+      if (successIds.length > 0) {
+        await db.pending.bulkDelete(successIds)
+      }
     } finally {
+      // Reset any records still marked 'syncing' (failed uploads) → 'pending'
+      await db.pending.where('status').equals('syncing').modify({ status: 'pending' })
+      await refreshCount()
+      syncingRef.current = false
       setSyncing(false)
     }
-  }
+  }, [refreshCount])
+
+  // ── Online / offline tracking ────────────────────────────────────────────────
+
+  useEffect(() => {
+    const onOnline = () => {
+      setIsOnline(true)
+      syncNow()
+    }
+    const onOffline = () => setIsOnline(false)
+
+    window.addEventListener('online', onOnline)
+    window.addEventListener('offline', onOffline)
+    setIsOnline(navigator.onLine)
+
+    return () => {
+      window.removeEventListener('online', onOnline)
+      window.removeEventListener('offline', onOffline)
+    }
+  }, [syncNow])
+
+  // ── Sync when tab regains focus ──────────────────────────────────────────────
+
+  useEffect(() => {
+    const onVisible = () => {
+      if (!document.hidden) syncNow()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [syncNow])
+
+  // ── Initial count + 30 s fallback interval (count-only, no upload) ───────────
+
+  useEffect(() => {
+    refreshCount()
+    const id = setInterval(refreshCount, 30_000)
+    return () => clearInterval(id)
+  }, [refreshCount])
+
+  // ── Auto-sync whenever online and pending records exist ──────────────────────
+
+  useEffect(() => {
+    if (isOnline && pendingCount > 0) syncNow()
+  }, [isOnline, pendingCount, syncNow])
+
+  // ── Render ───────────────────────────────────────────────────────────────────
 
   if (isOnline && pendingCount === 0) return null
 
@@ -91,7 +134,9 @@ export function SyncBanner() {
       ) : (
         <>
           <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />
-          <span>{syncing ? t('syncing') : t('pendingSync', { count: pendingCount })}</span>
+          <span>
+            {syncing ? t('syncing') : t('pendingSync', { count: pendingCount })}
+          </span>
         </>
       )}
     </div>

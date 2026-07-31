@@ -2060,6 +2060,22 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-07-31T11:19:13.800Z"
+    },
+    {
+      "id": "bug-127",
+      "timestamp": "2026-07-31T11:52:12.231Z",
+      "error_message": "Wrong reference: true should be false",
+      "file": "frontend/next.config.ts",
+      "root_cause": "Used \"true\" instead of \"false\"",
+      "fix": "Changed true → false",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-31T11:52:12.231Z"
     }
   ]
 }

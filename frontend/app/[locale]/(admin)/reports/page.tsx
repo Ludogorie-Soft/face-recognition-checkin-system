@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
-  Download, Loader2, CheckCircle2, XCircle, AlertTriangle, Pencil, AlertCircle,
+  Download, Loader2, CheckCircle2, XCircle, AlertTriangle, Pencil, AlertCircle, MapPin,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -61,6 +61,8 @@ interface WorkedHoursRow {
   effectiveHours: number | null
   correctedHours: number | null
   correctionNote: string | null
+  checkOutLat: number | null
+  checkOutLng: number | null
 }
 
 interface WorkedHoursSummaryRow {
@@ -635,6 +637,7 @@ function WorkedHoursTable({
             <TableHead>{t('checkIn')}</TableHead>
             <TableHead>{t('checkOut')}</TableHead>
             <TableHead>{t('hoursWorked')}</TableHead>
+            <TableHead>{t('checkOutLocation')}</TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
@@ -694,6 +697,21 @@ function WorkedHoursTable({
                     </span>
                   ) : (
                     <span className="text-muted-foreground">{row.calculatedHours}h</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {!isTotalRow && row.checkOutLat != null ? (
+                    <a
+                      href={`https://www.google.com/maps?q=${row.checkOutLat},${row.checkOutLng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-primary hover:underline underline-offset-2 whitespace-nowrap"
+                    >
+                      <MapPin size={12} />
+                      {row.checkOutLat.toFixed(5)}, {row.checkOutLng!.toFixed(5)}
+                    </a>
+                  ) : (
+                    <span className="text-muted-foreground text-xs">—</span>
                   )}
                 </TableCell>
                 <TableCell>
@@ -769,6 +787,7 @@ function WorkedHoursSummaryTable({
                       <TableHead className="text-xs">{t('checkIn')}</TableHead>
                       <TableHead className="text-xs">{t('checkOut')}</TableHead>
                       <TableHead className="text-xs">{t('hoursWorked')}</TableHead>
+                      <TableHead className="text-xs">{t('checkOutLocation')}</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -827,6 +846,21 @@ function WorkedHoursSummaryTable({
                               </span>
                             ) : (
                               <span className="text-muted-foreground">{row.calculatedHours}h</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {!isTotalRow && row.checkOutLat != null ? (
+                              <a
+                                href={`https://www.google.com/maps?q=${row.checkOutLat},${row.checkOutLng}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-primary hover:underline underline-offset-2 whitespace-nowrap"
+                              >
+                                <MapPin size={11} />
+                                {row.checkOutLat.toFixed(5)}, {row.checkOutLng!.toFixed(5)}
+                              </a>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">—</span>
                             )}
                           </TableCell>
                           <TableCell>

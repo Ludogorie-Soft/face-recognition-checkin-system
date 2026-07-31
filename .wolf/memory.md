@@ -3,6 +3,8 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 
+| 2026-07-31 | Rewrote SyncLoader.tsx — replaced JS setInterval segments with pure CSS comet arc (spin animation) + SVG glow filter (feGaussianBlur). Determinate: smooth strokeDashoffset transition. Indeterminate: rotating 28% arc. Center: ClipboardCheck icon / pct%. Build ✓ | SyncLoader.tsx | success | ~800 |
+
 | 15:00 | Fixed: deactivate() now deletes face descriptor — soft-delete left orphan face_descriptors blocking re-registration | UserService.java | fixed | ~800 |
 
 | 17:00 | Responsive design audit — all pages/components reviewed | all | complete | ~4000 |
@@ -1029,3 +1031,39 @@
 | 14:20 | Session end: 23 writes across 7 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~27505 tok |
 | 14:20 | Edited frontend/components/verify/VerifyCamera.tsx | 15→15 lines | ~130 |
 | 14:21 | Session end: 24 writes across 7 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~27635 tok |
+| 14:23 | Session end: 24 writes across 7 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~27635 tok |
+| 14:24 | Session end: 24 writes across 7 files (useGeoLocation.ts, useSiteSync.ts, bg.json, en.json, page.tsx) | 10 reads | ~27635 tok |
+
+## Session: 2026-07-31 14:36
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:36 | Created frontend/components/verify/SyncLoader.tsx | — | ~973 |
+| 14:37 | Session end: 1 writes across 1 files (SyncLoader.tsx) | 1 reads | ~1860 tok |
+| 14:39 | Session end: 1 writes across 1 files (SyncLoader.tsx) | 2 reads | ~11403 tok |
+| 14:39 | Session end: 1 writes across 1 files (SyncLoader.tsx) | 2 reads | ~11403 tok |
+| 14:40 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | 20→24 lines | ~348 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified sessionRow() | ~263 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 9→10 lines | ~197 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 4→5 lines | ~100 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 7→8 lines | ~128 |
+| 14:42 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~810 |
+| 14:42 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~866 |
+| 14:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: checkOutLat, checkOutLng | ~137 |
+| 14:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 3→3 lines | ~34 |
+| 14:43 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: https | ~1404 |
+| 14:43 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: https | ~1686 |
+| 2026-07-31 | Added checkOutLat/checkOutLng to WorkedHoursRow (backend DTO + ReportService) and WorkedHoursTable/Summary (frontend) — admins see checkout location with Google Maps link. Excel exports updated. Build ✓ | WorkedHoursRow.java, ReportService.java, reports/page.tsx, bg.json, en.json | success | ~1200 |
+| 14:44 | Session end: 12 writes across 4 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx) | 4 reads | ~26004 tok |
+| 14:45 | Session end: 12 writes across 4 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx) | 4 reads | ~26148 tok |
+| 14:46 | Session end: 12 writes across 4 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx) | 4 reads | ~26148 tok |
+| 14:48 | Session end: 12 writes across 4 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx) | 5 reads | ~27094 tok |
+| 14:51 | Session end: 12 writes across 4 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx) | 5 reads | ~27094 tok |
+| 14:52 | Edited frontend/next.config.ts | inline fix | ~7 |
+| 14:53 | Created frontend/components/offline/SyncBanner.tsx | — | ~1336 |
+| 2026-07-31 | Fixed offline sync: reloadOnOnline→false (no page reload on reconnect), race condition fix with status:'syncing' + per-site error handling, replaced 3s poll with event-driven sync (online+visibilitychange+30s fallback) | next.config.ts, SyncBanner.tsx | success | ~600 |
+| 14:53 | Session end: 14 writes across 6 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx, next.config.ts) | 7 reads | ~29109 tok |
+| 14:55 | Created OFFLINE_WORKFLOW.md | — | ~2059 |
+| 2026-07-31 | Created OFFLINE_WORKFLOW.md — full offline architecture, 4 phases (setup→offline start→scan→sync), race condition diagram, edge cases, deployment tips | OFFLINE_WORKFLOW.md | success | ~400 |
+| 14:55 | Session end: 15 writes across 7 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx, next.config.ts) | 7 reads | ~31315 tok |
+| 14:57 | Session end: 15 writes across 7 files (SyncLoader.tsx, WorkedHoursRow.java, ReportService.java, page.tsx, next.config.ts) | 7 reads | ~31315 tok |

@@ -206,7 +206,7 @@ public class ReportService {
             CellStyle warningStyle = buildWarningStyle(workbook);
 
             String[] headers = {"Работник", "Обект", "Дата", "Начало", "Край",
-                                 "Часове", "Коригирани часове", "Бележка"};
+                                 "Часове", "Коригирани часове", "Бележка", "Локация при излизане"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -250,6 +250,10 @@ public class ReportService {
                     row.createCell(5).setCellValue(r.calculatedHours() != null ? r.calculatedHours() : 0.0);
                     if (r.correctedHours() != null) row.createCell(6).setCellValue(r.correctedHours());
                     if (r.correctionNote() != null) row.createCell(7).setCellValue(r.correctionNote());
+                    if (r.checkOutLat() != null) {
+                        row.createCell(8).setCellValue(
+                                "https://www.google.com/maps?q=" + r.checkOutLat() + "," + r.checkOutLng());
+                    }
                 }
             }
 
@@ -273,7 +277,7 @@ public class ReportService {
             CellStyle headerStyle = buildHeaderStyle(workbook);
 
             String[] headers = {"Работник", "Обект", "Дата", "Начало", "Край",
-                                 "Часове", "Коригирани часове", "Бележка"};
+                                 "Часове", "Коригирани часове", "Бележка", "Локация при излизане"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -319,6 +323,10 @@ public class ReportService {
                         row.createCell(5).setCellValue(d.calculatedHours() != null ? d.calculatedHours() : 0.0);
                         if (d.correctedHours() != null) row.createCell(6).setCellValue(d.correctedHours());
                         if (d.correctionNote() != null) row.createCell(7).setCellValue(d.correctionNote());
+                        if (d.checkOutLat() != null) {
+                            row.createCell(8).setCellValue(
+                                    "https://www.google.com/maps?q=" + d.checkOutLat() + "," + d.checkOutLng());
+                        }
                     }
                 }
                 // Grand-total row per worker
@@ -494,7 +502,8 @@ public class ReportService {
                             key.date(), sessionRows.size(),
                             openIn.getRecordedAt().toLocalTime(),
                             nextSiteIn.get().toLocalTime(),
-                            true, false, roundToQuarter(minutes), null, null, null));
+                            true, false, roundToQuarter(minutes), null, null, null,
+                            null, null));  // inferred checkout — no real CHECK_OUT record
                 } else {
                     sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size()));
                 }
@@ -517,7 +526,8 @@ public class ReportService {
                 rows.add(new WorkedHoursRow(
                         s.workerId(), s.workerName(), s.siteId(), s.siteName(), s.date(),
                         0, s.checkIn(), s.checkOut(), s.inferredCheckOut(), s.autoCheckout(),
-                        s.calculatedHours(), effectiveHours, correctedHours, corrNote));
+                        s.calculatedHours(), effectiveHours, correctedHours, corrNote,
+                        s.checkOutLat(), s.checkOutLng()));
             } else {
                 // Multiple sessions: session rows carry no effectiveHours (prevents double-counting);
                 // a day-total row (pairIndex = -1) carries the sum and any correction.
@@ -536,7 +546,8 @@ public class ReportService {
                         key.date(), -1,
                         null, null, false, false,
                         daySum == 0 ? null : daySum, effectiveDay,
-                        correctedHours, corrNote));
+                        correctedHours, corrNote,
+                        null, null));  // day-total row — no single checkout location
             }
         }
 
@@ -553,6 +564,9 @@ public class ReportService {
             LocalDate shiftDate, Attendance checkIn, Attendance checkOut,
             boolean inferredCheckOut, boolean autoCheckout,
             Double calculatedHours, int pairIdx) {
+        // Checkout coordinates: only from a real CHECK_OUT record (not inferred)
+        Double coLat = (checkOut != null && !inferredCheckOut) ? checkOut.getLat() : null;
+        Double coLng = (checkOut != null && !inferredCheckOut) ? checkOut.getLng() : null;
         return new WorkedHoursRow(
                 checkIn.getWorker().getId(), checkIn.getWorker().getName(),
                 checkIn.getSite().getId(), checkIn.getSite().getName(),
@@ -560,7 +574,8 @@ public class ReportService {
                 checkIn.getRecordedAt().toLocalTime(),
                 checkOut != null ? checkOut.getRecordedAt().toLocalTime() : null,
                 inferredCheckOut, autoCheckout,
-                calculatedHours, null, null, null);
+                calculatedHours, null, null, null,
+                coLat, coLng);
     }
 
     /** Rounds total minutes to the nearest quarter-hour (0.25h increments). */
