@@ -30,7 +30,7 @@ public class ReportController {
 
     @GetMapping("/attendance")
     public ResponseEntity<List<AttendanceReportRow>> getAttendance(
-            @RequestParam UUID siteId,
+            @RequestParam(required = false) UUID siteId,
             @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -65,7 +65,7 @@ public class ReportController {
 
     @GetMapping("/hours")
     public ResponseEntity<List<WorkedHoursRow>> getWorkedHours(
-            @RequestParam UUID siteId,
+            @RequestParam(required = false) UUID siteId,
             @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {

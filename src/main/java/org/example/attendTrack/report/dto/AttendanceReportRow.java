@@ -9,6 +9,7 @@ import java.util.UUID;
 public record AttendanceReportRow(
         UUID workerId,
         String workerName,
+        String companyName,
         String siteName,
         LocalDate date,
         AttendanceType type,

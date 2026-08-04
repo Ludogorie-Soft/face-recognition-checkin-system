@@ -260,6 +260,9 @@
     "periodCustom": "Custom",
     "autoCheckout": "Auto or manual checkout",
     "company": "Company",
-    "allCompanies": "All companies"
+    "allCompanies": "All companies",
+    "allSites": "All sites",
+    "revalidate": "Revalidate location",
+    "revalidateSuccess": "Updated records: {count}"
   }
 }

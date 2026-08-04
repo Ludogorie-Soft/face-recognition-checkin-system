@@ -51,7 +51,7 @@ export function CompanySiteModal({ open, onClose, company }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t('manageSites')} — {company.name}</DialogTitle>
         </DialogHeader>
@@ -61,7 +61,7 @@ export function CompanySiteModal({ open, onClose, company }: Props) {
           {liveCompany.sites.length > 0 && (
             <div className="flex flex-col gap-1">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('assignedSites')}</p>
-              <div className="flex flex-col divide-y divide-border rounded-md border border-border">
+              <div className="flex flex-col divide-y divide-border rounded-md border border-border max-h-60 overflow-y-auto">
                 {liveCompany.sites.map((s) => (
                   <div key={s.id} className="flex items-center justify-between px-3 py-2">
                     <span className="text-sm">{s.name}</span>

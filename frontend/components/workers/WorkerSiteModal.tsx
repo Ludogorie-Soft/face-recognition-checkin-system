@@ -124,7 +124,7 @@ export function WorkerSiteModal({ open, onClose, worker }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 size={16} />
@@ -141,7 +141,7 @@ export function WorkerSiteModal({ open, onClose, worker }: Props) {
           ) : (
             <>
               {/* Assigned sites */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1.5 max-h-60 overflow-y-auto">
                 {assignedSites.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-2">{tc('noData')}</p>
                 ) : (

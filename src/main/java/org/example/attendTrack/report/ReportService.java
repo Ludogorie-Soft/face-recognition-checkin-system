@@ -50,14 +50,24 @@ public class ReportService {
     @Transactional(readOnly = true)
     public List<AttendanceReportRow> getAttendance(UUID siteId, UUID companyId, LocalDate from, LocalDate to) {
         validateDateRange(from, to);
-        validateSiteExists(siteId);
+        if (siteId != null) validateSiteExists(siteId);
         LocalDateTime start = from.atStartOfDay();
         LocalDateTime end = to.plusDays(1).atTime(LocalTime.of(6, 0));
         Set<UUID> companyWorkers = workerIdsForCompany(companyId);
 
-        return attendanceRepository.findBySiteAndDateRange(siteId, start, end).stream()
+        List<Attendance> records = siteId != null
+                ? attendanceRepository.findBySiteAndDateRange(siteId, start, end)
+                : attendanceRepository.findAllInDateRange(start, end);
+
+        List<Attendance> filtered = records.stream()
                 .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
-                .map(this::toRow)
+                .toList();
+
+        Map<UUID, String> companyNames = workerCompanyNames(
+                filtered.stream().map(a -> a.getWorker().getId()).distinct().toList());
+
+        return filtered.stream()
+                .map(a -> toRow(a, companyNames.get(a.getWorker().getId())))
                 .toList();
     }
 
@@ -96,7 +106,7 @@ public class ReportService {
             writeHeader(sheet, headerStyle);
             writeRows(sheet, rows);
 
-            for (int i = 0; i < 11; i++) sheet.autoSizeColumn(i);
+            for (int i = 0; i < 12; i++) sheet.autoSizeColumn(i);
 
             workbook.write(out);
             return out.toByteArray();
@@ -111,22 +121,31 @@ public class ReportService {
     @Transactional(readOnly = true)
     public List<WorkedHoursRow> getWorkedHours(UUID siteId, UUID companyId, LocalDate from, LocalDate to) {
         validateDateRange(from, to);
-        validateSiteExists(siteId);
+        if (siteId != null) validateSiteExists(siteId);
         Set<UUID> companyWorkers = workerIdsForCompany(companyId);
-        List<Attendance> records = attendanceRepository.findBySiteAndDateRange(
-                siteId, from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)))
-                .stream()
+
+        List<Attendance> allRecords = siteId != null
+                ? attendanceRepository.findBySiteAndDateRange(siteId, from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)))
+                : attendanceRepository.findAllInDateRange(from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)));
+
+        List<Attendance> records = allRecords.stream()
                 .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
                 .toList();
 
-        Map<CorrectionKey, HoursCorrection> corrections = hoursCorrectionRepository
-                .findBySiteAndPeriod(siteId, from, to).stream()
+        List<HoursCorrection> correctionList = siteId != null
+                ? hoursCorrectionRepository.findBySiteAndPeriod(siteId, from, to)
+                : hoursCorrectionRepository.findAllInPeriod(from, to);
+
+        Map<CorrectionKey, HoursCorrection> corrections = correctionList.stream()
                 .collect(Collectors.toMap(
                         c -> new CorrectionKey(c.getWorker().getId(), c.getSite().getId(), c.getDate()),
                         c -> c
                 ));
 
-        return buildWorkedHoursRows(records, corrections);
+        Map<UUID, String> companyNames = workerCompanyNames(
+                records.stream().map(a -> a.getWorker().getId()).distinct().toList());
+
+        return buildWorkedHoursRows(records, corrections, companyNames);
     }
 
     @Transactional(readOnly = true)
@@ -146,7 +165,10 @@ public class ReportService {
                         c -> c
                 ));
 
-        List<WorkedHoursRow> rows = buildWorkedHoursRows(records, corrections);
+        Map<UUID, String> companyNames = workerCompanyNames(
+                records.stream().map(a -> a.getWorker().getId()).distinct().toList());
+
+        List<WorkedHoursRow> rows = buildWorkedHoursRows(records, corrections, companyNames);
 
         return rows.stream()
                 .collect(Collectors.groupingBy(WorkedHoursRow::workerId))
@@ -205,7 +227,7 @@ public class ReportService {
             CellStyle headerStyle = buildHeaderStyle(workbook);
             CellStyle warningStyle = buildWarningStyle(workbook);
 
-            String[] headers = {"Работник", "Обект", "Дата", "Начало", "Край",
+            String[] headers = {"Работник", "Фирма", "Обект", "Дата", "Начало", "Край",
                                  "Часове", "Коригирани часове", "Бележка",
                                  "Локация при влизане", "Локация при излизане"};
             Row headerRow = sheet.createRow(0);
@@ -223,22 +245,23 @@ public class ReportService {
                 boolean openShift = !isTotalRow && r.checkOut() == null && !r.inferredCheckOut();
 
                 row.createCell(0).setCellValue(r.workerName());
-                row.createCell(1).setCellValue(r.siteName());
-                row.createCell(2).setCellValue(r.date().toString());
+                row.createCell(1).setCellValue(r.companyName() != null ? r.companyName() : "");
+                row.createCell(2).setCellValue(r.siteName());
+                row.createCell(3).setCellValue(r.date().toString());
 
                 if (isTotalRow) {
-                    Cell startCell = row.createCell(3);
+                    Cell startCell = row.createCell(4);
                     startCell.setCellValue("ОБЩО");
                     startCell.setCellStyle(totalStyle);
-                    row.createCell(4).setCellValue("");
-                    Cell hoursCell = row.createCell(5);
+                    row.createCell(5).setCellValue("");
+                    Cell hoursCell = row.createCell(6);
                     hoursCell.setCellValue(r.effectiveHours() != null ? r.effectiveHours() : 0.0);
                     hoursCell.setCellStyle(totalStyle);
-                    if (r.correctedHours() != null) row.createCell(6).setCellValue(r.correctedHours());
-                    if (r.correctionNote() != null) row.createCell(7).setCellValue(r.correctionNote());
+                    if (r.correctedHours() != null) row.createCell(7).setCellValue(r.correctedHours());
+                    if (r.correctionNote() != null) row.createCell(8).setCellValue(r.correctionNote());
                 } else {
-                    row.createCell(3).setCellValue(r.checkIn() != null ? r.checkIn().format(TIME_FORMAT) : "");
-                    Cell checkOutCell = row.createCell(4);
+                    row.createCell(4).setCellValue(r.checkIn() != null ? r.checkIn().format(TIME_FORMAT) : "");
+                    Cell checkOutCell = row.createCell(5);
                     if (openShift) {
                         checkOutCell.setCellValue("ОТВОРЕНА СМЯНА");
                         checkOutCell.setCellStyle(warningStyle);
@@ -248,15 +271,15 @@ public class ReportService {
                         else if (r.inferredCheckOut()) checkOutStr += " (→)";
                         checkOutCell.setCellValue(checkOutStr);
                     }
-                    row.createCell(5).setCellValue(r.calculatedHours() != null ? r.calculatedHours() : 0.0);
-                    if (r.correctedHours() != null) row.createCell(6).setCellValue(r.correctedHours());
-                    if (r.correctionNote() != null) row.createCell(7).setCellValue(r.correctionNote());
+                    row.createCell(6).setCellValue(r.calculatedHours() != null ? r.calculatedHours() : 0.0);
+                    if (r.correctedHours() != null) row.createCell(7).setCellValue(r.correctedHours());
+                    if (r.correctionNote() != null) row.createCell(8).setCellValue(r.correctionNote());
                     if (r.checkInLat() != null) {
-                        row.createCell(8).setCellValue(
+                        row.createCell(9).setCellValue(
                                 "https://www.google.com/maps?q=" + r.checkInLat() + "," + r.checkInLng());
                     }
                     if (r.checkOutLat() != null) {
-                        row.createCell(9).setCellValue(
+                        row.createCell(10).setCellValue(
                                 "https://www.google.com/maps?q=" + r.checkOutLat() + "," + r.checkOutLng());
                     }
                 }
@@ -281,7 +304,7 @@ public class ReportService {
             Sheet sheet = workbook.createSheet("Обобщение часове");
             CellStyle headerStyle = buildHeaderStyle(workbook);
 
-            String[] headers = {"Работник", "Обект", "Дата", "Начало", "Край",
+            String[] headers = {"Работник", "Фирма", "Обект", "Дата", "Начало", "Край",
                                  "Часове", "Коригирани часове", "Бележка",
                                  "Локация при влизане", "Локация при излизане"};
             Row headerRow = sheet.createRow(0);
@@ -301,22 +324,23 @@ public class ReportService {
                     boolean openShift = !isTotalRow && d.checkOut() == null && !d.inferredCheckOut();
 
                     row.createCell(0).setCellValue(worker.workerName());
-                    row.createCell(1).setCellValue(d.siteName());
-                    row.createCell(2).setCellValue(d.date().toString());
+                    row.createCell(1).setCellValue(d.companyName() != null ? d.companyName() : "");
+                    row.createCell(2).setCellValue(d.siteName());
+                    row.createCell(3).setCellValue(d.date().toString());
 
                     if (isTotalRow) {
-                        Cell startCell = row.createCell(3);
+                        Cell startCell = row.createCell(4);
                         startCell.setCellValue("ОБЩО");
                         startCell.setCellStyle(totalStyle);
-                        row.createCell(4).setCellValue("");
-                        Cell hoursCell = row.createCell(5);
+                        row.createCell(5).setCellValue("");
+                        Cell hoursCell = row.createCell(6);
                         hoursCell.setCellValue(d.effectiveHours() != null ? d.effectiveHours() : 0.0);
                         hoursCell.setCellStyle(totalStyle);
-                        if (d.correctedHours() != null) row.createCell(6).setCellValue(d.correctedHours());
-                        if (d.correctionNote() != null) row.createCell(7).setCellValue(d.correctionNote());
+                        if (d.correctedHours() != null) row.createCell(7).setCellValue(d.correctedHours());
+                        if (d.correctionNote() != null) row.createCell(8).setCellValue(d.correctionNote());
                     } else {
-                        row.createCell(3).setCellValue(d.checkIn() != null ? d.checkIn().format(TIME_FORMAT) : "");
-                        Cell checkOutCell = row.createCell(4);
+                        row.createCell(4).setCellValue(d.checkIn() != null ? d.checkIn().format(TIME_FORMAT) : "");
+                        Cell checkOutCell = row.createCell(5);
                         if (openShift) {
                             checkOutCell.setCellValue("ОТВОРЕНА СМЯНА");
                             checkOutCell.setCellStyle(warningStyle);
@@ -326,15 +350,15 @@ public class ReportService {
                             else if (d.inferredCheckOut()) checkOutStr += " (→)";
                             checkOutCell.setCellValue(checkOutStr);
                         }
-                        row.createCell(5).setCellValue(d.calculatedHours() != null ? d.calculatedHours() : 0.0);
-                        if (d.correctedHours() != null) row.createCell(6).setCellValue(d.correctedHours());
-                        if (d.correctionNote() != null) row.createCell(7).setCellValue(d.correctionNote());
+                        row.createCell(6).setCellValue(d.calculatedHours() != null ? d.calculatedHours() : 0.0);
+                        if (d.correctedHours() != null) row.createCell(7).setCellValue(d.correctedHours());
+                        if (d.correctionNote() != null) row.createCell(8).setCellValue(d.correctionNote());
                         if (d.checkInLat() != null) {
-                            row.createCell(8).setCellValue(
+                            row.createCell(9).setCellValue(
                                     "https://www.google.com/maps?q=" + d.checkInLat() + "," + d.checkInLng());
                         }
                         if (d.checkOutLat() != null) {
-                            row.createCell(9).setCellValue(
+                            row.createCell(10).setCellValue(
                                     "https://www.google.com/maps?q=" + d.checkOutLat() + "," + d.checkOutLng());
                         }
                     }
@@ -344,7 +368,7 @@ public class ReportService {
                 Cell totalLabelCell = totalRow.createCell(0);
                 totalLabelCell.setCellValue(worker.workerName() + " — ОБЩО");
                 totalLabelCell.setCellStyle(totalStyle);
-                Cell totalHoursCell = totalRow.createCell(5);
+                Cell totalHoursCell = totalRow.createCell(6);
                 totalHoursCell.setCellValue(worker.totalHours());
                 totalHoursCell.setCellStyle(totalStyle);
             }
@@ -363,7 +387,7 @@ public class ReportService {
 
     private void writeHeader(Sheet sheet, CellStyle style) {
         String[] headers = {
-                "ID работник", "Работник", "Обект", "Дата",
+                "ID работник", "Работник", "Фирма", "Обект", "Дата",
                 "Тип", "Записано в", "Ширина", "Дължина", "Валидна локация", "Разпознаване на лице", "Ръчно въведено"
         };
         Row row = sheet.createRow(0);
@@ -380,15 +404,16 @@ public class ReportService {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(r.workerId().toString());
             row.createCell(1).setCellValue(r.workerName());
-            row.createCell(2).setCellValue(r.siteName());
-            row.createCell(3).setCellValue(r.date().toString());
-            row.createCell(4).setCellValue(r.type().name());
-            row.createCell(5).setCellValue(r.recordedAt().format(DT_FORMAT));
-            row.createCell(6).setCellValue(r.lat());
-            row.createCell(7).setCellValue(r.lng());
-            row.createCell(8).setCellValue(r.locationValid());
-            row.createCell(9).setCellValue(r.faceConfidence() != null ? r.faceConfidence() : 0);
-            row.createCell(10).setCellValue(r.manualOverride());
+            row.createCell(2).setCellValue(r.companyName() != null ? r.companyName() : "");
+            row.createCell(3).setCellValue(r.siteName());
+            row.createCell(4).setCellValue(r.date().toString());
+            row.createCell(5).setCellValue(r.type().name());
+            row.createCell(6).setCellValue(r.recordedAt().format(DT_FORMAT));
+            row.createCell(7).setCellValue(r.lat());
+            row.createCell(8).setCellValue(r.lng());
+            row.createCell(9).setCellValue(r.locationValid());
+            row.createCell(10).setCellValue(r.faceConfidence() != null ? r.faceConfidence() : 0);
+            row.createCell(11).setCellValue(r.manualOverride());
         }
     }
 
@@ -402,10 +427,11 @@ public class ReportService {
         return style;
     }
 
-    private AttendanceReportRow toRow(Attendance a) {
+    private AttendanceReportRow toRow(Attendance a, String companyName) {
         return new AttendanceReportRow(
                 a.getWorker().getId(),
                 a.getWorker().getName(),
+                companyName,
                 a.getSite().getName(),
                 a.getRecordedAt().toLocalDate(),
                 a.getType(),
@@ -416,6 +442,16 @@ public class ReportService {
                 a.getFaceConfidence(),
                 a.isManualOverride()
         );
+    }
+
+    private Map<UUID, String> workerCompanyNames(List<UUID> workerIds) {
+        if (workerIds.isEmpty()) return Collections.emptyMap();
+        Map<UUID, String> result = new HashMap<>();
+        companyRepository.findWorkerCompanyPairs(workerIds).forEach(row -> {
+            UUID wId = (UUID) row[0];
+            result.putIfAbsent(wId, (String) row[2]); // first company alphabetically
+        });
+        return result;
     }
 
     private Set<UUID> workerIdsForCompany(UUID companyId) {
@@ -453,7 +489,8 @@ public class ReportService {
      */
     private List<WorkedHoursRow> buildWorkedHoursRows(
             List<Attendance> records,
-            Map<CorrectionKey, HoursCorrection> corrections) {
+            Map<CorrectionKey, HoursCorrection> corrections,
+            Map<UUID, String> companyNames) {
 
         record GroupKey(UUID workerId, UUID siteId, LocalDate date) {}
 
@@ -466,6 +503,7 @@ public class ReportService {
 
         for (Map.Entry<GroupKey, List<Attendance>> entry : grouped.entrySet()) {
             GroupKey key = entry.getKey();
+            String companyName = companyNames.get(key.workerId());
             List<Attendance> dayRecords = entry.getValue().stream()
                     .sorted(Comparator.comparing(Attendance::getRecordedAt))
                     .toList();
@@ -478,14 +516,14 @@ public class ReportService {
                 if (a.getType() == AttendanceType.CHECK_IN) {
                     if (openIn != null) {
                         // Consecutive CHECK_IN without a CHECK_OUT: emit as open shift
-                        sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size()));
+                        sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size(), companyName));
                     }
                     openIn = a;
                 } else { // CHECK_OUT
                     if (openIn != null) {
                         long minutes = Duration.between(openIn.getRecordedAt(), a.getRecordedAt()).toMinutes();
                         boolean auto = a.isManualOverride() && a.getManager() == null;
-                        sessionRows.add(sessionRow(key.date(), openIn, a, false, auto, roundToQuarter(minutes), sessionRows.size()));
+                        sessionRows.add(sessionRow(key.date(), openIn, a, false, auto, roundToQuarter(minutes), sessionRows.size(), companyName));
                         openIn = null;
                     }
                     // Orphan CHECK_OUT (no preceding open CHECK_IN): ignore
@@ -508,7 +546,7 @@ public class ReportService {
                     long minutes = Duration.between(openIn.getRecordedAt(), nextSiteIn.get()).toMinutes();
                     boolean hasRealCheckInCoords = openIn.getLat() != 0.0 || openIn.getLng() != 0.0;
                     sessionRows.add(new WorkedHoursRow(
-                            openIn.getWorker().getId(), openIn.getWorker().getName(),
+                            openIn.getWorker().getId(), openIn.getWorker().getName(), companyName,
                             openIn.getSite().getId(), openIn.getSite().getName(),
                             key.date(), sessionRows.size(),
                             openIn.getRecordedAt().toLocalTime(),
@@ -518,7 +556,7 @@ public class ReportService {
                             hasRealCheckInCoords ? openIn.getLat() : null,
                             hasRealCheckInCoords ? openIn.getLng() : null));
                 } else {
-                    sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size()));
+                    sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size(), companyName));
                 }
             }
 
@@ -537,7 +575,7 @@ public class ReportService {
                 Double effectiveHours = openShift ? null
                         : (correctedHours != null ? correctedHours : s.calculatedHours());
                 rows.add(new WorkedHoursRow(
-                        s.workerId(), s.workerName(), s.siteId(), s.siteName(), s.date(),
+                        s.workerId(), s.workerName(), s.companyName(), s.siteId(), s.siteName(), s.date(),
                         0, s.checkIn(), s.checkOut(), s.inferredCheckOut(), s.autoCheckout(),
                         s.calculatedHours(), effectiveHours, correctedHours, corrNote,
                         s.checkOutLat(), s.checkOutLng(), s.checkInLat(), s.checkInLng()));
@@ -554,7 +592,7 @@ public class ReportService {
                 Double effectiveDay = correctedHours != null ? correctedHours : (daySum == 0 ? null : daySum);
 
                 rows.add(new WorkedHoursRow(
-                        key.workerId(), sessionRows.get(0).workerName(),
+                        key.workerId(), sessionRows.get(0).workerName(), companyName,
                         key.siteId(), sessionRows.get(0).siteName(),
                         key.date(), -1,
                         null, null, false, false,
@@ -576,7 +614,7 @@ public class ReportService {
     private static WorkedHoursRow sessionRow(
             LocalDate shiftDate, Attendance checkIn, Attendance checkOut,
             boolean inferredCheckOut, boolean autoCheckout,
-            Double calculatedHours, int pairIdx) {
+            Double calculatedHours, int pairIdx, String companyName) {
         // Check-in coordinates: null when record was created manually (0,0 coords).
         boolean hasRealCheckInCoords = checkIn.getLat() != 0.0 || checkIn.getLng() != 0.0;
         Double ciLat = hasRealCheckInCoords ? checkIn.getLat() : null;
@@ -588,7 +626,7 @@ public class ReportService {
         Double coLat = hasRealCheckOutCoords ? checkOut.getLat() : null;
         Double coLng = hasRealCheckOutCoords ? checkOut.getLng() : null;
         return new WorkedHoursRow(
-                checkIn.getWorker().getId(), checkIn.getWorker().getName(),
+                checkIn.getWorker().getId(), checkIn.getWorker().getName(), companyName,
                 checkIn.getSite().getId(), checkIn.getSite().getName(),
                 shiftDate, pairIdx,
                 checkIn.getRecordedAt().toLocalTime(),

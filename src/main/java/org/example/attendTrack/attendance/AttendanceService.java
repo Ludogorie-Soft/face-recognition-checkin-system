@@ -223,6 +223,59 @@ public class AttendanceService {
         attendanceRepository.deleteById(id);
     }
 
+    // ── Retroactive location re-validation ───────────────────────────────────
+
+    @Transactional
+    public int revalidateLocation(UUID siteId, LocalDate from, LocalDate to) {
+        LocalDateTime start = from.atStartOfDay();
+        LocalDateTime end = to.plusDays(1).atStartOfDay();
+
+        List<Attendance> records = siteId != null
+                ? attendanceRepository.findBySiteAndDateRange(siteId, start, end)
+                : attendanceRepository.findAllInDateRange(start, end);
+
+        if (records.isEmpty()) return 0;
+
+        // Bulk-load checkpoints to avoid N+1
+        Map<UUID, List<SiteCheckpoint>> checkpointsBySite;
+        if (siteId != null) {
+            checkpointsBySite = Map.of(siteId, siteCheckpointRepository.findBySiteId(siteId));
+        } else {
+            List<UUID> siteIds = records.stream()
+                    .map(a -> a.getSite().getId())
+                    .distinct()
+                    .toList();
+            checkpointsBySite = new java.util.HashMap<>();
+            siteCheckpointRepository.findBySiteIdIn(siteIds)
+                    .forEach(cp -> checkpointsBySite
+                            .computeIfAbsent(cp.getSite().getId(), k -> new ArrayList<>())
+                            .add(cp));
+        }
+
+        List<UUID> nowValid = new ArrayList<>();
+        List<UUID> nowInvalid = new ArrayList<>();
+
+        for (Attendance a : records) {
+            List<SiteCheckpoint> cps = checkpointsBySite.getOrDefault(a.getSite().getId(), List.of());
+            boolean valid;
+            if (!cps.isEmpty()) {
+                valid = cps.stream().anyMatch(cp ->
+                        haversineDistance(a.getLat(), a.getLng(), cp.getLat(), cp.getLng()) <= cp.getRadiusMeters());
+            } else {
+                valid = haversineDistance(a.getLat(), a.getLng(), a.getSite().getLat(), a.getSite().getLng())
+                        <= a.getSite().getRadiusMeters();
+            }
+            if (valid != a.isLocationValid()) {
+                (valid ? nowValid : nowInvalid).add(a.getId());
+            }
+        }
+
+        if (!nowValid.isEmpty()) attendanceRepository.updateLocationValidBulk(nowValid, true);
+        if (!nowInvalid.isEmpty()) attendanceRepository.updateLocationValidBulk(nowInvalid, false);
+
+        return nowValid.size() + nowInvalid.size();
+    }
+
     private static double haversineDistance(double lat1, double lng1, double lat2, double lng2) {
         final double R = 6_371_000.0;
         double dLat = Math.toRadians(lat2 - lat1);

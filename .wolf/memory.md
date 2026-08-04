@@ -1156,3 +1156,82 @@
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
+
+## Session: 2026-07-31 17:15
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:30 | Edited frontend/messages/bg.json | 3→4 lines | ~21 |
+| 14:30 | Edited frontend/messages/en.json | 3→4 lines | ~20 |
+| 14:30 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 15→16 lines | ~219 |
+| 14:30 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: siteId, siteId | ~323 |
+| 14:30 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified if() | ~40 |
+| 14:30 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~10 |
+| 14:31 | Edited src/main/java/org/example/attendTrack/report/ReportController.java | 8→8 lines | ~131 |
+| 14:31 | Edited src/main/java/org/example/attendTrack/report/ReportController.java | 8→8 lines | ~129 |
+| 14:31 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~223 |
+| 14:31 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~364 |
+| 14:31 | Session end: 10 writes across 5 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 7 reads | ~26601 tok |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/dto/AttendanceReportRow.java | modified AttendanceReportRow() | ~97 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | 20→21 lines | ~286 |
+| 14:41 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getAttendance() | ~297 |
+| 14:42 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getWorkedHours() | ~408 |
+| 14:42 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getWorkedHoursSummary() | ~304 |
+| 14:42 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~265 |
+| 14:43 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified buildWorkedHoursRows() | ~1768 |
+| 14:43 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified sessionRow() | ~416 |
+| 14:43 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 import(s) | ~12 |
+| 14:43 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 2→1 lines | ~6 |
+| 14:44 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified writeHeader() | ~407 |
+| 14:44 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | inline fix | ~18 |
+| 14:44 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified for() | ~822 |
+| 14:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified catch() | ~252 |
+| 14:45 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified for() | ~1111 |
+| 14:45 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: companyName | ~37 |
+| 14:46 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: companyName | ~38 |
+| 14:46 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 10→11 lines | ~150 |
+| 14:46 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added nullish coalescing | ~129 |
+| 14:46 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 11→12 lines | ~162 |
+| 14:46 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added nullish coalescing | ~101 |
+| 14:47 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 10→11 lines | ~225 |
+| 14:47 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added nullish coalescing | ~86 |
+| 14:47 | Session end: 33 writes across 7 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 10 reads | ~36482 tok |
+| 14:48 | Edited frontend/components/sites/SiteAssignModal.tsx | 6→6 lines | ~97 |
+| 14:48 | Session end: 34 writes across 8 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 12 reads | ~40773 tok |
+| 14:50 | Edited frontend/components/companies/CompanySiteModal.tsx | 2→2 lines | ~50 |
+| 14:50 | Edited frontend/components/workers/WorkerSiteModal.tsx | 3→3 lines | ~47 |
+| 14:50 | Session end: 36 writes across 10 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 14 reads | ~42106 tok |
+| 14:51 | Session end: 36 writes across 10 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 14 reads | ~42106 tok |
+
+| 2026-07-31 | Session: Reports "Всички обекти" + Фирма колона + Modal scroll fixes | reports/page.tsx, ReportController.java, ReportService.java, AttendanceReportRow.java, WorkedHoursRow.java, SiteAssignModal.tsx, CompanySiteModal.tsx, WorkerSiteModal.tsx, bg.json, en.json | completed | ~8000 |
+| 14:56 | Session end: 36 writes across 10 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 14 reads | ~42106 tok |
+| 15:00 | Edited frontend/components/verify/VerifyCamera.tsx | 17→21 lines | ~340 |
+| 15:01 | Edited frontend/components/verify/VerifyCamera.tsx | modified t() | ~140 |
+| 15:01 | Session end: 38 writes across 11 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 21 reads | ~52807 tok |
+| 15:03 | Session end: 38 writes across 11 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 21 reads | ~52807 tok |
+| 15:06 | Session end: 38 writes across 11 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 21 reads | ~52807 tok |
+| 15:11 | Session end: 38 writes across 11 files (bg.json, en.json, page.tsx, ReportController.java, ReportService.java) | 27 reads | ~57840 tok |
+| 15:12 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | 3→7 lines | ~88 |
+
+## Session: 2026-08-04 15:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:14 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 6 condition(s) | ~655 |
+| 15:15 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | modified deleteAttendance() | ~205 |
+| 15:15 | Edited frontend/messages/bg.json | 3→5 lines | ~38 |
+| 15:15 | Edited frontend/messages/en.json | 3→5 lines | ~37 |
+| 15:16 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | expanded (+14 lines) | ~181 |
+| 15:16 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | expanded (+14 lines) | ~231 |
+| 15:16 | feat: retroactive locationValid re-validation — revalidateLocation() in AttendanceService, POST /api/attendance/revalidate, revalidate mutation + button in reports/page.tsx | AttendanceService.java, AttendanceController.java, reports/page.tsx, bg.json, en.json | complete | ~1800 |
+| 15:16 | Session end: 6 writes across 5 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 6 reads | ~16360 tok |
+| 15:22 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | added 1 import(s) | ~62 |
+| 15:23 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified for() | ~38 |
+| 15:24 | Session end: 8 writes across 6 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 9 reads | ~21691 tok |
+| 15:30 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 1 condition(s) | ~94 |
+| 15:31 | Session end: 9 writes across 6 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 9 reads | ~21729 tok |
+| 15:38 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | "missing" → "summary" | ~11 |
+| 15:39 | Session end: 10 writes across 6 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 13 reads | ~23724 tok |
+| 15:42 | Edited frontend/components/sites/SiteAssignModal.tsx | "sm:max-w-md" → "sm:max-w-lg" | ~13 |
+| 15:42 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 14 reads | ~25777 tok |
+| 15:43 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 14 reads | ~25777 tok |

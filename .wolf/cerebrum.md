@@ -55,6 +55,12 @@
 
 <!-- [2026-07-31] When location permission is PERMISSION_DENIED (GeolocationPositionError.code === 1), show a full-screen overlay in VerifyCamera (not just the top bar text). The overlay includes numbered steps for enabling location in device settings. navigator.permissions.query({name:'geolocation'}) pre-detects the denied state before watchPosition fires its error. -->
 
+<!-- [2026-07-31] Reports: siteId is optional for /api/reports/attendance and /api/reports/hours (required=false in controller, service branches on null → findAllInDateRange). The 'missing' tab still requires a specific siteId (logic depends on site worker list). The 'summary' tab never needed siteId. Frontend Select adds "Всички обекти" as first option (value="_all" → siteId='') mirroring the company filter pattern. -->
+
+<!-- [2026-07-31] Reports: companyName is fetched via CompanyRepository.findWorkerCompanyPairs(workerIds) — a bulk query returning [workerId, companyId, companyName]. Use putIfAbsent to keep the first (alphabetically first) company per worker. Pass as Map<UUID,String> into buildWorkedHoursRows() and toRow(). AttendanceReportRow and WorkedHoursRow records both have companyName as second field after workerName. -->
+
+<!-- [2026-07-31] Assign modals (SiteAssignModal, CompanySiteModal, WorkerSiteModal, CompanyWorkerModal): BOTH the "assigned" list AND the "available/unassigned" list must have max-h + overflow-y-auto. A common mistake is adding scroll only to the available list and forgetting the assigned list, which overflows when many items are assigned. Use max-h-60 for assigned, max-h-48 for available (smaller since it has a search field above it). -->
+
 ## Decision Log
 
 - **Biometric — face recognition v2:** MediaPipe FaceLandmarker (478-landmark detection) + MobileFaceNet ONNX (InsightFace w600k_mbf, 512-dim ArcFace embeddings) via onnxruntime-web. Replaced face-api.js. Module-level singletons with reference counting (consumerCount). GPU delegate with CPU fallback. All ONNX output tensors must be disposed explicitly.

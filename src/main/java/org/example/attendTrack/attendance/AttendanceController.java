@@ -64,4 +64,14 @@ public class AttendanceController {
         attendanceService.deleteAttendance(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/revalidate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Integer>> revalidateLocation(
+            @RequestParam(required = false) UUID siteId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        int updated = attendanceService.revalidateLocation(siteId, from, to);
+        return ResponseEntity.ok(Map.of("updated", updated));
+    }
 }

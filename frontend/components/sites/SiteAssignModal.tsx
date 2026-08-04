@@ -78,7 +78,7 @@ export function SiteAssignModal({ open, onClose, site }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{site.name} — {ts('workers')}</DialogTitle>
         </DialogHeader>
@@ -91,7 +91,7 @@ export function SiteAssignModal({ open, onClose, site }: Props) {
           ) : (
             <>
               {/* Current workers */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1.5 max-h-60 overflow-y-auto">
                 {(detail?.workers ?? []).length === 0 ? (
                   <p className="text-sm text-muted-foreground py-2">{tc('noData')}</p>
                 ) : (

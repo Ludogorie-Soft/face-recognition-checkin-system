@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T12:58:58.168Z
-> Files: 148 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-04T12:42:37.966Z
+> Files: 149 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -55,7 +55,7 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~10648 tok)
+- `page.tsx` — fmtLocal (~11117 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
@@ -92,7 +92,7 @@
 ## frontend/components/companies/
 
 - `CompanyDialog.tsx` — Req — renders form, modal (~1198 tok)
-- `CompanySiteModal.tsx` — CompanySiteModal — renders modal (~1236 tok)
+- `CompanySiteModal.tsx` — CompanySiteModal — renders modal; assigned list max-h-60 overflow-y-auto (~1250 tok)
 - `CompanyWorkerModal.tsx` — CompanyWorkerModal — renders modal (~1450 tok)
 
 ## frontend/components/dashboard/
@@ -111,7 +111,7 @@
 ## frontend/components/sites/
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~1205 tok)
-- `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~2024 tok)
+- `SiteAssignModal.tsx` — SiteAssignModal — renders modal (~2032 tok)
 - `SiteDialog.tsx` — MapPicker — renders form, modal (~3916 tok)
 - `TimePicker.tsx` — HOURS (~502 tok)
 
@@ -123,13 +123,13 @@
 
 - `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal (~705 tok)
 - `SyncLoader.tsx` — SVG comet-arc loader; indeterminate: pure CSS spin + feGaussianBlur glow; determinate: smooth strokeDashoffset fill. No JS state. (~620 tok)
-- `VerifyCamera.tsx` — resolveWorkerSite (~6147 tok)
+- `VerifyCamera.tsx` — resolveWorkerSite (~6300 tok)
 
 ## frontend/components/workers/
 
 - `FaceRegisterModal.tsx` — FaceRegisterModal — renders modal (~1849 tok)
 - `WorkerDialog.tsx` — ROLES — renders form, modal (~2332 tok)
-- `WorkerSiteModal.tsx` — WorkerSiteModal — renders modal (~2458 tok)
+- `WorkerSiteModal.tsx` — WorkerSiteModal — renders modal; assigned list max-h-60 overflow-y-auto (~2470 tok)
 
 ## frontend/hooks/
 
@@ -155,8 +155,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~2814 tok)
-- `en.json` (~2690 tok)
+- `bg.json` (~2851 tok)
+- `en.json` (~2725 tok)
 
 ## frontend/scripts/
 
@@ -174,9 +174,9 @@
 
 ## src/main/java/org/example/attendTrack/attendance/
 
-- `AttendanceController.java` — RestController: AttendanceController (6 endpoints) (~711 tok)
-- `AttendanceRepository.java` — Class: AttendanceRepository (~1768 tok)
-- `AttendanceService.java` — Service: AttendanceService (~2761 tok)
+- `AttendanceController.java` — RestController: AttendanceController (7 endpoints) (~850 tok)
+- `AttendanceRepository.java` — Class: AttendanceRepository (~1849 tok)
+- `AttendanceService.java` — Service: AttendanceService (~3383 tok)
 - `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~1099 tok)
 
 ## src/main/java/org/example/attendTrack/attendance/dto/
@@ -223,13 +223,14 @@
 
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
-- `ReportController.java` — RestController: ReportController (9 endpoints) (~1498 tok)
-- `ReportService.java` — Service: ReportService (~8456 tok)
+- `ReportController.java` — RestController: ReportController (9 endpoints); siteId optional for /attendance and /hours (~1520 tok)
+- `ReportService.java` — Service: ReportService; workerCompanyNames() bulk-loads company per worker; buildWorkedHoursRows takes companyNames map (~9200 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
+- `AttendanceReportRow.java` — Class: AttendanceReportRow; fields: workerId, workerName, companyName, siteName, date, type, recordedAt, lat, lng, locationValid, faceConfidence, manualOverride (~155 tok)
 - `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
-- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~684 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report; includes companyName field (~700 tok)
 - `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
 
 ## src/main/java/org/example/attendTrack/site/

@@ -30,6 +30,7 @@ import api from '@/lib/axios'
 interface AttendanceRow {
   workerId: string
   workerName: string
+  companyName: string | null
   siteName: string
   date: string
   type: 'CHECK_IN' | 'CHECK_OUT'
@@ -49,6 +50,7 @@ interface MissingRow {
 interface WorkedHoursRow {
   workerId: string
   workerName: string
+  companyName: string | null
   siteId: string
   siteName: string
   date: string
@@ -167,9 +169,9 @@ export default function ReportsPage() {
     queryKey: ['reports', 'attendance', siteId, companyId, dateFrom, dateTo, queryKey],
     queryFn: () =>
       api.get('/api/reports/attendance', {
-        params: { siteId, companyId: companyId || undefined, from: dateFrom, to: dateTo },
+        params: { siteId: siteId || undefined, companyId: companyId || undefined, from: dateFrom, to: dateTo },
       }).then((r) => r.data),
-    enabled: tab === 'attendance' && !!siteId && queryKey > 0,
+    enabled: tab === 'attendance' && queryKey > 0,
   })
 
   const missingQuery = useQuery<MissingRow[]>({
@@ -185,9 +187,9 @@ export default function ReportsPage() {
     queryKey: ['reports', 'hours', siteId, companyId, dateFrom, dateTo, queryKey],
     queryFn: () =>
       api.get('/api/reports/hours', {
-        params: { siteId, companyId: companyId || undefined, from: dateFrom, to: dateTo },
+        params: { siteId: siteId || undefined, companyId: companyId || undefined, from: dateFrom, to: dateTo },
       }).then((r) => r.data),
-    enabled: tab === 'hours' && !!siteId && queryKey > 0,
+    enabled: tab === 'hours' && queryKey > 0,
   })
 
   const hoursSummaryQuery = useQuery<WorkedHoursSummaryRow[]>({
@@ -209,6 +211,20 @@ export default function ReportsPage() {
       qc.invalidateQueries({ queryKey: ['reports', 'hours'] })
       qc.invalidateQueries({ queryKey: ['reports', 'hours-summary'] })
       setCorrTarget(null)
+    },
+    onError: () => toast.error(tc('error')),
+  })
+
+  // ── Revalidate location mutation ──────────────────────────────────────────
+
+  const revalidateMutation = useMutation({
+    mutationFn: () =>
+      api.post('/api/attendance/revalidate', null, {
+        params: { siteId: siteId || undefined, from: dateFrom, to: dateTo },
+      }).then((r) => r.data as { updated: number }),
+    onSuccess: (data) => {
+      toast.success(t('revalidateSuccess', { count: data.updated }))
+      qc.invalidateQueries({ queryKey: ['reports', 'attendance'] })
     },
     onError: () => toast.error(tc('error')),
   })
@@ -240,9 +256,7 @@ export default function ReportsPage() {
   // ── Actions ────────────────────────────────────────────────────────────────
 
   const handleSearch = () => {
-    if (tab !== 'missing' && tab !== 'summary') {
-      if (!siteId) { toast.warning(t('site')); return }
-    }
+    if (tab === 'missing' && !siteId) { toast.warning(t('site')); return }
     setQueryKey((k) => k + 1)
   }
 
@@ -316,7 +330,7 @@ export default function ReportsPage() {
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
-  const needsSite = tab !== 'missing' && tab !== 'summary'
+  const needsSite = tab !== 'summary'
 
   let activeQuery
   if (tab === 'attendance') activeQuery = attendanceQuery
@@ -394,11 +408,12 @@ export default function ReportsPage() {
         {needsSite && (
           <div className="flex flex-col gap-1.5 w-full sm:w-auto sm:min-w-[200px]">
             <label className="text-xs font-medium text-muted-foreground">{t('site')}</label>
-            <Select value={siteId} onValueChange={setSiteId}>
+            <Select value={siteId || '_all'} onValueChange={(v) => { setSiteId(v === '_all' ? '' : v); setQueryKey(0) }}>
               <SelectTrigger>
-                <SelectValue placeholder={t('site')} />
+                <SelectValue placeholder={t('allSites')} />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="_all">{t('allSites')}</SelectItem>
                 {filteredSites.map((s) => (
                   <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                 ))}
@@ -434,11 +449,25 @@ export default function ReportsPage() {
           <Button
             variant="outline"
             onClick={handleExport}
-            disabled={exporting || (needsSite && !siteId)}
+            disabled={exporting}
             className="gap-2"
           >
             {exporting ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
             {t('export')}
+          </Button>
+        )}
+
+        {tab === 'attendance' && (
+          <Button
+            variant="outline"
+            onClick={() => revalidateMutation.mutate()}
+            disabled={revalidateMutation.isPending || queryKey === 0}
+            className="gap-2"
+          >
+            {revalidateMutation.isPending
+              ? <Loader2 size={15} className="animate-spin" />
+              : <MapPin size={15} />}
+            {t('revalidate')}
           </Button>
         )}
       </div>
@@ -528,6 +557,7 @@ function AttendanceTable({
             <TableHead>{t('date')}</TableHead>
             <TableHead>{t('recordedAt')}</TableHead>
             <TableHead>{t('worker')}</TableHead>
+            <TableHead>{t('company')}</TableHead>
             <TableHead>{t('site')}</TableHead>
             <TableHead>{t('type')}</TableHead>
             <TableHead>{t('location')}</TableHead>
@@ -541,6 +571,7 @@ function AttendanceTable({
               <TableCell className="text-sm">{row.date}</TableCell>
               <TableCell className="text-sm font-mono">{formatTime(row.recordedAt.slice(11))}</TableCell>
               <TableCell className="font-medium">{row.workerName}</TableCell>
+              <TableCell className="text-muted-foreground text-sm">{row.companyName ?? '—'}</TableCell>
               <TableCell className="text-muted-foreground text-sm">{row.siteName}</TableCell>
               <TableCell>
                 <Badge
@@ -634,6 +665,7 @@ function WorkedHoursTable({
         <TableHeader>
           <TableRow className="bg-muted/50">
             <TableHead>{t('worker')}</TableHead>
+            <TableHead>{t('company')}</TableHead>
             <TableHead>{t('site')}</TableHead>
             <TableHead>{t('date')}</TableHead>
             <TableHead>{t('checkIn')}</TableHead>
@@ -661,6 +693,7 @@ function WorkedHoursTable({
                 }
               >
                 <TableCell className="font-medium">{row.workerName}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{row.companyName ?? '—'}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">{row.siteName}</TableCell>
                 <TableCell className="text-sm">{row.date}</TableCell>
                 <TableCell className="font-mono text-sm">
@@ -800,6 +833,7 @@ function WorkedHoursSummaryTable({
                 <Table className="min-w-[600px]">
                   <TableHeader>
                     <TableRow className="bg-muted/20">
+                      <TableHead className="text-xs">{t('company')}</TableHead>
                       <TableHead className="text-xs">{t('site')}</TableHead>
                       <TableHead className="text-xs">{t('date')}</TableHead>
                       <TableHead className="text-xs">{t('checkIn')}</TableHead>
@@ -826,6 +860,7 @@ function WorkedHoursSummaryTable({
                               : ''
                           }
                         >
+                          <TableCell className="text-sm text-muted-foreground">{row.companyName ?? '—'}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">{row.siteName}</TableCell>
                           <TableCell className="text-sm">{row.date}</TableCell>
                           <TableCell className="font-mono text-sm">

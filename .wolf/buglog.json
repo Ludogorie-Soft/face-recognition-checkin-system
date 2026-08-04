@@ -2348,6 +2348,198 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-31T12:58:58.187Z"
+    },
+    {
+      "id": "bug-145",
+      "timestamp": "2026-08-04T11:30:36.300Z",
+      "error_message": "CSS fix: params, enabled",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "params: { siteId, companyId: companyId || undefined, from: dateFrom, to: dateTo → { siteId: siteId || undefined, companyId: companyId || undefined, from: dateFrom, to: dateTo; enabled: tab === 'hours' && !!siteId && queryKey > 0, → tab === 'hours' && queryKey > 0,",
+      "fix": "Changed params: { siteId, companyId: companyId || undefined, from: dateFrom, to: dateTo → { siteId: siteId || undefined, companyId: companyId || undefined, from: dateFrom, to: dateTo; enabled: tab === 'hours' && !!siteId && queryKey > 0, → tab === 'hours' && queryKey > 0,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T11:30:36.300Z"
+    },
+    {
+      "id": "bug-146",
+      "timestamp": "2026-08-04T11:30:49.378Z",
+      "error_message": "Wrong operator: !== should be ===",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Used \"!==\" instead of \"===\"",
+      "fix": "Changed operator !== → ===",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T11:30:49.378Z"
+    },
+    {
+      "id": "bug-147",
+      "timestamp": "2026-08-04T11:31:24.711Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: if (siteId != null) validateSiteExists(siteId);; List<Attendance> allRecords = siteId != null",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-04T11:31:37.203Z"
+    },
+    {
+      "id": "bug-148",
+      "timestamp": "2026-08-04T11:41:48.202Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 17→23 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T11:41:48.202Z"
+    },
+    {
+      "id": "bug-149",
+      "timestamp": "2026-08-04T11:46:28.770Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: <TableCell className=\"text-sm text-muted-foreground\">{row.co",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-08-04T11:47:11.918Z"
+    },
+    {
+      "id": "bug-150",
+      "timestamp": "2026-08-04T11:50:04.365Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/companies/CompanySiteModal.tsx",
+      "root_cause": "Had \"flex flex-col divide-y divide-border rounded-md b",
+      "fix": "Changed to \"flex flex-col divide-y divide-border rounded-md b",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T11:50:04.365Z"
+    },
+    {
+      "id": "bug-151",
+      "timestamp": "2026-08-04T11:50:10.754Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/workers/WorkerSiteModal.tsx",
+      "root_cause": "Had \"flex flex-col gap-1.5\"",
+      "fix": "Changed to \"flex flex-col gap-1.5 max-h-60 overflow-y-auto\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T11:50:10.754Z"
+    },
+    {
+      "id": "bug-152",
+      "timestamp": "2026-08-04T12:00:56.339Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/components/verify/VerifyCamera.tsx",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 17→21 lines (4 removed) | Also: ? t('locationValid'); ? t('locationInvalid')",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-04T12:01:09.819Z"
+    },
+    {
+      "id": "bug-153",
+      "timestamp": "2026-08-04T12:14:43.422Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T12:14:43.422Z"
+    },
+    {
+      "id": "bug-154",
+      "timestamp": "2026-08-04T12:16:06.416Z",
+      "error_message": "Type error",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T12:16:06.416Z"
+    },
+    {
+      "id": "bug-155",
+      "timestamp": "2026-08-04T12:38:47.219Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Had 'missing'",
+      "fix": "Changed to 'summary'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T12:38:47.219Z"
+    },
+    {
+      "id": "bug-156",
+      "timestamp": "2026-08-04T12:42:38.011Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/sites/SiteAssignModal.tsx",
+      "root_cause": "Had \"sm:max-w-md\"",
+      "fix": "Changed to \"sm:max-w-lg\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T12:42:38.011Z"
     }
   ]
 }

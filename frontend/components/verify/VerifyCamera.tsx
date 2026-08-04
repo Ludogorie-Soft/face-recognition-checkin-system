@@ -286,6 +286,8 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord }: Props) {
     ? 'text-amber-400'
     : 'text-white/70'
 
+  const accuracyLabel = geo.accuracy > 0 ? ` ±${Math.round(geo.accuracy)}m` : ''
+
   const geoBarLabel = geo.permissionDenied
     ? t('locationError')
     : geo.loading
@@ -293,10 +295,10 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord }: Props) {
     : geo.error
     ? t('locationError')
     : detectedWorkerGeo?.locationValid
-    ? t('locationValid')
+    ? `${t('locationValid')}${accuracyLabel}`
     : detected && detectedWorkerGeo && !detectedWorkerGeo.locationValid
-    ? t('locationInvalid')
-    : t('locationActive')
+    ? `${t('locationInvalid')}${accuracyLabel}`
+    : `${t('locationActive')}${accuracyLabel}`
 
   // ── Render ────────────────────────────────────────────────────────────────────
 
@@ -522,17 +524,21 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord }: Props) {
                   <Button
                     className="h-14 text-base font-bold w-full bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
                     onClick={() => handleConfirm('CHECK_OUT')}
-                    disabled={!detectedWorkerGeo}
+                    disabled={!detectedWorkerGeo || geo.loading}
                   >
-                    {t('checkOut')}
+                    {geo.loading ? (
+                      <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" />{t('locationLoading')}</span>
+                    ) : t('checkOut')}
                   </Button>
                 ) : (
                   <Button
                     className="h-14 text-base font-bold w-full bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
                     onClick={() => handleConfirm('CHECK_IN')}
-                    disabled={!detectedWorkerGeo}
+                    disabled={!detectedWorkerGeo || geo.loading}
                   >
-                    {t('checkIn')}
+                    {geo.loading ? (
+                      <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" />{t('locationLoading')}</span>
+                    ) : t('checkIn')}
                   </Button>
                 )}
               </>

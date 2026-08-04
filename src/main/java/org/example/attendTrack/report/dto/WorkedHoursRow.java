@@ -27,6 +27,7 @@ import java.util.UUID;
 public record WorkedHoursRow(
         UUID workerId,
         String workerName,
+        String companyName,
         UUID siteId,
         String siteName,
         LocalDate date,

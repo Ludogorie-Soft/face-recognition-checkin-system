@@ -260,6 +260,9 @@
     "periodCustom": "Персонализиран",
     "autoCheckout": "Автоматичен или ръчен чекаут",
     "company": "Фирма",
-    "allCompanies": "Всички фирми"
+    "allCompanies": "Всички фирми",
+    "allSites": "Всички обекти",
+    "revalidate": "Ревалидирай локация",
+    "revalidateSuccess": "Обновени записи: {count}"
   }
 }

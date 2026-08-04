@@ -61,7 +61,7 @@ export function CompanyWorkerModal({ open, onClose, company }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t('manageWorkers')} — {company.name}</DialogTitle>
         </DialogHeader>

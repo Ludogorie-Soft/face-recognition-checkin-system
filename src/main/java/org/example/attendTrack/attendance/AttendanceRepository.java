@@ -2,6 +2,7 @@ package org.example.attendTrack.attendance;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -135,6 +136,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to
     );
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Attendance a SET a.locationValid = :valid WHERE a.id IN :ids")
+    void updateLocationValidBulk(@Param("ids") List<UUID> ids, @Param("valid") boolean valid);
 
     @Query("""
             SELECT DISTINCT a.site.id
