@@ -429,6 +429,7 @@ public class ReportService {
 
     private AttendanceReportRow toRow(Attendance a, String companyName) {
         return new AttendanceReportRow(
+                a.getId(),
                 a.getWorker().getId(),
                 a.getWorker().getName(),
                 companyName,
@@ -546,6 +547,7 @@ public class ReportService {
                     long minutes = Duration.between(openIn.getRecordedAt(), nextSiteIn.get()).toMinutes();
                     boolean hasRealCheckInCoords = openIn.getLat() != 0.0 || openIn.getLng() != 0.0;
                     sessionRows.add(new WorkedHoursRow(
+                            openIn.getId(), null,  // inferred checkout — no real CHECK_OUT record
                             openIn.getWorker().getId(), openIn.getWorker().getName(), companyName,
                             openIn.getSite().getId(), openIn.getSite().getName(),
                             key.date(), sessionRows.size(),
@@ -575,6 +577,7 @@ public class ReportService {
                 Double effectiveHours = openShift ? null
                         : (correctedHours != null ? correctedHours : s.calculatedHours());
                 rows.add(new WorkedHoursRow(
+                        s.checkInId(), s.checkOutId(),
                         s.workerId(), s.workerName(), s.companyName(), s.siteId(), s.siteName(), s.date(),
                         0, s.checkIn(), s.checkOut(), s.inferredCheckOut(), s.autoCheckout(),
                         s.calculatedHours(), effectiveHours, correctedHours, corrNote,
@@ -592,6 +595,7 @@ public class ReportService {
                 Double effectiveDay = correctedHours != null ? correctedHours : (daySum == 0 ? null : daySum);
 
                 rows.add(new WorkedHoursRow(
+                        null, null,  // day-total row — no individual record IDs
                         key.workerId(), sessionRows.get(0).workerName(), companyName,
                         key.siteId(), sessionRows.get(0).siteName(),
                         key.date(), -1,
@@ -626,6 +630,8 @@ public class ReportService {
         Double coLat = hasRealCheckOutCoords ? checkOut.getLat() : null;
         Double coLng = hasRealCheckOutCoords ? checkOut.getLng() : null;
         return new WorkedHoursRow(
+                checkIn.getId(),
+                checkOut != null && !inferredCheckOut ? checkOut.getId() : null,
                 checkIn.getWorker().getId(), checkIn.getWorker().getName(), companyName,
                 checkIn.getSite().getId(), checkIn.getSite().getName(),
                 shiftDate, pairIdx,

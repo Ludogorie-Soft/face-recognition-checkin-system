@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record AttendanceReportRow(
+        UUID id,
         UUID workerId,
         String workerName,
         String companyName,

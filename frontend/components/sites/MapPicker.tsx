@@ -92,7 +92,7 @@ export function MapPicker({ checkpoints, selectedId, onAdd, onSelect, onMove }: 
     <MapContainer
       center={initialCenter}
       zoom={11}
-      style={{ height: '280px', width: '100%', borderRadius: '8px' }}
+      style={{ height: '380px', width: '100%', borderRadius: '8px' }}
       className="z-0"
     >
       <TileLayer

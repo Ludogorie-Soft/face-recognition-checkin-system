@@ -223,6 +223,35 @@ public class AttendanceService {
         attendanceRepository.deleteById(id);
     }
 
+    // ── Change site on existing attendance record ─────────────────────────────
+
+    @Transactional
+    public void changeSite(UUID attendanceId, UUID newSiteId) {
+        Attendance a = attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
+                        ErrorCode.ATTENDANCE_NOT_FOUND, "Attendance record not found: " + attendanceId));
+
+        Site newSite = siteRepository.findById(newSiteId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
+                        ErrorCode.SITE_NOT_FOUND, "Site not found: " + newSiteId));
+
+        // Re-compute locationValid for the new site
+        List<SiteCheckpoint> checkpoints = siteCheckpointRepository.findBySiteId(newSiteId);
+        boolean locationValid;
+        if (!checkpoints.isEmpty()) {
+            locationValid = checkpoints.stream().anyMatch(cp ->
+                    haversineDistance(a.getLat(), a.getLng(), cp.getLat(), cp.getLng()) <= cp.getRadiusMeters());
+        } else {
+            locationValid = haversineDistance(a.getLat(), a.getLng(), newSite.getLat(), newSite.getLng())
+                    <= newSite.getRadiusMeters();
+        }
+
+        attendanceRepository.updateSite(attendanceId, newSiteId);
+        if (locationValid != a.isLocationValid()) {
+            attendanceRepository.updateLocationValidBulk(List.of(attendanceId), locationValid);
+        }
+    }
+
     // ── Retroactive location re-validation ───────────────────────────────────
 
     @Transactional

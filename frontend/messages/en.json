@@ -263,6 +263,8 @@
     "allCompanies": "All companies",
     "allSites": "All sites",
     "revalidate": "Revalidate location",
-    "revalidateSuccess": "Updated records: {count}"
+    "revalidateSuccess": "Updated records: {count}",
+    "changeSite": "Change site",
+    "selectSite": "Select site"
   }
 }

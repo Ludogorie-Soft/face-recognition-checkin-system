@@ -28,7 +28,7 @@ const MapPicker = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[280px] rounded-lg bg-muted animate-pulse" />
+      <div className="h-[380px] rounded-lg bg-muted animate-pulse" />
     ),
   }
 )
@@ -215,7 +215,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{site ? t('editSite') : t('addSite')}</DialogTitle>
         </DialogHeader>

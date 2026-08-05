@@ -141,6 +141,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
     @Query("UPDATE Attendance a SET a.locationValid = :valid WHERE a.id IN :ids")
     void updateLocationValidBulk(@Param("ids") List<UUID> ids, @Param("valid") boolean valid);
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "UPDATE attendance SET site_id = :siteId WHERE id = :id", nativeQuery = true)
+    void updateSite(@Param("id") UUID id, @Param("siteId") UUID siteId);
+
     @Query("""
             SELECT DISTINCT a.site.id
             FROM Attendance a

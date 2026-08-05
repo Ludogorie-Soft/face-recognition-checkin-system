@@ -263,6 +263,8 @@
     "allCompanies": "Всички фирми",
     "allSites": "Всички обекти",
     "revalidate": "Ревалидирай локация",
-    "revalidateSuccess": "Обновени записи: {count}"
+    "revalidateSuccess": "Обновени записи: {count}",
+    "changeSite": "Промени обект",
+    "selectSite": "Избери обект"
   }
 }

@@ -2540,6 +2540,187 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-04T12:42:38.011Z"
+    },
+    {
+      "id": "bug-157",
+      "timestamp": "2026-08-04T00:00:00.000Z",
+      "error_message": "cannot find symbol: class Modifying in AttendanceRepository",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+      "root_cause": "Added @Modifying annotation but forgot to import org.springframework.data.jpa.repository.Modifying",
+      "fix": "Added missing import for @Modifying",
+      "tags": [
+        "java",
+        "jpa",
+        "import",
+        "compile-error"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T00:00:00.000Z"
+    },
+    {
+      "id": "bug-158",
+      "timestamp": "2026-08-04T00:00:00.000Z",
+      "error_message": "bad operand types for binary operator ==: double and nulltype",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Attendance.lat and Attendance.lng are primitive double (not Double), so null check with == null is a compile error. Fields are @Column(nullable=false) so null check is also logically wrong.",
+      "fix": "Removed null guard: if (a.getLat() == null || a.getLng() == null) continue",
+      "tags": [
+        "java",
+        "compile-error",
+        "primitive",
+        "null-check"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T00:00:00.000Z"
+    },
+    {
+      "id": "bug-159",
+      "timestamp": "2026-08-04T00:00:00.000Z",
+      "error_message": "findBySiteIdIn called with empty list when no attendance records exist in period",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "When siteId is null and records is empty, siteIds list is empty. Calling JPA IN query with empty collection produces invalid SQL IN () and throws exception.",
+      "fix": "Added early return: if (records.isEmpty()) return 0; before building checkpointsBySite map",
+      "tags": [
+        "java",
+        "jpa",
+        "empty-collection",
+        "in-clause"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T00:00:00.000Z"
+    },
+    {
+      "id": "bug-160",
+      "timestamp": "2026-08-04T00:00:00.000Z",
+      "error_message": "No site selector shown on missing workers tab — cannot select site",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "needsSite was defined as tab !== missing && tab !== summary, which hid the site Select on the missing tab entirely.",
+      "fix": "Changed needsSite to tab !== summary so site selector is visible on all tabs including missing.",
+      "tags": [
+        "frontend",
+        "react",
+        "reports",
+        "missing-tab",
+        "ui"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T00:00:00.000Z"
+    },
+    {
+      "id": "bug-161",
+      "timestamp": "2026-08-05T10:53:42.884Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/sites/SiteDialog.tsx",
+      "root_cause": "Had \"sm:max-w-xl max-h-[90vh] overflow-y-auto\"",
+      "fix": "Changed to \"sm:max-w-3xl max-h-[90vh] overflow-y-auto\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-05T10:53:52.792Z"
+    },
+    {
+      "id": "bug-162",
+      "timestamp": "2026-08-05T10:54:12.770Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/sites/MapPicker.tsx",
+      "root_cause": "Had '280px'",
+      "fix": "Changed to '380px'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T10:54:12.770Z"
+    },
+    {
+      "id": "bug-163",
+      "timestamp": "2026-08-05T11:43:18.346Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T11:43:18.346Z"
+    },
+    {
+      "id": "bug-164",
+      "timestamp": "2026-08-05T12:15:58.222Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceController.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T12:15:58.222Z"
+    },
+    {
+      "id": "bug-165",
+      "timestamp": "2026-08-05T12:17:03.561Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "10 lines replaced/restructured",
+      "fix": "Rewrote 19→8 lines (10 removed) | Also: {sites; .filter((s) => s.id !== changeSiteRow?.siteName)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-05T12:21:21.740Z"
+    },
+    {
+      "id": "bug-166",
+      "timestamp": "2026-08-05T12:17:35.337Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Change site dialog */}; <Dialog open={!!changeSiteRow} onOpenChange={(v) => !v && se",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-05T12:21:09.869Z"
+    },
+    {
+      "id": "bug-167",
+      "timestamp": "2026-08-05T12:30:56.036Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 10→5 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T12:30:56.036Z"
     }
   ]
 }

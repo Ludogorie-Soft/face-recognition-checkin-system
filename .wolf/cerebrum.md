@@ -61,6 +61,16 @@
 
 <!-- [2026-07-31] Assign modals (SiteAssignModal, CompanySiteModal, WorkerSiteModal, CompanyWorkerModal): BOTH the "assigned" list AND the "available/unassigned" list must have max-h + overflow-y-auto. A common mistake is adding scroll only to the available list and forgetting the assigned list, which overflows when many items are assigned. Use max-h-60 for assigned, max-h-48 for available (smaller since it has a search field above it). -->
 
+<!-- [2026-08-04] When adding @Modifying to a JPA repository method, always add the import: org.springframework.data.jpa.repository.Modifying. It is NOT auto-imported by Spring Data. -->
+
+<!-- [2026-08-04] Attendance.lat and Attendance.lng are primitive double (not Double). Never write null checks like == null on them — it's a compile error. Fields are @Column(nullable=false) so they are always set. -->
+
+<!-- [2026-08-04] JPA IN clause with empty collection produces invalid SQL and throws an exception at runtime. Always guard before calling findByXxxIn(): if the collection is empty, return early (e.g. if (records.isEmpty()) return 0). -->
+
+<!-- [2026-08-04] In reports/page.tsx the needsSite flag controls whether the site Select renders. If a tab needs the site selector (e.g. missing), it must be included in the condition. Current: needsSite = tab !== 'summary'. -->
+
+<!-- [2026-08-04] Assign modals (SiteAssignModal, WorkerSiteModal, CompanySiteModal, CompanyWorkerModal) use sm:max-w-lg for width. Do NOT revert to sm:max-w-md. -->
+
 ## Decision Log
 
 - **Biometric — face recognition v2:** MediaPipe FaceLandmarker (478-landmark detection) + MobileFaceNet ONNX (InsightFace w600k_mbf, 512-dim ArcFace embeddings) via onnxruntime-web. Replaced face-api.js. Module-level singletons with reference counting (consumerCount). GPU delegate with CPU fallback. All ONNX output tensors must be disposed explicitly.

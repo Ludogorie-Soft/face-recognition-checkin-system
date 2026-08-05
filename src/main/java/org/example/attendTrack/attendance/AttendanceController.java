@@ -65,6 +65,26 @@ public class AttendanceController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/move-session")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> moveSession(
+            @RequestParam UUID checkInId,
+            @RequestParam(required = false) UUID checkOutId,
+            @RequestParam UUID siteId) {
+        attendanceService.changeSite(checkInId, siteId);
+        if (checkOutId != null) attendanceService.changeSite(checkOutId, siteId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/site")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> changeSite(
+            @PathVariable UUID id,
+            @RequestParam UUID siteId) {
+        attendanceService.changeSite(id, siteId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/revalidate")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Integer>> revalidateLocation(

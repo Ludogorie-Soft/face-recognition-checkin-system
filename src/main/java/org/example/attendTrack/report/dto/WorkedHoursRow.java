@@ -25,6 +25,8 @@ import java.util.UUID;
  *   only set when a real CHECK_OUT attendance record exists with non-zero coordinates.
  */
 public record WorkedHoursRow(
+        UUID checkInId,            // null on day-total rows and inferred-checkout rows without a real record
+        UUID checkOutId,           // null on open shifts, inferred checkouts, and day-total rows
         UUID workerId,
         String workerName,
         String companyName,

@@ -1235,3 +1235,45 @@
 | 15:42 | Edited frontend/components/sites/SiteAssignModal.tsx | "sm:max-w-md" → "sm:max-w-lg" | ~13 |
 | 15:42 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 14 reads | ~25777 tok |
 | 15:43 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 14 reads | ~25777 tok |
+| 15:56 | Expanded assign modals from max-w-md to max-w-lg: SiteAssignModal, WorkerSiteModal, CompanySiteModal, CompanyWorkerModal | 4 files | complete | ~100 |
+| 15:57 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 14 reads | ~25777 tok |
+| 16:00 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 14 reads | ~25777 tok |
+| 13:43 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 16 reads | ~28247 tok |
+| 13:47 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 16 reads | ~28247 tok |
+| 13:48 | Session end: 11 writes across 7 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 16 reads | ~28247 tok |
+| 13:53 | Edited frontend/components/sites/SiteDialog.tsx | "sm:max-w-xl max-h-[90vh] " → "sm:max-w-3xl max-h-[90vh]" | ~22 |
+| 13:53 | Edited frontend/components/sites/SiteDialog.tsx | "h-[280px] rounded-lg bg-m" → "h-[380px] rounded-lg bg-m" | ~20 |
+| 13:54 | Edited frontend/components/sites/MapPicker.tsx | "280px" → "380px" | ~20 |
+| 13:54 | Session end: 14 writes across 9 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 18 reads | ~33430 tok |
+| 14:38 | Edited src/main/java/org/example/attendTrack/report/dto/AttendanceReportRow.java | 4→5 lines | ~35 |
+| 14:39 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified toRow() | ~59 |
+| 14:39 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | 3→7 lines | ~130 |
+| 14:39 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 3 condition(s) | ~475 |
+| 14:39 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | modified changeSite() | ~86 |
+| 14:40 | Edited frontend/messages/bg.json | 2→4 lines | ~46 |
+| 14:40 | Edited frontend/messages/en.json | 2→4 lines | ~46 |
+| 14:41 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: id | ~36 |
+| 14:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~25 |
+| 14:43 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added optional chaining | ~1859 |
+| 14:43 | Session end: 24 writes across 11 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 21 reads | ~46167 tok |
+| 14:57 | Session end: 24 writes across 11 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 21 reads | ~46167 tok |
+| 15:14 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | 3→5 lines | ~77 |
+| 15:15 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getId() | ~169 |
+| 15:15 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getLat() | ~226 |
+| 15:15 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 5→6 lines | ~128 |
+| 15:15 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 8→9 lines | ~154 |
+| 15:15 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | added 1 condition(s) | ~129 |
+| 15:16 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: checkInId, checkOutId | ~54 |
+| 15:16 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 6→5 lines | ~77 |
+| 15:16 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: hover | ~193 |
+| 15:17 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | reduced (-11 lines) | ~45 |
+| 15:17 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~33 |
+| 15:17 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added nullish coalescing | ~364 |
+| 15:18 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: hover | ~265 |
+| 15:21 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added optional chaining | ~523 |
+| 15:21 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 5→3 lines | ~39 |
+| 15:21 | Session end: 39 writes across 12 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 22 reads | ~50160 tok |
+| 15:30 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 10→5 lines | ~72 |
+| 15:31 | Session end: 40 writes across 12 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 22 reads | ~50237 tok |
+| 15:32 | Session end: 40 writes across 12 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 22 reads | ~50237 tok |
+| 15:32 | Session end: 40 writes across 12 files (AttendanceService.java, AttendanceController.java, bg.json, en.json, page.tsx) | 22 reads | ~50237 tok |

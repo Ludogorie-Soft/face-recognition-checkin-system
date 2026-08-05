@@ -28,6 +28,7 @@ import api from '@/lib/axios'
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface AttendanceRow {
+  id: string
   workerId: string
   workerName: string
   companyName: string | null
@@ -48,6 +49,8 @@ interface MissingRow {
 }
 
 interface WorkedHoursRow {
+  checkInId: string | null
+  checkOutId: string | null
   workerId: string
   workerName: string
   companyName: string | null
@@ -480,11 +483,11 @@ export default function ReportsPage() {
       ) : rows.length === 0 ? (
         <p className="text-sm text-muted-foreground py-8 text-center">{t('noResults')}</p>
       ) : tab === 'attendance' ? (
-        <AttendanceTable rows={rows as AttendanceRow[]} t={t} />
+        <AttendanceTable rows={rows as AttendanceRow[]} t={t} sites={filteredSites} />
       ) : tab === 'missing' ? (
         <MissingTable rows={rows as MissingRow[]} t={t} />
       ) : tab === 'hours' ? (
-        <WorkedHoursTable rows={rows as WorkedHoursRow[]} t={t} onCorrect={openCorrection} />
+        <WorkedHoursTable rows={rows as WorkedHoursRow[]} t={t} onCorrect={openCorrection} sites={filteredSites} />
       ) : (
         <WorkedHoursSummaryTable
           rows={rows as WorkedHoursSummaryRow[]}
@@ -547,79 +550,154 @@ export default function ReportsPage() {
 // ── Attendance table ───────────────────────────────────────────────────────────
 
 function AttendanceTable({
-  rows, t,
-}: { rows: AttendanceRow[]; t: ReturnType<typeof useTranslations> }) {
+  rows, t, sites,
+}: {
+  rows: AttendanceRow[]
+  t: ReturnType<typeof useTranslations>
+  sites: import('@/types/site').SiteResponse[]
+}) {
+  const tc = useTranslations('common')
+  const qc = useQueryClient()
+
+  const [changeSiteRow, setChangeSiteRow] = useState<AttendanceRow | null>(null)
+  const [selectedSiteId, setSelectedSiteId] = useState('')
+
+  const changeSiteMutation = useMutation({
+    mutationFn: ({ id, siteId }: { id: string; siteId: string }) =>
+      api.patch(`/api/attendance/${id}/site`, null, { params: { siteId } }),
+    onSuccess: () => {
+      toast.success(tc('success'))
+      qc.invalidateQueries({ queryKey: ['reports', 'attendance'] })
+      setChangeSiteRow(null)
+    },
+    onError: () => toast.error(tc('error')),
+  })
+
+  const handleOpenChangeSite = (row: AttendanceRow) => {
+    setChangeSiteRow(row)
+    setSelectedSiteId('')
+  }
+
   return (
-    <div className="rounded-lg border border-border overflow-x-auto">
-      <Table className="min-w-[640px]">
-        <TableHeader>
-          <TableRow className="bg-muted/50">
-            <TableHead>{t('date')}</TableHead>
-            <TableHead>{t('recordedAt')}</TableHead>
-            <TableHead>{t('worker')}</TableHead>
-            <TableHead>{t('company')}</TableHead>
-            <TableHead>{t('site')}</TableHead>
-            <TableHead>{t('type')}</TableHead>
-            <TableHead>{t('location')}</TableHead>
-            <TableHead>{t('locationValid')}</TableHead>
-            <TableHead>{t('faceConfidence')}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((row, i) => (
-            <TableRow key={i}>
-              <TableCell className="text-sm">{row.date}</TableCell>
-              <TableCell className="text-sm font-mono">{formatTime(row.recordedAt.slice(11))}</TableCell>
-              <TableCell className="font-medium">{row.workerName}</TableCell>
-              <TableCell className="text-muted-foreground text-sm">{row.companyName ?? '—'}</TableCell>
-              <TableCell className="text-muted-foreground text-sm">{row.siteName}</TableCell>
-              <TableCell>
-                <Badge
-                  variant={row.type === 'CHECK_IN' ? 'default' : 'secondary'}
-                  className={row.type === 'CHECK_IN'
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}
-                >
-                  {t(row.type === 'CHECK_IN' ? 'checkIn' : 'checkOut')}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-xs font-mono text-muted-foreground whitespace-nowrap">
-                <a
-                  href={`https://www.google.com/maps?q=${row.lat},${row.lng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary underline-offset-2 hover:underline"
-                >
-                  {row.lat.toFixed(5)}, {row.lng.toFixed(5)}
-                </a>
-              </TableCell>
-              <TableCell>
-                {row.locationValid ? (
-                  <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400 text-sm font-medium">
-                    <CheckCircle2 size={15} />{t('inZone')}
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-sm font-medium">
-                    <XCircle size={15} />{t('outOfZone')}
-                  </span>
-                )}
-              </TableCell>
-              <TableCell className="text-sm">
-                {row.manualOverride ? (
-                  <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
-                    <AlertTriangle size={13} />{t('manual')}
-                  </span>
-                ) : row.faceConfidence != null ? (
-                  `${Math.round(row.faceConfidence)}%`
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </TableCell>
+    <>
+      <div className="rounded-lg border border-border overflow-x-auto">
+        <Table className="min-w-[700px]">
+          <TableHeader>
+            <TableRow className="bg-muted/50">
+              <TableHead>{t('date')}</TableHead>
+              <TableHead>{t('recordedAt')}</TableHead>
+              <TableHead>{t('worker')}</TableHead>
+              <TableHead>{t('company')}</TableHead>
+              <TableHead>{t('site')}</TableHead>
+              <TableHead>{t('type')}</TableHead>
+              <TableHead>{t('location')}</TableHead>
+              <TableHead>{t('locationValid')}</TableHead>
+              <TableHead>{t('faceConfidence')}</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row, i) => (
+              <TableRow key={i}>
+                <TableCell className="text-sm">{row.date}</TableCell>
+                <TableCell className="text-sm font-mono">{formatTime(row.recordedAt.slice(11))}</TableCell>
+                <TableCell className="font-medium">{row.workerName}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">{row.companyName ?? '—'}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  <span className="flex items-center gap-1.5">
+                    {row.siteName}
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground shrink-0"
+                      title={t('changeSite')}
+                      onClick={() => handleOpenChangeSite(row)}
+                    >
+                      <Pencil size={11} />
+                    </Button>
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={row.type === 'CHECK_IN' ? 'default' : 'secondary'}
+                    className={row.type === 'CHECK_IN'
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                      : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}
+                  >
+                    {t(row.type === 'CHECK_IN' ? 'checkIn' : 'checkOut')}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-xs font-mono text-muted-foreground whitespace-nowrap">
+                  <a
+                    href={`https://www.google.com/maps?q=${row.lat},${row.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary underline-offset-2 hover:underline"
+                  >
+                    {row.lat.toFixed(5)}, {row.lng.toFixed(5)}
+                  </a>
+                </TableCell>
+                <TableCell>
+                  {row.locationValid ? (
+                    <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400 text-sm font-medium">
+                      <CheckCircle2 size={15} />{t('inZone')}
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-sm font-medium">
+                      <XCircle size={15} />{t('outOfZone')}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="text-sm">
+                  {row.manualOverride ? (
+                    <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                      <AlertTriangle size={13} />{t('manual')}
+                    </span>
+                  ) : row.faceConfidence != null ? (
+                    `${Math.round(row.faceConfidence)}%`
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Change site dialog */}
+      <Dialog open={!!changeSiteRow} onOpenChange={(v) => !v && setChangeSiteRow(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('changeSite')}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-2">
+            <p className="text-sm text-muted-foreground">
+              {changeSiteRow?.workerName} — {changeSiteRow?.siteName}
+            </p>
+            <Select value={selectedSiteId} onValueChange={setSelectedSiteId}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('selectSite')} />
+              </SelectTrigger>
+              <SelectContent>
+                {sites.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setChangeSiteRow(null)}>{tc('cancel')}</Button>
+            <Button
+              disabled={!selectedSiteId || changeSiteMutation.isPending}
+              onClick={() => changeSiteRow && changeSiteMutation.mutate({ id: changeSiteRow.id, siteId: selectedSiteId })}
+            >
+              {changeSiteMutation.isPending && <Loader2 size={14} className="animate-spin mr-2" />}
+              {tc('save')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
@@ -653,13 +731,32 @@ function MissingTable({
 // ── Worked hours table (by-site) ───────────────────────────────────────────────
 
 function WorkedHoursTable({
-  rows, t, onCorrect,
+  rows, t, onCorrect, sites,
 }: {
   rows: WorkedHoursRow[]
   t: ReturnType<typeof useTranslations>
   onCorrect: (row: WorkedHoursRow) => void
+  sites: import('@/types/site').SiteResponse[]
 }) {
+  const tc = useTranslations('common')
+  const qc = useQueryClient()
+
+  const [changeSiteRow, setChangeSiteRow] = useState<WorkedHoursRow | null>(null)
+  const [selectedSiteId, setSelectedSiteId] = useState('')
+
+  const changeSiteMutation = useMutation({
+    mutationFn: ({ checkInId, checkOutId, siteId }: { checkInId: string; checkOutId: string | null; siteId: string }) =>
+      api.patch('/api/attendance/move-session', null, { params: { checkInId, checkOutId: checkOutId ?? undefined, siteId } }),
+    onSuccess: () => {
+      toast.success(tc('success'))
+      qc.invalidateQueries({ queryKey: ['reports', 'hours'] })
+      setChangeSiteRow(null)
+    },
+    onError: () => toast.error(tc('error')),
+  })
+
   return (
+    <>
     <div className="rounded-lg border border-border overflow-x-auto">
       <Table className="min-w-[700px]">
         <TableHeader>
@@ -694,7 +791,22 @@ function WorkedHoursTable({
               >
                 <TableCell className="font-medium">{row.workerName}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">{row.companyName ?? '—'}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">{row.siteName}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    {row.siteName}
+                    {!isTotalRow && row.checkInId && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-6 w-6 text-muted-foreground hover:text-foreground shrink-0"
+                        title={t('changeSite')}
+                        onClick={() => { setChangeSiteRow(row); setSelectedSiteId('') }}
+                      >
+                        <Pencil size={11} />
+                      </Button>
+                    )}
+                  </span>
+                </TableCell>
                 <TableCell className="text-sm">{row.date}</TableCell>
                 <TableCell className="font-mono text-sm">
                   {isTotalRow
@@ -783,6 +895,47 @@ function WorkedHoursTable({
         </TableBody>
       </Table>
     </div>
+
+      {/* Change site dialog */}
+      <Dialog open={!!changeSiteRow} onOpenChange={(v) => !v && setChangeSiteRow(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('changeSite')}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-2">
+            <p className="text-sm text-muted-foreground">
+              {changeSiteRow?.workerName} — {changeSiteRow?.siteName}
+            </p>
+            <Select value={selectedSiteId} onValueChange={setSelectedSiteId}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('selectSite')} />
+              </SelectTrigger>
+              <SelectContent>
+                {sites
+                  .filter((s) => s.id !== changeSiteRow?.siteId)
+                  .map((s) => (
+                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setChangeSiteRow(null)}>{tc('cancel')}</Button>
+            <Button
+              disabled={!selectedSiteId || changeSiteMutation.isPending}
+              onClick={() => changeSiteRow && changeSiteMutation.mutate({
+                checkInId: changeSiteRow.checkInId!,
+                checkOutId: changeSiteRow.checkOutId,
+                siteId: selectedSiteId,
+              })}
+            >
+              {changeSiteMutation.isPending && <Loader2 size={14} className="animate-spin mr-2" />}
+              {tc('save')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
