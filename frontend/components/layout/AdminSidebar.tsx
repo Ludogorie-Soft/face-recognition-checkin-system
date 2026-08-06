@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -10,6 +11,7 @@ import {
   BarChart2,
   LogOut,
   ClipboardCheck,
+  ClipboardEdit,
   X,
   ScanFace,
   Building2,
@@ -19,6 +21,7 @@ import { ThemeToggle } from './ThemeToggle'
 import { LanguageToggle } from './LanguageToggle'
 import { NotificationBell } from './NotificationBell'
 import { removeToken } from '@/lib/auth'
+import { ManualAttendanceModal } from '@/components/dashboard/ManualAttendanceModal'
 
 interface AdminSidebarProps {
   onClose?: () => void
@@ -26,10 +29,12 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ onClose }: AdminSidebarProps) {
   const t = useTranslations('nav')
+  const td = useTranslations('dashboard')
   const params = useParams()
   const pathname = usePathname()
   const locale = params.locale as string
   const router = useRouter()
+  const [manualOpen, setManualOpen] = useState(false)
 
   const logout = () => {
     removeToken()
@@ -78,7 +83,17 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
             {label}
           </Link>
         ))}
+
+        <button
+          onClick={() => setManualOpen(true)}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+        >
+          <ClipboardEdit size={18} />
+          {td('manualAttendance')}
+        </button>
       </nav>
+
+      <ManualAttendanceModal open={manualOpen} onClose={() => setManualOpen(false)} />
       <div className="flex items-center justify-between px-3 py-4 border-t border-border">
         <div className="flex items-center gap-1">
           <NotificationBell />

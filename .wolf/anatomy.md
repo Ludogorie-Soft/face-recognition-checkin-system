@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-06T05:23:18.981Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-06T10:21:11.039Z
 > Files: 149 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -101,7 +101,7 @@
 
 ## frontend/components/layout/
 
-- `AdminSidebar.tsx` — AdminSidebar (~937 tok)
+- `AdminSidebar.tsx` — AdminSidebar (~1123 tok)
 - `ThemeToggle.tsx` — ThemeToggle (~197 tok)
 
 ## frontend/components/offline/
@@ -112,7 +112,7 @@
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~1205 tok)
 - `SiteAssignModal.tsx` — SiteAssignModal — renders modal; sm:max-w-lg; assigned list max-h-60 overflow-y-auto (~2040 tok)
-- `SiteDialog.tsx` — MapPicker — renders form, modal (~3916 tok)
+- `SiteDialog.tsx` — MapPicker — renders form, modal (~4136 tok)
 - `TimePicker.tsx` — HOURS (~502 tok)
 
 ## frontend/components/ui/
@@ -155,8 +155,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~2870 tok)
-- `en.json` (~2744 tok)
+- `bg.json` (~2899 tok)
+- `en.json` (~2768 tok)
 
 ## frontend/scripts/
 

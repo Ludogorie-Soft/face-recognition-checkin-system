@@ -281,75 +281,86 @@ export function SiteDialog({ open, onClose, site }: Props) {
             {checkpoints.length === 0 ? (
               <p className="text-xs text-muted-foreground py-1">{t('noCheckpoints')}</p>
             ) : (
-              checkpoints.map((cp, idx) => (
-                <div
-                  key={cp.localId}
-                  onClick={() => setSelectedCpId(cp.localId)}
-                  className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${
-                    cp.localId === selectedCpId
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border hover:bg-muted/40'
-                  }`}
-                >
-                  {/* Index badge */}
-                  <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
-                    cp.localId === selectedCpId ? 'bg-primary' : 'bg-muted-foreground'
-                  }`}>
-                    {idx + 1}
-                  </span>
+              <>
+                {/* Column headers */}
+                <div className="flex items-center gap-2 px-2 pb-1 border-b border-border">
+                  <span className="w-6 shrink-0" />
+                  <span className="flex-1 text-xs font-medium text-muted-foreground">{t('name')}</span>
+                  <span className="w-32 shrink-0 text-xs font-medium text-muted-foreground">{t('radiusLabel')}</span>
+                  <span className="text-xs font-medium text-muted-foreground shrink-0 hidden sm:block">{t('coordinates')}</span>
+                  <span className="w-7 shrink-0" />
+                </div>
 
-                  {/* Name input */}
-                  <Input
-                    placeholder={t('checkpointName')}
-                    value={cp.name}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      handleUpdateCheckpoint(cp.localId, 'name', e.target.value)
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="h-7 text-sm flex-1"
-                    disabled={loading}
-                  />
+                {checkpoints.map((cp, idx) => (
+                  <div
+                    key={cp.localId}
+                    onClick={() => setSelectedCpId(cp.localId)}
+                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${
+                      cp.localId === selectedCpId
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:bg-muted/40'
+                    }`}
+                  >
+                    {/* Index badge */}
+                    <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                      cp.localId === selectedCpId ? 'bg-primary' : 'bg-muted-foreground'
+                    }`}>
+                      {idx + 1}
+                    </span>
 
-                  {/* Radius input */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {/* Name input */}
                     <Input
-                      type="number"
-                      min={50}
-                      max={5000}
-                      value={cp.radiusMeters}
+                      placeholder={t('checkpointNamePlaceholder')}
+                      value={cp.name}
                       onChange={(e) => {
                         e.stopPropagation()
-                        handleUpdateCheckpoint(cp.localId, 'radiusMeters', e.target.value)
+                        handleUpdateCheckpoint(cp.localId, 'name', e.target.value)
                       }}
                       onClick={(e) => e.stopPropagation()}
-                      className="h-7 text-sm w-20"
+                      className="h-7 text-sm flex-1"
                       disabled={loading}
                     />
-                    <span className="text-xs text-muted-foreground">м</span>
+
+                    {/* Radius input */}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Input
+                        type="number"
+                        min={50}
+                        max={5000}
+                        value={cp.radiusMeters}
+                        onChange={(e) => {
+                          e.stopPropagation()
+                          handleUpdateCheckpoint(cp.localId, 'radiusMeters', e.target.value)
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-7 text-sm w-24"
+                        disabled={loading}
+                      />
+                      <span className="text-xs text-muted-foreground">м</span>
+                    </div>
+
+                    {/* Coordinates display */}
+                    <span className="text-xs text-muted-foreground shrink-0 hidden sm:block">
+                      {cp.lat.toFixed(5)}, {cp.lng.toFixed(5)}
+                    </span>
+
+                    {/* Delete */}
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteCheckpoint(cp.localId)
+                      }}
+                      disabled={loading}
+                    >
+                      <Trash2 size={13} />
+                    </Button>
                   </div>
-
-                  {/* Coordinates display */}
-                  <span className="text-xs text-muted-foreground flex-shrink-0 hidden sm:block">
-                    {cp.lat.toFixed(5)}, {cp.lng.toFixed(5)}
-                  </span>
-
-                  {/* Delete */}
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-destructive"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDeleteCheckpoint(cp.localId)
-                    }}
-                    disabled={loading}
-                  >
-                    <Trash2 size={13} />
-                  </Button>
-                </div>
-              ))
+                ))}
+              </>
             )}
           </div>
 

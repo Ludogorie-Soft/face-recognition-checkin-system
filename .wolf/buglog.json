@@ -2721,6 +2721,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-05T12:30:56.036Z"
+    },
+    {
+      "id": "bug-168",
+      "timestamp": "2026-08-06T09:58:34.854Z",
+      "error_message": "CSS fix: hover",
+      "file": "frontend/components/layout/AdminSidebar.tsx",
+      "root_cause": "hover: text-foreground hover:bg-accent' → text-foreground hover:bg-accent transition-colors\"",
+      "fix": "Changed hover: text-foreground hover:bg-accent' → text-foreground hover:bg-accent transition-colors\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-06T09:58:34.855Z"
+    },
+    {
+      "id": "bug-169",
+      "timestamp": "2026-08-06T10:12:51.655Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/sites/SiteDialog.tsx",
+      "root_cause": "Had \"h-7 text-sm w-16\"",
+      "fix": "Changed to \"h-7 text-sm w-24\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-06T10:12:51.655Z"
+    },
+    {
+      "id": "bug-170",
+      "timestamp": "2026-08-06T10:21:11.059Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/sites/SiteDialog.tsx",
+      "root_cause": "Had \"w-[6.75rem] shrink-0 text-xs font-medium text-mut",
+      "fix": "Changed to \"w-32 shrink-0 text-xs font-medium text-muted-fore",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-06T10:21:11.059Z"
     }
   ]
 }

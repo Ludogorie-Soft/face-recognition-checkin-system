@@ -103,6 +103,8 @@
     "clickMapToAdd": "Click on the map to add a checkpoint. Drag markers to reposition.",
     "noCheckpoints": "No checkpoints added",
     "checkpointName": "Checkpoint name (optional)",
+    "checkpointNamePlaceholder": "Name (optional)",
+    "radiusLabel": "Radius (m)",
     "noCheckpointsError": "Add at least one checkpoint",
     "checkpointRadiusError": "Every checkpoint must have a radius of at least 1 metre",
     "changeCompanyHint": "Changing will reassign the site to the selected company"
