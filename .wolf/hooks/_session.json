@@ -111,6 +111,11 @@
       "count": 1,
       "tokens": 700,
       "first_read": "2026-08-05T12:07:35.410Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/components/verify/VerifyCamera.tsx": {
+      "count": 1,
+      "tokens": 6300,
+      "first_read": "2026-08-06T05:23:04.180Z"
     }
   },
   "files_written": [
@@ -353,6 +358,12 @@
       "action": "edit",
       "tokens": 77,
       "at": "2026-08-05T12:30:56.031Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/verify/VerifyCamera.tsx",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-08-06T05:23:19.013Z"
     }
   ],
   "edit_counts": {
@@ -367,11 +378,12 @@
     "frontend/components/sites/MapPicker.tsx": 1,
     "src/main/java/org/example/attendTrack/report/dto/AttendanceReportRow.java": 1,
     "src/main/java/org/example/attendTrack/report/ReportService.java": 5,
-    "src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java": 1
+    "src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java": 1,
+    "frontend/components/verify/VerifyCamera.tsx": 1
   },
-  "anatomy_hits": 16,
+  "anatomy_hits": 17,
   "anatomy_misses": 2,
   "repeated_reads_warned": 14,
   "cerebrum_warnings": 0,
-  "stop_count": 18
+  "stop_count": 19
 }

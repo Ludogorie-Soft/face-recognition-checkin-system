@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T12:30:55.989Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-06T05:23:18.981Z
 > Files: 149 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -123,7 +123,7 @@
 
 - `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal (~705 tok)
 - `SyncLoader.tsx` — SVG comet-arc loader; indeterminate: pure CSS spin + feGaussianBlur glow; determinate: smooth strokeDashoffset fill. No JS state. (~620 tok)
-- `VerifyCamera.tsx` — resolveWorkerSite (~6300 tok)
+- `VerifyCamera.tsx` — resolveWorkerSite (~5981 tok)
 
 ## frontend/components/workers/
 

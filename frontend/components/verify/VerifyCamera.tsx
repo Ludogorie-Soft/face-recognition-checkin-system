@@ -470,31 +470,6 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord }: Props) {
       {cameraActive && (
         <div className="flex-1 min-h-0 overflow-y-auto bg-card border-t border-border flex flex-col">
 
-          {/* Session log strip */}
-          {sessionLog.size > 0 && (
-            <div className="flex items-center gap-2 px-4 py-2 border-b border-border/60 overflow-x-auto">
-              <Users size={12} className="text-muted-foreground shrink-0" />
-              <div className="flex gap-1.5">
-                {Array.from(sessionLog.entries()).map(([workerId, type]) => {
-                  const worker = uniqueWorkers.find((w) => w.id === workerId)
-                  if (!worker) return null
-                  return (
-                    <span
-                      key={workerId}
-                      className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
-                        type === 'CHECK_IN'
-                          ? 'bg-green-500/15 text-green-600 dark:text-green-400'
-                          : 'bg-red-500/15 text-red-600 dark:text-red-400'
-                      }`}
-                    >
-                      {worker.name.split(' ')[0]}
-                    </span>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
           <div className="px-4 pt-3 pb-4 flex flex-col gap-3">
             {confirming ? (
               <div className="flex items-center justify-center py-5">
