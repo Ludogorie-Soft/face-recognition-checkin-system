@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-06T10:21:11.039Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-06T11:50:34.580Z
 > Files: 149 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -97,7 +97,7 @@
 
 ## frontend/components/dashboard/
 
-- `ManualAttendanceModal.tsx` — todayStr — renders modal (~2730 tok)
+- `ManualAttendanceModal.tsx` — todayStr, currentTimeStr, fmtTime — renders modal; per-worker time picker; session summary (Вход/Изход/Отработени); sm:max-w-xl (~3300 tok)
 
 ## frontend/components/layout/
 
@@ -155,8 +155,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~2899 tok)
-- `en.json` (~2768 tok)
+- `bg.json` (~2923 tok)
+- `en.json` (~2791 tok)
 
 ## frontend/scripts/
 
@@ -174,15 +174,15 @@
 
 ## src/main/java/org/example/attendTrack/attendance/
 
-- `AttendanceController.java` — RestController: AttendanceController (9 endpoints) (~1048 tok)
-- `AttendanceRepository.java` — Class: AttendanceRepository (~1913 tok)
-- `AttendanceService.java` — Service: AttendanceService (~3767 tok)
-- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. For each worker who checked in yesterday at a site (~1099 tok)
+- `AttendanceController.java` — RestController: AttendanceController (10 endpoints) (~1188 tok)
+- `AttendanceRepository.java` — Class: AttendanceRepository (~1902 tok)
+- `AttendanceService.java` — Service: AttendanceService; getWorkersDayStatus tracks firstCheckIn+lastCheckOut+calculatedHours; manualRecord uses req.time() (~4200 tok)
+- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1427 tok)
 
 ## src/main/java/org/example/attendTrack/attendance/dto/
 
-- `ManualAttendanceRequest.java` — Class: ManualAttendanceRequest (~118 tok)
-- `WorkerDayStatus.java` — Status of one worker for a given site + day, used by the admin manual-attendance panel. (~155 tok)
+- `ManualAttendanceRequest.java` — Class: ManualAttendanceRequest; fields: workerId, siteId, type, date, time (LocalTime, optional) (~145 tok)
+- `WorkerDayStatus.java` — Status of one worker for a given site + day; fields: workerId, workerName, attendanceId, lastType, checkInTime, checkOutTime, calculatedHours (~220 tok)
 
 ## src/main/java/org/example/attendTrack/common/exception/
 

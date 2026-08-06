@@ -22,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.PageRequest;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -145,21 +147,44 @@ public class AttendanceService {
         LocalDateTime from = date.atStartOfDay();
         LocalDateTime to = date.plusDays(1).atStartOfDay();
 
-        // Last attendance record per worker for this site + day
+        // Track last record, first check-in, and last check-out per worker
         Map<UUID, Attendance> lastRecord = new LinkedHashMap<>();
+        Map<UUID, Attendance> firstCheckIn = new LinkedHashMap<>();
+        Map<UUID, Attendance> lastCheckOut = new LinkedHashMap<>();
         for (Attendance a : attendanceRepository.findTodayBySite(siteId, from, to)) {
-            lastRecord.put(a.getWorker().getId(), a); // later records overwrite earlier ones
+            UUID wid = a.getWorker().getId();
+            lastRecord.put(wid, a);
+            if (a.getType() == AttendanceType.CHECK_IN) {
+                firstCheckIn.putIfAbsent(wid, a);
+            } else if (a.getType() == AttendanceType.CHECK_OUT) {
+                lastCheckOut.put(wid, a);
+            }
         }
 
         return siteWorkerRepository.findBySiteId(siteId).stream()
                 .map(sw -> {
                     User w = sw.getUser();
-                    Attendance last = lastRecord.get(w.getId());
+                    UUID wid = w.getId();
+                    Attendance last = lastRecord.get(wid);
+                    Attendance ci = firstCheckIn.get(wid);
+                    Attendance co = lastCheckOut.get(wid);
+
+                    LocalTime checkInTime = ci != null ? ci.getRecordedAt().toLocalTime() : null;
+                    LocalTime checkOutTime = co != null ? co.getRecordedAt().toLocalTime() : null;
+                    Double calculatedHours = null;
+                    if (ci != null && co != null) {
+                        long minutes = Duration.between(ci.getRecordedAt(), co.getRecordedAt()).toMinutes();
+                        calculatedHours = Math.round(minutes / 60.0 * 10) / 10.0;
+                    }
+
                     return new WorkerDayStatus(
                             w.getId(),
                             w.getName(),
                             last != null ? last.getId() : null,
-                            last != null ? last.getType() : null
+                            last != null ? last.getType() : null,
+                            checkInTime,
+                            checkOutTime,
+                            calculatedHours
                     );
                 })
                 .sorted(Comparator.comparing(WorkerDayStatus::workerName))
@@ -196,8 +221,8 @@ public class AttendanceService {
                     "Worker already has a " + req.type() + " record for this day");
         }
 
-        // Use current time on the target date so the record lands in the correct day
-        LocalDateTime recordedAt = targetDate.atTime(java.time.LocalTime.now());
+        // Use the provided time (or current time) so the record lands in the correct day
+        LocalDateTime recordedAt = targetDate.atTime(req.time() != null ? req.time() : LocalTime.now());
 
         attendanceRepository.save(Attendance.builder()
                 .worker(worker)

@@ -24,6 +24,7 @@ import java.util.UUID;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
+    private final AutoCheckoutScheduler autoCheckoutScheduler;
 
     @GetMapping("/today")
     public ResponseEntity<Map<String, String>> getTodayStatus(@RequestParam UUID siteId) {
@@ -83,6 +84,15 @@ public class AttendanceController {
             @RequestParam UUID siteId) {
         attendanceService.changeSite(id, siteId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/auto-checkout")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Integer>> triggerAutoCheckout(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        int created = autoCheckoutScheduler.triggerAutoCheckout(from, to);
+        return ResponseEntity.ok(Map.of("created", created));
     }
 
     @PostMapping("/revalidate")

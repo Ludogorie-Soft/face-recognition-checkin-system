@@ -4,11 +4,13 @@ import jakarta.validation.constraints.NotNull;
 import org.example.attendTrack.attendance.AttendanceType;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 public record ManualAttendanceRequest(
         @NotNull UUID workerId,
         @NotNull UUID siteId,
         @NotNull AttendanceType type,
-        LocalDate date   // null → use today; used to place the record on the correct day
+        LocalDate date,   // null → use today
+        LocalTime time    // null → use current time
 ) {}

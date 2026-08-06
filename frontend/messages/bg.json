@@ -76,7 +76,8 @@
     "markedSuccess": "{name} е отбелязан успешно",
     "clearedSuccess": "Записът на {name} е изчистен",
     "clearRecord": "Изчисти запис",
-    "noWorkersAssigned": "Няма работници, назначени на този обект"
+    "noWorkersAssigned": "Няма работници, назначени на този обект",
+    "sessionSummary": "Вход: {checkIn} · Изход: {checkOut} · Отработени: {hours} ч."
   },
   "sites": {
     "title": "Обекти",

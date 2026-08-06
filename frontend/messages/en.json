@@ -76,7 +76,8 @@
     "markedSuccess": "{name} marked successfully",
     "clearedSuccess": "Record for {name} cleared",
     "clearRecord": "Clear record",
-    "noWorkersAssigned": "No workers assigned to this site"
+    "noWorkersAssigned": "No workers assigned to this site",
+    "sessionSummary": "In: {checkIn} · Out: {checkOut} · Worked: {hours} h."
   },
   "sites": {
     "title": "Sites",

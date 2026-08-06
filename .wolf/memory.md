@@ -3,6 +3,8 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 
+| 2026-08-06 | ManualAttendanceModal — per-worker time picker, session summary (Вход/Изход/Отработени ч.), modal sm:max-w-xl | WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, ManualAttendanceModal.tsx, bg.json, en.json | success | ~4000 |
+
 | 2026-07-31 | Rewrote SyncLoader.tsx — replaced JS setInterval segments with pure CSS comet arc (spin animation) + SVG glow filter (feGaussianBlur). Determinate: smooth strokeDashoffset transition. Indeterminate: rotating 28% arc. Center: ClipboardCheck icon / pct%. Build ✓ | SyncLoader.tsx | success | ~800 |
 
 | 15:00 | Fixed: deactivate() now deletes face descriptor — soft-delete left orphan face_descriptors blocking re-registration | UserService.java | fixed | ~800 |
@@ -1300,3 +1302,30 @@
 | 13:21 | Edited frontend/components/sites/SiteDialog.tsx | "w-[6.75rem] shrink-0 text" → "w-32 shrink-0 text-xs fon" | ~34 |
 | 13:21 | Session end: 9 writes across 4 files (AdminSidebar.tsx, SiteDialog.tsx, bg.json, en.json) | 6 reads | ~19373 tok |
 | 13:41 | Session end: 9 writes across 4 files (AdminSidebar.tsx, SiteDialog.tsx, bg.json, en.json) | 6 reads | ~19373 tok |
+
+## Session: 2026-08-06 14:17
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:21 | Created src/main/java/org/example/attendTrack/attendance/dto/WorkerDayStatus.java | — | ~258 |
+| 14:21 | Created src/main/java/org/example/attendTrack/attendance/dto/ManualAttendanceRequest.java | — | ~128 |
+| 14:21 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 2 import(s) | ~38 |
+| 14:22 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 3 condition(s) | ~530 |
+| 14:22 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified time() | ~52 |
+| 14:25 | Edited frontend/messages/bg.json | 2→3 lines | ~51 |
+| 14:25 | Edited frontend/messages/en.json | 2→3 lines | ~47 |
+| 14:26 | Created frontend/components/dashboard/ManualAttendanceModal.tsx | — | ~3310 |
+| 14:28 | Session end: 8 writes across 6 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 8 reads | ~28725 tok |
+| 14:31 | Session end: 8 writes across 6 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 8 reads | ~28725 tok |
+| 14:32 | Edited frontend/messages/bg.json | inline fix | ~23 |
+| 14:32 | Edited frontend/messages/en.json | inline fix | ~21 |
+| 14:32 | Session end: 10 writes across 6 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 8 reads | ~28769 tok |
+| 14:33 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | "sm:max-w-lg max-h-[90vh] " → "sm:max-w-xl max-h-[90vh] " | ~21 |
+| 14:33 | Session end: 11 writes across 6 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 8 reads | ~28790 tok |
+| 14:38 | Session end: 11 writes across 6 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 8 reads | ~28790 tok |
+| 14:42 | Session end: 11 writes across 6 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 13 reads | ~37916 tok |
+| 14:49 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | 22→21 lines | ~210 |
+| 14:50 | Created src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | — | ~1427 |
+| 14:50 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | 6→7 lines | ~62 |
+| 14:50 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | expanded (+9 lines) | ~143 |
+| 14:52 | Session end: 15 writes across 9 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 13 reads | ~39889 tok |
