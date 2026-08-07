@@ -13,6 +13,9 @@ export interface CheckpointInfo {
   lat: number
   lng: number
   radiusMeters: number
+  lat2: number | null
+  lng2: number | null
+  checkpointType: 'POINT' | 'LINE'
 }
 
 export interface SiteInfo {

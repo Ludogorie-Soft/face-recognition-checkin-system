@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { useForm, Controller } from 'react-hook-form'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { MapPin, Loader2, Trash2 } from 'lucide-react'
+import { MapPin, Loader2, Trash2, CircleDot, Minus } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
@@ -20,7 +20,7 @@ import { useCreateSite, useUpdateSite, useMoveSiteCompany } from '@/hooks/useSit
 import { useCompanies } from '@/hooks/useCompanies'
 import { apiErrorMessage } from '@/lib/errors'
 import type { SiteResponse, SiteRequest } from '@/types/site'
-import type { CheckpointDraft } from './MapPicker'
+import type { CheckpointDraft, CheckpointType } from './MapPicker'
 
 // Leaflet uses window — must be loaded client-side only
 const MapPicker = dynamic(
@@ -32,6 +32,8 @@ const MapPicker = dynamic(
     ),
   }
 )
+
+const LINE_DEFAULT_RADIUS = 5  // corridor half-width in metres
 
 interface Props {
   open: boolean
@@ -71,6 +73,9 @@ export function SiteDialog({ open, onClose, site }: Props) {
   const [checkpoints, setCheckpoints] = useState<CheckpointDraft[]>([])
   const [selectedCpId, setSelectedCpId] = useState<string | null>(null)
   const [companyId, setCompanyId] = useState('')
+  const [drawMode, setDrawMode] = useState<CheckpointType>('POINT')
+  // First point of a LINE checkpoint while waiting for the second click
+  const [pendingLineStart, setPendingLineStart] = useState<{ localId: string; lat: number; lng: number } | null>(null)
 
   useEffect(() => {
     if (!open) return
@@ -80,11 +85,9 @@ export function SiteDialog({ open, onClose, site }: Props) {
       workStartTime: toTimeInput(site?.workStartTime),
       workEndTime: toTimeInput(site?.workEndTime),
     })
+    setDrawMode('POINT')
+    setPendingLineStart(null)
 
-    // For edit: pre-select the site's current company. For create: clear.
-    // `companies` is intentionally read from the current closure but omitted from deps —
-    // we only want to re-initialise when the dialog opens or switches sites, not on every
-    // background cache refresh.
     if (site) {
       const currentCo = companies.find((c) => c.sites.some((s) => s.id === site.id))
       setCompanyId(currentCo?.id ?? '')
@@ -100,6 +103,9 @@ export function SiteDialog({ open, onClose, site }: Props) {
         lat: cp.lat,
         lng: cp.lng,
         radiusMeters: cp.radiusMeters,
+        checkpointType: cp.checkpointType ?? 'POINT',
+        lat2: cp.lat2 ?? null,
+        lng2: cp.lng2 ?? null,
       }))
       setCheckpoints(drafts)
       setSelectedCpId(drafts[0].localId)
@@ -109,18 +115,52 @@ export function SiteDialog({ open, onClose, site }: Props) {
     }
   }, [open, site, reset]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Map event handlers ──────────────────────────────────────────────────────
+
   const handleAddCheckpoint = (lat: number, lng: number) => {
-    const localId = crypto.randomUUID()
-    const newCp: CheckpointDraft = {
-      localId,
-      id: null,
-      name: '',
-      lat,
-      lng,
-      radiusMeters: 200,
+    if (drawMode === 'LINE') {
+      // First click in LINE mode — store as pending and add a placeholder checkpoint
+      const localId = crypto.randomUUID()
+      const newCp: CheckpointDraft = {
+        localId,
+        id: null,
+        name: '',
+        lat,
+        lng,
+        radiusMeters: LINE_DEFAULT_RADIUS,
+        checkpointType: 'LINE',
+        lat2: null,
+        lng2: null,
+      }
+      setCheckpoints((prev) => [...prev, newCp])
+      setSelectedCpId(localId)
+      setPendingLineStart({ localId, lat, lng })
+    } else {
+      const localId = crypto.randomUUID()
+      const newCp: CheckpointDraft = {
+        localId,
+        id: null,
+        name: '',
+        lat,
+        lng,
+        radiusMeters: 50,
+        checkpointType: 'POINT',
+        lat2: null,
+        lng2: null,
+      }
+      setCheckpoints((prev) => [...prev, newCp])
+      setSelectedCpId(localId)
     }
-    setCheckpoints((prev) => [...prev, newCp])
-    setSelectedCpId(localId)
+  }
+
+  const handleLineSecondPoint = (lat: number, lng: number) => {
+    if (!pendingLineStart) return
+    setCheckpoints((prev) =>
+      prev.map((cp) =>
+        cp.localId === pendingLineStart.localId ? { ...cp, lat2: lat, lng2: lng } : cp
+      )
+    )
+    setPendingLineStart(null)
   }
 
   const handleMoveCheckpoint = (localId: string, lat: number, lng: number) => {
@@ -129,7 +169,17 @@ export function SiteDialog({ open, onClose, site }: Props) {
     )
   }
 
-  const handleUpdateCheckpoint = (localId: string, field: 'name' | 'radiusMeters', value: string) => {
+  const handleMoveCheckpointSecond = (localId: string, lat: number, lng: number) => {
+    setCheckpoints((prev) =>
+      prev.map((cp) => (cp.localId === localId ? { ...cp, lat2: lat, lng2: lng } : cp))
+    )
+  }
+
+  const handleUpdateCheckpoint = (
+    localId: string,
+    field: 'name' | 'radiusMeters',
+    value: string
+  ) => {
     setCheckpoints((prev) =>
       prev.map((cp) =>
         cp.localId === localId
@@ -146,6 +196,8 @@ export function SiteDialog({ open, onClose, site }: Props) {
   }
 
   const handleDeleteCheckpoint = (localId: string) => {
+    // Cancel pending line draw if we're deleting that checkpoint
+    if (pendingLineStart?.localId === localId) setPendingLineStart(null)
     setCheckpoints((prev) => {
       const next = prev.filter((cp) => cp.localId !== localId)
       if (selectedCpId === localId) {
@@ -155,18 +207,17 @@ export function SiteDialog({ open, onClose, site }: Props) {
     })
   }
 
+  // ── Submit ──────────────────────────────────────────────────────────────────
+
   const onSubmit = async (data: FormValues) => {
-    if (!site && !companyId) {
-      toast.error(t('companyRequired'))
-      return
-    }
-    if (checkpoints.length === 0) {
-      toast.error(t('noCheckpointsError'))
-      return
+    if (!site && !companyId) { toast.error(t('companyRequired')); return }
+    if (checkpoints.length === 0) { toast.error(t('noCheckpointsError')); return }
+    // Incomplete LINE checkpoint (first point placed, second not yet)
+    if (checkpoints.some((cp) => cp.checkpointType === 'LINE' && (cp.lat2 == null || cp.lng2 == null))) {
+      toast.error(t('incompleteLineError')); return
     }
     if (checkpoints.some((cp) => !cp.radiusMeters || cp.radiusMeters < 1)) {
-      toast.error(t('checkpointRadiusError'))
-      return
+      toast.error(t('checkpointRadiusError')); return
     }
 
     const first = checkpoints[0]
@@ -184,6 +235,9 @@ export function SiteDialog({ open, onClose, site }: Props) {
         lat: cp.lat,
         lng: cp.lng,
         radiusMeters: cp.radiusMeters,
+        lat2: cp.lat2 ?? null,
+        lng2: cp.lng2 ?? null,
+        checkpointType: cp.checkpointType,
       })),
       ...(!site && { companyId }),
     }
@@ -192,7 +246,6 @@ export function SiteDialog({ open, onClose, site }: Props) {
       if (site) {
         await updateMutation.mutateAsync(body)
 
-        // Reassign company if the user selected a different one
         const currentCoId = companies.find((c) => c.sites.some((s) => s.id === site.id))?.id ?? ''
         if (companyId && companyId !== currentCoId) {
           await moveCompanyMutation.mutateAsync({
@@ -220,7 +273,8 @@ export function SiteDialog({ open, onClose, site }: Props) {
           <DialogTitle>{site ? t('editSite') : t('addSite')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 py-2">
-          {/* Company — required on create, optional change on edit */}
+
+          {/* Company */}
           {companies.length > 0 && (
             <div className="flex flex-col gap-1.5">
               <Label>
@@ -259,20 +313,59 @@ export function SiteDialog({ open, onClose, site }: Props) {
             <Input {...register('address')} disabled={loading} />
           </div>
 
-          {/* Map — click to add checkpoints */}
-          <div className="flex flex-col gap-1.5">
-            <Label className="flex items-center gap-1.5">
-              <MapPin size={14} />
-              {t('checkpoints')}
-            </Label>
-            <p className="text-xs text-muted-foreground -mt-1">{t('clickMapToAdd')}</p>
+          {/* Map section */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <Label className="flex items-center gap-1.5">
+                <MapPin size={14} />
+                {t('checkpoints')}
+              </Label>
+
+              {/* Draw mode toggle */}
+              <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => { setDrawMode('POINT'); setPendingLineStart(null) }}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                    drawMode === 'POINT'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <CircleDot size={13} />
+                  Точка
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDrawMode('LINE')}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                    drawMode === 'LINE'
+                      ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Minus size={13} />
+                  Линия
+                </button>
+              </div>
+            </div>
+
+            <p className="text-xs text-muted-foreground -mt-1">
+              {drawMode === 'POINT' ? t('clickMapToAdd') : t('clickMapToAddLine')}
+            </p>
+
             <MapPicker
               key={open ? `map-${site?.id ?? 'new'}` : 'map-closed'}
               checkpoints={checkpoints}
               selectedId={selectedCpId}
+              drawMode={drawMode}
+              lineRadius={LINE_DEFAULT_RADIUS}
               onAdd={handleAddCheckpoint}
               onSelect={setSelectedCpId}
               onMove={handleMoveCheckpoint}
+              onMoveSecond={handleMoveCheckpointSecond}
+              onLineSecondPoint={handleLineSecondPoint}
+              pendingLineStart={pendingLineStart}
             />
           </div>
 
@@ -291,75 +384,84 @@ export function SiteDialog({ open, onClose, site }: Props) {
                   <span className="w-7 shrink-0" />
                 </div>
 
-                {checkpoints.map((cp, idx) => (
-                  <div
-                    key={cp.localId}
-                    onClick={() => setSelectedCpId(cp.localId)}
-                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${
-                      cp.localId === selectedCpId
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:bg-muted/40'
-                    }`}
-                  >
-                    {/* Index badge */}
-                    <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
-                      cp.localId === selectedCpId ? 'bg-primary' : 'bg-muted-foreground'
-                    }`}>
-                      {idx + 1}
-                    </span>
+                {checkpoints.map((cp, idx) => {
+                  const incomplete = cp.checkpointType === 'LINE' && (cp.lat2 == null || cp.lng2 == null)
+                  return (
+                    <div
+                      key={cp.localId}
+                      onClick={() => setSelectedCpId(cp.localId)}
+                      className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${
+                        cp.localId === selectedCpId
+                          ? cp.checkpointType === 'LINE'
+                            ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                            : 'border-primary bg-primary/5'
+                          : 'border-border hover:bg-muted/40'
+                      }`}
+                    >
+                      {/* Index badge */}
+                      <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                        cp.localId === selectedCpId
+                          ? cp.checkpointType === 'LINE' ? 'bg-violet-600' : 'bg-primary'
+                          : 'bg-muted-foreground'
+                      }`}>
+                        {idx + 1}
+                      </span>
 
-                    {/* Name input */}
-                    <Input
-                      placeholder={t('checkpointNamePlaceholder')}
-                      value={cp.name}
-                      onChange={(e) => {
-                        e.stopPropagation()
-                        handleUpdateCheckpoint(cp.localId, 'name', e.target.value)
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-7 text-sm flex-1"
-                      disabled={loading}
-                    />
-
-                    {/* Radius input */}
-                    <div className="flex items-center gap-1 shrink-0">
+                      {/* Name input */}
                       <Input
-                        type="number"
-                        min={50}
-                        max={5000}
-                        value={cp.radiusMeters}
-                        onChange={(e) => {
-                          e.stopPropagation()
-                          handleUpdateCheckpoint(cp.localId, 'radiusMeters', e.target.value)
-                        }}
+                        placeholder={cp.checkpointType === 'LINE' ? t('lineNamePlaceholder') : t('checkpointNamePlaceholder')}
+                        value={cp.name}
+                        onChange={(e) => { e.stopPropagation(); handleUpdateCheckpoint(cp.localId, 'name', e.target.value) }}
                         onClick={(e) => e.stopPropagation()}
-                        className="h-7 text-sm w-24"
+                        className="h-7 text-sm flex-1"
                         disabled={loading}
                       />
-                      <span className="text-xs text-muted-foreground">м</span>
+
+                      {/* Radius / corridor width input */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Input
+                          type="number"
+                          min={1}
+                          max={cp.checkpointType === 'LINE' ? 50 : 5000}
+                          value={cp.radiusMeters}
+                          onChange={(e) => { e.stopPropagation(); handleUpdateCheckpoint(cp.localId, 'radiusMeters', e.target.value) }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-7 text-sm w-24"
+                          disabled={loading}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          {cp.checkpointType === 'LINE' ? 'м ширина' : 'м'}
+                        </span>
+                      </div>
+
+                      {/* Coordinates display */}
+                      <span className="text-xs text-muted-foreground shrink-0 hidden sm:block">
+                        {incomplete ? (
+                          <span className="text-amber-500">очаква 2-ра точка…</span>
+                        ) : cp.checkpointType === 'LINE' ? (
+                          <span className="flex items-center gap-1">
+                            <Minus size={10} className="text-violet-500" />
+                            линия
+                          </span>
+                        ) : (
+                          `${cp.lat.toFixed(5)}, ${cp.lng.toFixed(5)}`
+                        )}
+                      </span>
+
+                      {/* Delete */}
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                        onClick={(e) => { e.stopPropagation(); handleDeleteCheckpoint(cp.localId) }}
+                        disabled={loading}
+                      >
+                        <Trash2 size={13} />
+                      </Button>
                     </div>
-
-                    {/* Coordinates display */}
-                    <span className="text-xs text-muted-foreground shrink-0 hidden sm:block">
-                      {cp.lat.toFixed(5)}, {cp.lng.toFixed(5)}
-                    </span>
-
-                    {/* Delete */}
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDeleteCheckpoint(cp.localId)
-                      }}
-                      disabled={loading}
-                    >
-                      <Trash2 size={13} />
-                    </Button>
-                  </div>
-                ))}
+                  )
+                })}
               </>
             )}
           </div>
@@ -372,11 +474,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
                 control={control}
                 name="workStartTime"
                 render={({ field }) => (
-                  <TimePicker
-                    value={field.value}
-                    onChange={field.onChange}
-                    disabled={loading}
-                  />
+                  <TimePicker value={field.value} onChange={field.onChange} disabled={loading} />
                 )}
               />
             </div>
@@ -386,11 +484,7 @@ export function SiteDialog({ open, onClose, site }: Props) {
                 control={control}
                 name="workEndTime"
                 render={({ field }) => (
-                  <TimePicker
-                    value={field.value}
-                    onChange={field.onChange}
-                    disabled={loading}
-                  />
+                  <TimePicker value={field.value} onChange={field.onChange} disabled={loading} />
                 )}
               />
             </div>

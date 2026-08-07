@@ -1,14 +1,14 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-07T06:05:42.959Z
-> Files: 149 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-07T11:06:49.474Z
+> Files: 151 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~220 tok)
 - `CLAUDE.md` — OpenWolf entry point (~57 tok)
 - `DEPLOY.md` — Деплой на AttendTrack — AWS EC2 (Amazon Linux) + Docker + HTTPS (~2098 tok)
-- `docker-compose.prod.yml` — Docker Compose: 5 services (~375 tok)
+- `docker-compose.prod.yml` — Docker Compose: 4 services (~306 tok)
 - `docker-compose.yml` — Docker Compose services (~320 tok)
 - `FACE_RECOGNITION_V2.md` — Face Recognition — Вариант 2: MediaPipe + MobileFaceNet ONNX (~1394 tok)
 - `GUIDE_BG.md` — AttendTrack — Ръководство за потребителя (~2385 tok)
@@ -57,6 +57,10 @@
 
 - `page.tsx` — fmtLocal (~14229 tok)
 
+## frontend/app/[locale]/(admin)/settings/
+
+- `page.tsx` — today (~1170 tok)
+
 ## frontend/app/[locale]/(admin)/sites/
 
 - `page.tsx` — formatTime — renders table (~2170 tok)
@@ -101,7 +105,7 @@
 
 ## frontend/components/layout/
 
-- `AdminSidebar.tsx` — AdminSidebar (~1123 tok)
+- `AdminSidebar.tsx` — AdminSidebar (~1148 tok)
 - `ThemeToggle.tsx` — ThemeToggle (~197 tok)
 
 ## frontend/components/offline/
@@ -110,9 +114,9 @@
 
 ## frontend/components/sites/
 
-- `MapPicker.tsx` — DEFAULT_CENTER (~1205 tok)
+- `MapPicker.tsx` — DEFAULT_CENTER (~3599 tok)
 - `SiteAssignModal.tsx` — SiteAssignModal — renders modal; sm:max-w-lg; assigned list max-h-60 overflow-y-auto (~2040 tok)
-- `SiteDialog.tsx` — MapPicker — renders form, modal (~4136 tok)
+- `SiteDialog.tsx` — MapPicker — renders form, modal (~5390 tok)
 - `TimePicker.tsx` — HOURS (~502 tok)
 
 ## frontend/components/ui/
@@ -139,24 +143,24 @@
 - `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
 - `useGeoLocation.ts` — Exports GeoState (no site param), useGeoLocation(); tracks raw position + permissionDenied flag (~684 tok)
 - `useSites.ts` — API routes: GET, DELETE, POST (7 endpoints) (~772 tok)
-- `useSiteSync.ts` — Exports SyncResult, SyncAllResult, SyncStatus, useSiteSync (~1120 tok)
+- `useSiteSync.ts` — Exports SyncResult, SyncAllResult, SyncStatus, useSiteSync (~1146 tok)
 - `useWorkers.ts` — API routes: GET, DELETE, POST (4 endpoints) (~574 tok)
 
 ## frontend/lib/
 
 - `auth.ts` — Exports TOKEN_KEY, getToken, setToken, removeToken + 5 more (~400 tok)
 - `axios.ts` — Declares api (~267 tok)
-- `db.ts` — Exports WorkerRecord, CheckpointInfo, SiteInfo, PendingAttendance, db (~629 tok)
+- `db.ts` — Exports WorkerRecord, CheckpointInfo, SiteInfo, PendingAttendance, db (~652 tok)
 - `errors.ts` — Known error codes from the backend ErrorCode enum (~302 tok)
 - `faceAlignment.ts` — Face alignment: transforms a raw video frame into a normalized (~1112 tok)
 - `faceMatcher.ts` — Cosine-similarity 1:N face matcher. (~613 tok)
-- `geo.ts` — Exports haversineDistance, isWithinRadius, isWithinAnyCheckpoint (~273 tok)
+- `geo.ts` — Minimum distance (metres) from point P to line segment AB. (~628 tok)
 - `prefetchModels.ts` — prefetchModels — silently warms the Service Worker cache with all face (~462 tok)
 
 ## frontend/messages/
 
-- `bg.json` (~2998 tok)
-- `en.json` (~2869 tok)
+- `bg.json` (~3246 tok)
+- `en.json` (~3112 tok)
 
 ## frontend/scripts/
 
@@ -165,7 +169,7 @@
 ## frontend/types/
 
 - `company.ts` — Exports CompanyResponse, CompanyRequest (~133 tok)
-- `site.ts` — Exports CheckpointResponse, CheckpointRequest, SiteResponse, SiteRequest (~264 tok)
+- `site.ts` — Exports CheckpointResponse, CheckpointRequest, SiteResponse, SiteRequest (~310 tok)
 - `user.ts` — Exports Role, CompanyRef, UserResponse, UserRequest (~127 tok)
 
 ## src/main/java/org/example/ (legacy)
@@ -176,8 +180,8 @@
 
 - `AttendanceController.java` — RestController: AttendanceController (10 endpoints) (~1188 tok)
 - `AttendanceRepository.java` — Class: AttendanceRepository (~1902 tok)
-- `AttendanceService.java` — Service: AttendanceService; getWorkersDayStatus tracks firstCheckIn+lastCheckOut+calculatedHours; manualRecord uses req.time() (~4200 tok)
-- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1438 tok)
+- `AttendanceService.java` — Service: AttendanceService (~4627 tok)
+- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1443 tok)
 
 ## src/main/java/org/example/attendTrack/attendance/dto/
 
@@ -235,26 +239,26 @@
 
 ## src/main/java/org/example/attendTrack/site/
 
-- `SiteCheckpoint.java` — Entity: SiteCheckpoint (~232 tok)
+- `SiteCheckpoint.java` — Second endpoint — non-null only for LINE checkpoints. (~341 tok)
 - `SiteCheckpointRepository.java` — Class: SiteCheckpointRepository (~217 tok)
 - `SiteController.java` — RestController: SiteController (11 endpoints) (~892 tok)
-- `SiteService.java` — Service: SiteService (~2901 tok)
+- `SiteService.java` — Service: SiteService (~3025 tok)
 - `SiteWorkerRepository.java` — Class: SiteWorkerRepository (~464 tok)
 
 ## src/main/java/org/example/attendTrack/site/dto/
 
-- `CheckpointDto.java` — CheckpointDto: from (~131 tok)
+- `CheckpointDto.java` — Second endpoint — non-null only for LINE checkpoints. (~260 tok)
 - `SiteRequest.java` — Required on create, ignored on update (company managed via CompanyService). (~184 tok)
 - `SiteResponse.java` — SiteResponse: from, summary (~368 tok)
 
 ## src/main/java/org/example/attendTrack/sync/
 
 - `SyncController.java` — RestController: SyncController (2 endpoints) (~160 tok)
-- `SyncService.java` — Service: SyncService (~727 tok)
+- `SyncService.java` — Service: SyncService (~750 tok)
 
 ## src/main/java/org/example/attendTrack/sync/dto/
 
-- `SiteSyncResponse.java` — SiteSyncResponse: CheckpointInfo, SiteInfo (~179 tok)
+- `SiteSyncResponse.java` — Second endpoint — non-null for LINE checkpoints only. (~231 tok)
 
 ## src/main/java/org/example/attendTrack/user/
 
@@ -316,3 +320,4 @@
 - `V5__site_checkpoints.sql` — SQL: tables: site_checkpoints (~174 tok)
 - `V6__add_company_to_users.sql` (~14 tok)
 - `V7__companies.sql` — SQL: tables: companies, company_sites, company_workers (~252 tok)
+- `V8__line_checkpoints.sql` — V8: Add line/corridor checkpoint support (~117 tok)

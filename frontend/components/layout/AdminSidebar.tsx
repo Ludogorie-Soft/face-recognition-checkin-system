@@ -15,6 +15,7 @@ import {
   X,
   ScanFace,
   Building2,
+  Settings,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './ThemeToggle'
@@ -48,6 +49,7 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
     { href: `/${locale}/workers`, label: t('workers'), icon: Users },
     { href: `/${locale}/reports`, label: t('reports'), icon: BarChart2 },
     { href: `/${locale}/verify`, label: t('verify'), icon: ScanFace },
+    { href: `/${locale}/settings`, label: t('settings'), icon: Settings },
   ]
 
   return (

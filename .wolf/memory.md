@@ -3,6 +3,8 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 
+| 2026-08-07 | Added Settings page (/settings) — manual auto-checkout trigger with date range, result display; added Settings link in AdminSidebar | settings/page.tsx, AdminSidebar.tsx, bg.json, en.json | success | ~1200 |
+
 | 2026-08-06 | ManualAttendanceModal — per-worker time picker, session summary (Вход/Изход/Отработени ч.), modal sm:max-w-xl | WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, ManualAttendanceModal.tsx, bg.json, en.json | success | ~4000 |
 
 | 2026-07-31 | Rewrote SyncLoader.tsx — replaced JS setInterval segments with pure CSS comet arc (spin animation) + SVG glow filter (feGaussianBlur). Determinate: smooth strokeDashoffset transition. Indeterminate: rotating 28% arc. Center: ClipboardCheck icon / pct%. Build ✓ | SyncLoader.tsx | success | ~800 |
@@ -1382,3 +1384,83 @@
 | 09:05 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified MissingTable() | ~444 |
 | 09:05 | Session end: 29 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 7 reads | ~39022 tok |
 | 09:07 | Session end: 29 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 7 reads | ~39022 tok |
+| 09:07 | Session end: 29 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 7 reads | ~39022 tok |
+| 09:09 | Session end: 29 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 11 reads | ~43390 tok |
+| 09:10 | Edited frontend/components/sites/SiteDialog.tsx | 200 → 50 | ~7 |
+| 09:10 | Edited frontend/components/sites/MapPicker.tsx | 200 → 50 | ~12 |
+| 09:11 | Edited frontend/components/sites/SiteDialog.tsx | 50 → 5 | ~9 |
+| 09:11 | Edited src/main/java/org/example/attendTrack/site/SiteCheckpoint.java | 2→2 lines | ~15 |
+| 09:12 | Created frontend/components/sites/MapPicker.tsx | — | ~2092 |
+| 09:13 | Created src/main/resources/db/migration/V8__line_checkpoints.sql | — | ~117 |
+| 09:13 | Created src/main/java/org/example/attendTrack/site/SiteCheckpoint.java | — | ~341 |
+| 09:13 | Created src/main/java/org/example/attendTrack/site/dto/CheckpointDto.java | — | ~219 |
+| 09:14 | Edited src/main/java/org/example/attendTrack/site/SiteService.java | added 1 condition(s) | ~228 |
+| 09:15 | Created src/main/java/org/example/attendTrack/sync/dto/SiteSyncResponse.java | — | ~231 |
+| 09:16 | Edited src/main/java/org/example/attendTrack/sync/SyncService.java | 5→6 lines | ~108 |
+| 09:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 3 condition(s) | ~705 |
+| 09:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 7→6 lines | ~89 |
+| 09:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 7→7 lines | ~95 |
+| 09:17 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 4→3 lines | ~42 |
+| 09:18 | Created frontend/types/site.ts | — | ~310 |
+| 09:18 | Edited frontend/lib/db.ts | 7→10 lines | ~58 |
+| 09:19 | Created frontend/lib/geo.ts | — | ~621 |
+| 09:20 | Created frontend/components/sites/MapPicker.tsx | — | ~3312 |
+| 09:22 | Created frontend/components/sites/SiteDialog.tsx | — | ~5337 |
+| 09:23 | Edited frontend/messages/bg.json | 8→11 lines | ~238 |
+| 09:23 | Edited frontend/messages/en.json | 8→11 lines | ~224 |
+| 09:24 | Edited frontend/hooks/useSiteSync.ts | 7→10 lines | ~66 |
+| 09:25 | Session end: 52 writes across 20 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 20 reads | ~68135 tok |
+| 09:29 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | inline fix | ~17 |
+| 09:31 | Edited src/main/java/org/example/attendTrack/site/dto/CheckpointDto.java | modified from() | ~120 |
+| 09:34 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified if() | ~46 |
+| 09:35 | Edited frontend/lib/geo.ts | inline fix | ~29 |
+| 09:36 | Edited frontend/components/sites/MapPicker.tsx | CSS: onMoveSecond | ~183 |
+| 09:37 | Edited frontend/components/sites/MapPicker.tsx | modified MapPicker() | ~48 |
+| 09:39 | Edited frontend/components/sites/MapPicker.tsx | expanded (+13 lines) | ~296 |
+| 09:40 | Edited frontend/components/sites/MapPicker.tsx | modified makeEndIcon() | ~116 |
+| 09:41 | Edited frontend/components/sites/SiteDialog.tsx | CSS: lat2, lng2 | ~117 |
+| 09:41 | Edited frontend/components/sites/SiteDialog.tsx | 2→1 lines | ~30 |
+| 09:42 | Edited frontend/components/sites/SiteDialog.tsx | 5→6 lines | ~83 |
+| 09:43 | Session end: 63 writes across 20 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 22 reads | ~72634 tok |
+| 09:46 | Session end: 63 writes across 20 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 24 reads | ~78467 tok |
+| 09:47 | Session end: 63 writes across 20 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 24 reads | ~78467 tok |
+| 09:56 | Edited frontend/components/sites/SiteDialog.tsx | 7 → 5 | ~18 |
+| 09:57 | Session end: 64 writes across 20 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 24 reads | ~78485 tok |
+| 09:57 | Session end: 64 writes across 20 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 24 reads | ~78485 tok |
+
+## Session: 2026-08-07 10:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:33 | Edited frontend/messages/bg.json | expanded (+13 lines) | ~182 |
+| 13:33 | Edited frontend/messages/en.json | expanded (+13 lines) | ~183 |
+| 13:38 | Created frontend/app/[locale]/(admin)/settings/page.tsx | — | ~1172 |
+| 13:38 | Edited frontend/components/layout/AdminSidebar.tsx | 11→12 lines | ~46 |
+| 13:38 | Edited frontend/components/layout/AdminSidebar.tsx | 7→8 lines | ~150 |
+| 13:39 | Edited frontend/app/[locale]/(admin)/settings/page.tsx | inline fix | ~9 |
+| 13:39 | Session end: 6 writes across 4 files (bg.json, en.json, page.tsx, AdminSidebar.tsx) | 7 reads | ~8116 tok |
+| 13:40 | Session end: 6 writes across 4 files (bg.json, en.json, page.tsx, AdminSidebar.tsx) | 7 reads | ~8116 tok |
+| 13:41 | Session end: 6 writes across 4 files (bg.json, en.json, page.tsx, AdminSidebar.tsx) | 9 reads | ~8491 tok |
+| 13:43 | Edited frontend/messages/bg.json | inline fix | ~41 |
+| 13:44 | Edited frontend/messages/en.json | inline fix | ~40 |
+| 13:44 | Session end: 8 writes across 4 files (bg.json, en.json, page.tsx, AdminSidebar.tsx) | 9 reads | ~8572 tok |
+| 13:44 | Session end: 8 writes across 4 files (bg.json, en.json, page.tsx, AdminSidebar.tsx) | 9 reads | ~8572 tok |
+| 13:55 | Session end: 8 writes across 4 files (bg.json, en.json, page.tsx, AdminSidebar.tsx) | 9 reads | ~8572 tok |
+| 13:56 | Session end: 8 writes across 4 files (bg.json, en.json, page.tsx, AdminSidebar.tsx) | 9 reads | ~8572 tok |
+| 13:56 | Session end: 8 writes across 4 files (bg.json, en.json, page.tsx, AdminSidebar.tsx) | 9 reads | ~8572 tok |
+| 14:06 | Created docker-compose.prod.yml | — | ~306 |
+| 14:07 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:05 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:06 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:07 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:08 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:09 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:10 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:11 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:13 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:22 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:22 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:26 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:39 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:41 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |
+| 15:45 | Session end: 9 writes across 5 files (bg.json, en.json, page.tsx, AdminSidebar.tsx, docker-compose.prod.yml) | 10 reads | ~9191 tok |

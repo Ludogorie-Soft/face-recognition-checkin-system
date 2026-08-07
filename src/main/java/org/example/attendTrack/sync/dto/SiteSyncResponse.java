@@ -13,7 +13,12 @@ public record SiteSyncResponse(
             String name,
             double lat,
             double lng,
-            int radiusMeters
+            int radiusMeters,
+            /** Second endpoint — non-null for LINE checkpoints only. */
+            Double lat2,
+            Double lng2,
+            /** "POINT" or "LINE" */
+            String checkpointType
     ) {}
 
     public record SiteInfo(

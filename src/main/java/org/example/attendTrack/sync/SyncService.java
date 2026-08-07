@@ -46,7 +46,8 @@ public class SyncService {
         List<SiteSyncResponse.CheckpointInfo> checkpoints = siteCheckpointRepository.findBySiteId(siteId)
                 .stream()
                 .map(cp -> new SiteSyncResponse.CheckpointInfo(
-                        cp.getId(), cp.getName(), cp.getLat(), cp.getLng(), cp.getRadiusMeters()))
+                        cp.getId(), cp.getName(), cp.getLat(), cp.getLng(), cp.getRadiusMeters(),
+                        cp.getLat2(), cp.getLng2(), cp.getCheckpointType().name()))
                 .toList();
 
         SiteSyncResponse.SiteInfo siteInfo = new SiteSyncResponse.SiteInfo(

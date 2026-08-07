@@ -2979,6 +2979,230 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-07T06:05:42.977Z"
+    },
+    {
+      "id": "bug-184",
+      "timestamp": "2026-08-07T06:10:50.182Z",
+      "error_message": "Wrong reference: 200 should be 50",
+      "file": "frontend/components/sites/SiteDialog.tsx",
+      "root_cause": "Used \"200\" instead of \"50\"",
+      "fix": "Changed 200 → 50",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:10:50.182Z"
+    },
+    {
+      "id": "bug-185",
+      "timestamp": "2026-08-07T06:10:57.748Z",
+      "error_message": "Wrong reference: 200 should be 50",
+      "file": "frontend/components/sites/MapPicker.tsx",
+      "root_cause": "Used \"200\" instead of \"50\"",
+      "fix": "Changed 200 → 50",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:10:57.748Z"
+    },
+    {
+      "id": "bug-186",
+      "timestamp": "2026-08-07T06:11:16.192Z",
+      "error_message": "Wrong reference: 200 should be 50",
+      "file": "src/main/java/org/example/attendTrack/site/SiteCheckpoint.java",
+      "root_cause": "Used \"200\" instead of \"50\"",
+      "fix": "Changed 200 → 50",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:11:16.192Z"
+    },
+    {
+      "id": "bug-187",
+      "timestamp": "2026-08-07T06:14:57.731Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/site/SiteService.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 9→18 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:14:57.731Z"
+    },
+    {
+      "id": "bug-188",
+      "timestamp": "2026-08-07T06:17:16.129Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:17:16.129Z"
+    },
+    {
+      "id": "bug-189",
+      "timestamp": "2026-08-07T06:17:57.080Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→3 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:17:57.080Z"
+    },
+    {
+      "id": "bug-190",
+      "timestamp": "2026-08-07T06:29:39.717Z",
+      "error_message": "Wrong reference: true should be checkIn",
+      "file": "src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
+      "root_cause": "Used \"true\" instead of \"checkIn\"",
+      "fix": "Changed true → checkIn",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:29:39.717Z"
+    },
+    {
+      "id": "bug-191",
+      "timestamp": "2026-08-07T06:31:33.099Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/site/dto/CheckpointDto.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:31:33.099Z"
+    },
+    {
+      "id": "bug-192",
+      "timestamp": "2026-08-07T06:34:37.295Z",
+      "error_message": "Wrong condition in logic",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Condition was: if (len2 == 0)",
+      "fix": "Changed to: if (len2 < 1e-10)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:34:37.295Z"
+    },
+    {
+      "id": "bug-193",
+      "timestamp": "2026-08-07T06:35:50.976Z",
+      "error_message": "Wrong condition in logic",
+      "file": "frontend/lib/geo.ts",
+      "root_cause": "Condition was: if (len2 === 0)",
+      "fix": "Changed to: if (len2 < 1e-10)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:35:50.976Z"
+    },
+    {
+      "id": "bug-194",
+      "timestamp": "2026-08-07T06:40:20.845Z",
+      "error_message": "Type error",
+      "file": "frontend/components/sites/MapPicker.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T06:40:20.845Z"
+    },
+    {
+      "id": "bug-195",
+      "timestamp": "2026-08-07T10:38:26.033Z",
+      "error_message": "CSS fix: label",
+      "file": "frontend/components/layout/AdminSidebar.tsx",
+      "root_cause": "label: t('verify'), icon: ScanFace → t('settings'), icon: Settings",
+      "fix": "Changed label: t('verify'), icon: ScanFace → t('settings'), icon: Settings",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T10:38:26.033Z"
+    },
+    {
+      "id": "bug-196",
+      "timestamp": "2026-08-07T10:43:55.999Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/bg.json",
+      "root_cause": "Had \"Затваря незатворени смени в избрания период. Крон",
+      "fix": "Changed to \"Затваря незатворени смени в избрания период. Изпо",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T10:43:55.999Z"
+    },
+    {
+      "id": "bug-197",
+      "timestamp": "2026-08-07T10:44:05.395Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/messages/en.json",
+      "root_cause": "Had \"Closes unclosed shifts in the selected date range",
+      "fix": "Changed to \"Closes unclosed shifts in the selected date range",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-07T10:44:05.395Z"
     }
   ]
 }

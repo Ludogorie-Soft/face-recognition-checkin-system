@@ -14,6 +14,8 @@ import java.util.UUID;
 @Builder
 public class SiteCheckpoint {
 
+    public enum CheckpointType { POINT, LINE }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -32,7 +34,19 @@ public class SiteCheckpoint {
 
     @Column(name = "radius_meters", nullable = false)
     @Builder.Default
-    private int radiusMeters = 200;
+    private int radiusMeters = 50;
+
+    /** Second endpoint — non-null only for LINE checkpoints. */
+    @Column(name = "lat2")
+    private Double lat2;
+
+    @Column(name = "lng2")
+    private Double lng2;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "checkpoint_type", nullable = false, length = 10)
+    @Builder.Default
+    private CheckpointType checkpointType = CheckpointType.POINT;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default

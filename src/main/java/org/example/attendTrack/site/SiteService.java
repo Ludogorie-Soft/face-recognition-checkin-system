@@ -214,13 +214,22 @@ public class SiteService {
     private List<CheckpointDto> saveCheckpoints(Site site, List<CheckpointDto> checkpoints) {
         if (checkpoints == null || checkpoints.isEmpty()) return List.of();
         List<SiteCheckpoint> entities = checkpoints.stream()
-                .map(cp -> SiteCheckpoint.builder()
-                        .site(site)
-                        .name(cp.name())
-                        .lat(cp.lat())
-                        .lng(cp.lng())
-                        .radiusMeters(cp.radiusMeters())
-                        .build())
+                .map(cp -> {
+                    SiteCheckpoint.CheckpointType type = SiteCheckpoint.CheckpointType.POINT;
+                    if ("LINE".equalsIgnoreCase(cp.checkpointType())) {
+                        type = SiteCheckpoint.CheckpointType.LINE;
+                    }
+                    return SiteCheckpoint.builder()
+                            .site(site)
+                            .name(cp.name())
+                            .lat(cp.lat())
+                            .lng(cp.lng())
+                            .radiusMeters(cp.radiusMeters())
+                            .lat2(cp.lat2())
+                            .lng2(cp.lng2())
+                            .checkpointType(type)
+                            .build();
+                })
                 .toList();
         return siteCheckpointRepository.saveAll(entities)
                 .stream().map(CheckpointDto::from).toList();

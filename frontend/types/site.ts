@@ -6,6 +6,9 @@ export interface CheckpointResponse {
   lat: number
   lng: number
   radiusMeters: number
+  lat2: number | null
+  lng2: number | null
+  checkpointType: 'POINT' | 'LINE'
 }
 
 export interface CheckpointRequest {
@@ -14,6 +17,9 @@ export interface CheckpointRequest {
   lat: number
   lng: number
   radiusMeters: number
+  lat2?: number | null
+  lng2?: number | null
+  checkpointType?: 'POINT' | 'LINE'
 }
 
 export interface SiteResponse {

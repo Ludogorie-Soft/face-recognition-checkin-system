@@ -103,12 +103,15 @@
     "shift": "Shift",
     "checkpoints": "Checkpoints",
     "clickMapToAdd": "Click on the map to add a checkpoint. Drag markers to reposition.",
+    "clickMapToAddLine": "Click twice on the map to draw a line (street). The corridor around it will count as the site zone.",
     "noCheckpoints": "No checkpoints added",
     "checkpointName": "Checkpoint name (optional)",
     "checkpointNamePlaceholder": "Name (optional)",
+    "lineNamePlaceholder": "Line name (optional)",
     "radiusLabel": "Radius (m)",
     "noCheckpointsError": "Add at least one checkpoint",
     "checkpointRadiusError": "Every checkpoint must have a radius of at least 1 metre",
+    "incompleteLineError": "There is an incomplete line — click a second point on the map or delete it",
     "changeCompanyHint": "Changing will reassign the site to the selected company"
   },
   "companies": {
@@ -218,6 +221,19 @@
     "INTERNAL_ERROR": "Server error, please try again later",
     "COMPANY_NOT_FOUND": "Company not found",
     "UNKNOWN": "An unexpected error occurred"
+  },
+  "settings": {
+    "title": "Settings",
+    "maintenance": "Maintenance",
+    "autoCheckoutSection": "Manual auto-checkout trigger",
+    "autoCheckoutDesc": "Closes unclosed shifts in the selected date range. Use this when a worker's shift was not closed automatically.",
+    "dateFrom": "From date",
+    "dateTo": "To date",
+    "trigger": "Trigger",
+    "triggering": "Running...",
+    "resultCreated": "Created {count} auto-checkout record(s).",
+    "resultNone": "No unclosed shifts found in the selected period.",
+    "triggerError": "Error during trigger"
   },
   "reports": {
     "title": "Reports",

@@ -106,7 +106,7 @@ public class AutoCheckoutScheduler {
                     .type(AttendanceType.CHECK_OUT)
                     .lat(checkIn.getLat())
                     .lng(checkIn.getLng())
-                    .locationValid(true)
+                    .locationValid(checkIn.isLocationValid())
                     .faceConfidence(null)
                     .manualOverride(true)
                     .recordedAt(checkOutTime)

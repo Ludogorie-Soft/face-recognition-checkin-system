@@ -108,8 +108,7 @@ public class AttendanceService {
         boolean locationValid;
         if (!checkpoints.isEmpty()) {
             locationValid = checkpoints.stream().anyMatch(cp ->
-                    haversineDistance(record.lat(), record.lng(), cp.getLat(), cp.getLng()) <= cp.getRadiusMeters()
-            );
+                    isWithinCheckpoint(record.lat(), record.lng(), cp));
         } else {
             locationValid = haversineDistance(record.lat(), record.lng(), site.getLat(), site.getLng()) <= site.getRadiusMeters();
         }
@@ -265,7 +264,7 @@ public class AttendanceService {
         boolean locationValid;
         if (!checkpoints.isEmpty()) {
             locationValid = checkpoints.stream().anyMatch(cp ->
-                    haversineDistance(a.getLat(), a.getLng(), cp.getLat(), cp.getLng()) <= cp.getRadiusMeters());
+                    isWithinCheckpoint(a.getLat(), a.getLng(), cp));
         } else {
             locationValid = haversineDistance(a.getLat(), a.getLng(), newSite.getLat(), newSite.getLng())
                     <= newSite.getRadiusMeters();
@@ -313,8 +312,7 @@ public class AttendanceService {
             List<SiteCheckpoint> cps = checkpointsBySite.getOrDefault(a.getSite().getId(), List.of());
             boolean valid;
             if (!cps.isEmpty()) {
-                valid = cps.stream().anyMatch(cp ->
-                        haversineDistance(a.getLat(), a.getLng(), cp.getLat(), cp.getLng()) <= cp.getRadiusMeters());
+                valid = cps.stream().anyMatch(cp -> isWithinCheckpoint(a.getLat(), a.getLng(), cp));
             } else {
                 valid = haversineDistance(a.getLat(), a.getLng(), a.getSite().getLat(), a.getSite().getLng())
                         <= a.getSite().getRadiusMeters();
@@ -328,6 +326,53 @@ public class AttendanceService {
         if (!nowInvalid.isEmpty()) attendanceRepository.updateLocationValidBulk(nowInvalid, false);
 
         return nowValid.size() + nowInvalid.size();
+    }
+
+    /**
+     * Returns true if (userLat, userLng) is within the checkpoint's zone.
+     * For POINT checkpoints: standard haversine circle check.
+     * For LINE checkpoints: perpendicular distance from user to the line segment ≤ radiusMeters.
+     */
+    private static boolean isWithinCheckpoint(double userLat, double userLng, SiteCheckpoint cp) {
+        if (cp.getCheckpointType() == SiteCheckpoint.CheckpointType.LINE
+                && cp.getLat2() != null && cp.getLng2() != null) {
+            return distanceToSegmentMeters(
+                    userLat, userLng,
+                    cp.getLat(), cp.getLng(),
+                    cp.getLat2(), cp.getLng2()) <= cp.getRadiusMeters();
+        }
+        return haversineDistance(userLat, userLng, cp.getLat(), cp.getLng()) <= cp.getRadiusMeters();
+    }
+
+    /**
+     * Minimum distance (metres) from point P to line segment AB.
+     * Uses a planar approximation valid for short distances (< ~1 km).
+     */
+    private static double distanceToSegmentMeters(
+            double pLat, double pLng,
+            double aLat, double aLng,
+            double bLat, double bLng) {
+        // Convert to local Cartesian coordinates (metres) relative to A
+        final double R = 6_371_000.0;
+        final double cosLat = Math.cos(Math.toRadians((aLat + bLat) / 2.0));
+        double ax = 0, ay = 0;
+        double bx = Math.toRadians(bLng - aLng) * R * cosLat;
+        double by = Math.toRadians(bLat - aLat) * R;
+        double px = Math.toRadians(pLng - aLng) * R * cosLat;
+        double py = Math.toRadians(pLat - aLat) * R;
+
+        double abx = bx - ax, aby = by - ay;
+        double len2 = abx * abx + aby * aby;
+        if (len2 < 1e-10) {
+            // Degenerate segment (endpoints identical) — fall back to point distance
+            return Math.sqrt(px * px + py * py);
+        }
+        // Project P onto AB, clamped to [0, 1]
+        double t = Math.max(0, Math.min(1, (px * abx + py * aby) / len2));
+        double closestX = ax + t * abx;
+        double closestY = ay + t * aby;
+        double dx = px - closestX, dy = py - closestY;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     private static double haversineDistance(double lat1, double lng1, double lat2, double lng2) {
