@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
-  Download, Loader2, CheckCircle2, XCircle, AlertTriangle, Pencil, AlertCircle, MapPin,
+  Download, Loader2, CheckCircle2, XCircle, AlertTriangle, Pencil, AlertCircle, MapPin, Filter, ArrowUp, ArrowDown, ArrowUpDown,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -70,6 +70,8 @@ interface WorkedHoursRow {
   checkOutLng: number | null
   checkInLat: number | null
   checkInLng: number | null
+  checkInLocationValid: boolean | null
+  checkOutLocationValid: boolean | null
 }
 
 interface WorkedHoursSummaryRow {
@@ -706,19 +708,37 @@ function AttendanceTable({
 function MissingTable({
   rows, t,
 }: { rows: MissingRow[]; t: ReturnType<typeof useTranslations> }) {
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+
+  const sorted = [...rows].sort((a, b) =>
+    sortDir === 'asc'
+      ? a.workerName.localeCompare(b.workerName, undefined, { sensitivity: 'base' })
+      : b.workerName.localeCompare(a.workerName, undefined, { sensitivity: 'base' })
+  )
+
+  const SortIcon = sortDir === 'asc' ? ArrowUp : ArrowDown
+
   return (
     <div className="rounded-lg border border-border overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead>#</TableHead>
-            <TableHead>{t('worker')}</TableHead>
+            <TableHead className="w-12">#</TableHead>
+            <TableHead>
+              <button
+                onClick={() => setSortDir((d) => d === 'asc' ? 'desc' : 'asc')}
+                className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+              >
+                {t('worker')}
+                <SortIcon size={13} className="text-muted-foreground" />
+              </button>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((row, i) => (
+          {sorted.map((row, i) => (
             <TableRow key={row.workerId}>
-              <TableCell className="text-muted-foreground text-sm w-12">{i + 1}</TableCell>
+              <TableCell className="text-muted-foreground text-sm">{i + 1}</TableCell>
               <TableCell className="font-medium">{row.workerName}</TableCell>
             </TableRow>
           ))}
@@ -743,6 +763,8 @@ function WorkedHoursTable({
 
   const [changeSiteRow, setChangeSiteRow] = useState<WorkedHoursRow | null>(null)
   const [selectedSiteId, setSelectedSiteId] = useState('')
+  const [showAutoCheckoutOnly, setShowAutoCheckoutOnly] = useState(false)
+  const [showOutOfZoneOnly, setShowOutOfZoneOnly] = useState(false)
 
   const changeSiteMutation = useMutation({
     mutationFn: ({ checkInId, checkOutId, siteId }: { checkInId: string; checkOutId: string | null; siteId: string }) =>
@@ -755,8 +777,62 @@ function WorkedHoursTable({
     onError: () => toast.error(tc('error')),
   })
 
+  // When filter is on: keep session rows with autoCheckout=true, and total rows
+  // whose worker+site+date group has at least one autoCheckout session.
+  const isOutOfZone = (r: WorkedHoursRow) =>
+    r.pairIndex >= 0 && (r.checkInLocationValid === false || r.checkOutLocationValid === false)
+
+  const autoCheckoutKeys = showAutoCheckoutOnly
+    ? new Set(rows.filter((r) => r.pairIndex >= 0 && r.autoCheckout).map((r) => `${r.workerId}:${r.siteId}:${r.date}`))
+    : null
+  const outOfZoneKeys = showOutOfZoneOnly
+    ? new Set(rows.filter(isOutOfZone).map((r) => `${r.workerId}:${r.siteId}:${r.date}`))
+    : null
+
+  const displayedRows = rows.filter((r) => {
+    const key = `${r.workerId}:${r.siteId}:${r.date}`
+    if (autoCheckoutKeys && (r.pairIndex === -1 ? !autoCheckoutKeys.has(key) : !r.autoCheckout)) return false
+    if (outOfZoneKeys && (r.pairIndex === -1 ? !outOfZoneKeys.has(key) : !isOutOfZone(r))) return false
+    return true
+  })
+
   return (
     <>
+    {/* Filter toggles */}
+    <div className="flex items-center gap-2 mb-2">
+      <button
+        onClick={() => setShowAutoCheckoutOnly((v) => !v)}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+          showAutoCheckoutOnly
+            ? 'bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700'
+            : 'bg-background text-muted-foreground border-border hover:text-foreground'
+        }`}
+      >
+        <Filter size={12} />
+        {t('filterAutoCheckout')}
+        {showAutoCheckoutOnly && (
+          <span className="ml-1 bg-orange-500 text-white rounded-full px-1.5 text-[10px] font-bold leading-4">
+            {displayedRows.filter((r) => r.pairIndex >= 0).length}
+          </span>
+        )}
+      </button>
+      <button
+        onClick={() => setShowOutOfZoneOnly((v) => !v)}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+          showOutOfZoneOnly
+            ? 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700'
+            : 'bg-background text-muted-foreground border-border hover:text-foreground'
+        }`}
+      >
+        <Filter size={12} />
+        {t('filterOutOfZone')}
+        {showOutOfZoneOnly && (
+          <span className="ml-1 bg-red-500 text-white rounded-full px-1.5 text-[10px] font-bold leading-4">
+            {displayedRows.filter((r) => r.pairIndex >= 0).length}
+          </span>
+        )}
+      </button>
+    </div>
     <div className="rounded-lg border border-border overflow-x-auto">
       <Table className="min-w-[700px]">
         <TableHeader>
@@ -774,7 +850,7 @@ function WorkedHoursTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((row, i) => {
+          {displayedRows.map((row, i) => {
             const isTotalRow = row.pairIndex === -1
             const openShift = !isTotalRow && row.checkOut === null && !row.inferredCheckOut
             const hasCorrection = row.correctedHours !== null
@@ -849,30 +925,52 @@ function WorkedHoursTable({
                 </TableCell>
                 <TableCell>
                   {!isTotalRow && row.checkInLat != null ? (
-                    <a
-                      href={`https://www.google.com/maps?q=${row.checkInLat},${row.checkInLng}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-primary hover:underline underline-offset-2 whitespace-nowrap"
-                    >
-                      <MapPin size={12} />
-                      {row.checkInLat.toFixed(5)}, {row.checkInLng!.toFixed(5)}
-                    </a>
+                    <span className="flex items-center gap-1 whitespace-nowrap">
+                      <a
+                        href={`https://www.google.com/maps?q=${row.checkInLat},${row.checkInLng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex items-center gap-1 text-xs font-mono hover:underline underline-offset-2 ${
+                          row.checkInLocationValid === false
+                            ? 'text-red-600 dark:text-red-400 hover:text-red-700'
+                            : 'text-muted-foreground hover:text-primary'
+                        }`}
+                      >
+                        <MapPin size={12} />
+                        {row.checkInLat.toFixed(5)}, {row.checkInLng!.toFixed(5)}
+                      </a>
+                      {row.checkInLocationValid === false && (
+                        <span title={t('outOfZoneCheckIn')}>
+                          <XCircle size={12} className="text-red-500 shrink-0" />
+                        </span>
+                      )}
+                    </span>
                   ) : (
                     <span className="text-muted-foreground text-xs">—</span>
                   )}
                 </TableCell>
                 <TableCell>
                   {!isTotalRow && row.checkOutLat != null ? (
-                    <a
-                      href={`https://www.google.com/maps?q=${row.checkOutLat},${row.checkOutLng}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-primary hover:underline underline-offset-2 whitespace-nowrap"
-                    >
-                      <MapPin size={12} />
-                      {row.checkOutLat.toFixed(5)}, {row.checkOutLng!.toFixed(5)}
-                    </a>
+                    <span className="flex items-center gap-1 whitespace-nowrap">
+                      <a
+                        href={`https://www.google.com/maps?q=${row.checkOutLat},${row.checkOutLng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex items-center gap-1 text-xs font-mono hover:underline underline-offset-2 ${
+                          row.checkOutLocationValid === false
+                            ? 'text-red-600 dark:text-red-400 hover:text-red-700'
+                            : 'text-muted-foreground hover:text-primary'
+                        }`}
+                      >
+                        <MapPin size={12} />
+                        {row.checkOutLat.toFixed(5)}, {row.checkOutLng!.toFixed(5)}
+                      </a>
+                      {row.checkOutLocationValid === false && (
+                        <span title={t('outOfZoneCheckOut')}>
+                          <XCircle size={12} className="text-red-500 shrink-0" />
+                        </span>
+                      )}
+                    </span>
                   ) : (
                     <span className="text-muted-foreground text-xs">—</span>
                   )}

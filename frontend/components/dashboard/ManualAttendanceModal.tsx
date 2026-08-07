@@ -60,6 +60,7 @@ export function ManualAttendanceModal({ open, onClose }: Props) {
   const [date, setDate] = useState(todayStr())
   const [queryKey, setQueryKey] = useState(0)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [nameFilter, setNameFilter] = useState('')
   // Per-worker time inputs: workerId → "HH:mm"
   const [workerTimes, setWorkerTimes] = useState<Record<string, string>>({})
 
@@ -72,6 +73,7 @@ export function ManualAttendanceModal({ open, onClose }: Props) {
       setQueryKey(0)
       setLoadingAction(null)
       setWorkerTimes({})
+      setNameFilter('')
     }
   }, [open])
 
@@ -166,6 +168,19 @@ export function ManualAttendanceModal({ open, onClose }: Props) {
           </Button>
         </div>
 
+        {/* Name filter */}
+        {queryKey > 0 && workers.length > 0 && (
+          <div className="relative shrink-0">
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Input
+              placeholder={t('filterByName')}
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              className="pl-8 h-8 text-sm"
+            />
+          </div>
+        )}
+
         {/* Worker list */}
         <div className="flex-1 min-h-0 overflow-y-auto">
           {queryKey === 0 ? (
@@ -180,7 +195,7 @@ export function ManualAttendanceModal({ open, onClose }: Props) {
             <p className="text-sm text-muted-foreground text-center py-10">{t('noWorkersAssigned')}</p>
           ) : (
             <div className={`flex flex-col divide-y divide-border transition-opacity ${isFetching ? 'opacity-50 pointer-events-none' : ''}`}>
-              {workers.map((w) => {
+              {workers.filter((w) => w.workerName.toLowerCase().includes(nameFilter.toLowerCase())).map((w) => {
                 const busy = loadingAction !== null
                 const busyThis = loadingAction?.startsWith(w.workerId) ?? false
                 const hasSession = w.checkInTime !== null && w.checkOutTime !== null

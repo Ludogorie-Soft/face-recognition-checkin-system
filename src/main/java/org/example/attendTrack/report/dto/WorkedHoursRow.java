@@ -42,8 +42,10 @@ public record WorkedHoursRow(
         Double effectiveHours,     // corrected or calculated total; null on multi-session session rows
         Double correctedHours,     // null → no correction
         String correctionNote,     // null → no correction
-        Double checkOutLat,        // null → open shift, inferred checkout, or day-total row
-        Double checkOutLng,        // null → same cases as checkOutLat
-        Double checkInLat,         // null → manual record (0,0 coords) or day-total row
-        Double checkInLng          // null → same cases as checkInLat
+        Double checkOutLat,           // null → open shift, inferred checkout, or day-total row
+        Double checkOutLng,           // null → same cases as checkOutLat
+        Double checkInLat,            // null → manual record (0,0 coords) or day-total row
+        Double checkInLng,            // null → same cases as checkInLat
+        Boolean checkInLocationValid, // null → manual record or day-total row
+        Boolean checkOutLocationValid // null → open shift, inferred checkout, or day-total row
 ) {}

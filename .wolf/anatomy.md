@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-06T11:50:34.580Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-07T06:05:42.959Z
 > Files: 149 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -55,7 +55,7 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~12881 tok)
+- `page.tsx` — fmtLocal (~14229 tok)
 
 ## frontend/app/[locale]/(admin)/sites/
 
@@ -97,7 +97,7 @@
 
 ## frontend/components/dashboard/
 
-- `ManualAttendanceModal.tsx` — todayStr, currentTimeStr, fmtTime — renders modal; per-worker time picker; session summary (Вход/Изход/Отработени); sm:max-w-xl (~3300 tok)
+- `ManualAttendanceModal.tsx` — todayStr — renders modal (~3497 tok)
 
 ## frontend/components/layout/
 
@@ -155,8 +155,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~2923 tok)
-- `en.json` (~2791 tok)
+- `bg.json` (~2998 tok)
+- `en.json` (~2869 tok)
 
 ## frontend/scripts/
 
@@ -177,7 +177,7 @@
 - `AttendanceController.java` — RestController: AttendanceController (10 endpoints) (~1188 tok)
 - `AttendanceRepository.java` — Class: AttendanceRepository (~1902 tok)
 - `AttendanceService.java` — Service: AttendanceService; getWorkersDayStatus tracks firstCheckIn+lastCheckOut+calculatedHours; manualRecord uses req.time() (~4200 tok)
-- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1427 tok)
+- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1438 tok)
 
 ## src/main/java/org/example/attendTrack/attendance/dto/
 
@@ -224,13 +224,13 @@
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints); siteId optional for /attendance and /hours (~1520 tok)
-- `ReportService.java` — Service: ReportService (~9126 tok)
+- `ReportService.java` — Service: ReportService (~9304 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
 - `AttendanceReportRow.java` — Class: AttendanceReportRow (~152 tok)
 - `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
-- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~747 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~796 tok)
 - `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
 
 ## src/main/java/org/example/attendTrack/site/

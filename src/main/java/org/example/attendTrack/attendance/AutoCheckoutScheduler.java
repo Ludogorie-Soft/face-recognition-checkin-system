@@ -65,7 +65,7 @@ public class AutoCheckoutScheduler {
         // for the same logical session.
         Map<String, Attendance> lastCheckIn = new LinkedHashMap<>();
         for (Attendance a : unclosed) {
-            String key = a.getWorker().getId() + ":" + a.getSite().getId();
+            String key = a.getWorker().getId() + ":" + a.getSite().getId() + ":" + a.getRecordedAt().toLocalDate();
             lastCheckIn.merge(key, a, (existing, next) ->
                     next.getRecordedAt().isAfter(existing.getRecordedAt()) ? next : existing);
         }

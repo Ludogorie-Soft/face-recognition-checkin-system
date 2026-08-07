@@ -90,6 +90,7 @@ public class ReportService {
                 .filter(w -> !checkedIn.contains(w.getId()))
                 .filter(w -> companyWorkers == null || companyWorkers.contains(w.getId()))
                 .map(w -> new MissingWorkerReport(w.getId(), w.getName()))
+                .sorted(Comparator.comparing(MissingWorkerReport::workerName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
 
@@ -556,7 +557,9 @@ public class ReportService {
                             true, false, roundToQuarter(minutes), null, null, null,
                             null, null,  // inferred checkout — no real CHECK_OUT coords
                             hasRealCheckInCoords ? openIn.getLat() : null,
-                            hasRealCheckInCoords ? openIn.getLng() : null));
+                            hasRealCheckInCoords ? openIn.getLng() : null,
+                            hasRealCheckInCoords ? openIn.isLocationValid() : null,
+                            null));  // inferred checkout — no locationValid
                 } else {
                     sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size(), companyName));
                 }
@@ -581,7 +584,8 @@ public class ReportService {
                         s.workerId(), s.workerName(), s.companyName(), s.siteId(), s.siteName(), s.date(),
                         0, s.checkIn(), s.checkOut(), s.inferredCheckOut(), s.autoCheckout(),
                         s.calculatedHours(), effectiveHours, correctedHours, corrNote,
-                        s.checkOutLat(), s.checkOutLng(), s.checkInLat(), s.checkInLng()));
+                        s.checkOutLat(), s.checkOutLng(), s.checkInLat(), s.checkInLng(),
+                        s.checkInLocationValid(), s.checkOutLocationValid()));
             } else {
                 // Multiple sessions: session rows carry no effectiveHours (prevents double-counting);
                 // a day-total row (pairIndex = -1) carries the sum and any correction.
@@ -602,7 +606,8 @@ public class ReportService {
                         null, null, false, false,
                         daySum == 0 ? null : daySum, effectiveDay,
                         correctedHours, corrNote,
-                        null, null, null, null));  // day-total row — no location fields
+                        null, null, null, null,    // day-total row — no location fields
+                        null, null));              // day-total row — no locationValid
             }
         }
 
@@ -629,6 +634,8 @@ public class ReportService {
                 && (checkOut.getLat() != 0.0 || checkOut.getLng() != 0.0);
         Double coLat = hasRealCheckOutCoords ? checkOut.getLat() : null;
         Double coLng = hasRealCheckOutCoords ? checkOut.getLng() : null;
+        Boolean ciLocationValid = hasRealCheckInCoords ? checkIn.isLocationValid() : null;
+        Boolean coLocationValid = hasRealCheckOutCoords ? checkOut.isLocationValid() : null;
         return new WorkedHoursRow(
                 checkIn.getId(),
                 checkOut != null && !inferredCheckOut ? checkOut.getId() : null,
@@ -639,7 +646,8 @@ public class ReportService {
                 checkOut != null ? checkOut.getRecordedAt().toLocalTime() : null,
                 inferredCheckOut, autoCheckout,
                 calculatedHours, null, null, null,
-                coLat, coLng, ciLat, ciLng);
+                coLat, coLng, ciLat, ciLng,
+                ciLocationValid, coLocationValid);
     }
 
     /** Rounds total minutes to the nearest quarter-hour (0.25h increments). */

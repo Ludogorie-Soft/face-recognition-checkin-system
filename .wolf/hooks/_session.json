@@ -1,179 +1,231 @@
 {
-  "session_id": "session-2026-08-06-1417",
-  "started": "2026-08-06T11:17:04.800Z",
+  "session_id": "session-2026-08-07-0837",
+  "started": "2026-08-07T05:37:43.631Z",
   "files_read": {
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/dto/WorkerDayStatus.java": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java": {
       "count": 1,
-      "tokens": 0,
-      "first_read": "2026-08-06T11:18:17.529Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/frontend/components/dashboard/ManualAttendanceModal.tsx": {
-      "count": 1,
-      "tokens": 2730,
-      "first_read": "2026-08-06T11:18:17.618Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-08-06T11:18:23.379Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceController.java": {
-      "count": 1,
-      "tokens": 1048,
-      "first_read": "2026-08-06T11:18:23.474Z"
+      "tokens": 1427,
+      "first_read": "2026-08-07T05:37:52.023Z"
     },
     "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx": {
-      "count": 1,
-      "tokens": 12881,
-      "first_read": "2026-08-06T11:18:29.843Z"
+      "count": 7,
+      "tokens": 14014,
+      "first_read": "2026-08-07T05:40:28.869Z"
     },
     "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json": {
-      "count": 1,
-      "tokens": 2899,
-      "first_read": "2026-08-06T11:20:03.158Z"
+      "count": 2,
+      "tokens": 2987,
+      "first_read": "2026-08-07T05:41:10.440Z"
     },
     "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json": {
       "count": 1,
-      "tokens": 2768,
-      "first_read": "2026-08-06T11:20:07.742Z"
+      "tokens": 2791,
+      "first_read": "2026-08-07T05:41:13.618Z"
     },
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java": {
+    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java": {
       "count": 1,
-      "tokens": 1913,
-      "first_read": "2026-08-06T11:20:16.975Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-08-06T11:39:18.141Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/Attendance.java": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-08-06T11:39:18.233Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/src/main/resources/db/migration/V1__init.sql": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-08-06T11:39:33.832Z"
-    },
-    "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/site/Site.java": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-08-06T11:39:33.931Z"
+      "tokens": 747,
+      "first_read": "2026-08-07T05:50:19.239Z"
     },
     "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java": {
+      "count": 4,
+      "tokens": 9275,
+      "first_read": "2026-08-07T05:50:38.367Z"
+    },
+    "/Users/user/Documents/projects/AttendTrack/frontend/components/dashboard/ManualAttendanceModal.tsx": {
       "count": 1,
-      "tokens": 9126,
-      "first_read": "2026-08-06T11:41:36.422Z"
+      "tokens": 3300,
+      "first_read": "2026-08-07T06:01:04.800Z"
     }
   },
   "files_written": [
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/dto/WorkerDayStatus.java",
-      "action": "create",
-      "tokens": 276,
-      "at": "2026-08-06T11:21:26.735Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/dto/ManualAttendanceRequest.java",
-      "action": "create",
-      "tokens": 137,
-      "at": "2026-08-06T11:21:35.754Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
       "action": "edit",
-      "tokens": 41,
-      "at": "2026-08-06T11:21:44.209Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
-      "action": "edit",
-      "tokens": 568,
-      "at": "2026-08-06T11:22:37.952Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
-      "action": "edit",
-      "tokens": 56,
-      "at": "2026-08-06T11:22:45.912Z"
+      "tokens": 33,
+      "at": "2026-08-07T05:40:23.580Z"
     },
     {
       "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
       "action": "edit",
-      "tokens": 51,
-      "at": "2026-08-06T11:25:32.987Z"
+      "tokens": 29,
+      "at": "2026-08-07T05:41:23.943Z"
     },
     {
       "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
       "action": "edit",
-      "tokens": 47,
-      "at": "2026-08-06T11:25:41.915Z"
+      "tokens": 27,
+      "at": "2026-08-07T05:41:31.636Z"
     },
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/dashboard/ManualAttendanceModal.tsx",
-      "action": "create",
-      "tokens": 3310,
-      "at": "2026-08-06T11:26:33.048Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
       "action": "edit",
-      "tokens": 23,
-      "at": "2026-08-06T11:32:06.897Z"
+      "tokens": 36,
+      "at": "2026-08-07T05:41:40.819Z"
     },
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
       "action": "edit",
-      "tokens": 21,
-      "at": "2026-08-06T11:32:16.380Z"
+      "tokens": 657,
+      "at": "2026-08-07T05:41:58.961Z"
     },
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
       "action": "edit",
-      "tokens": 21,
-      "at": "2026-08-06T11:33:00.240Z"
-    },
-    {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
-      "action": "edit",
-      "tokens": 225,
-      "at": "2026-08-06T11:49:24.014Z"
+      "tokens": 27,
+      "at": "2026-08-07T05:42:07.784Z"
     },
     {
       "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
-      "action": "create",
-      "tokens": 1529,
-      "at": "2026-08-06T11:50:04.870Z"
+      "action": "edit",
+      "tokens": 11,
+      "at": "2026-08-07T05:43:31.480Z"
     },
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceController.java",
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java",
       "action": "edit",
-      "tokens": 66,
-      "at": "2026-08-06T11:50:25.791Z"
+      "tokens": 11,
+      "at": "2026-08-07T05:46:33.519Z"
     },
     {
-      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/attendance/AttendanceController.java",
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java",
       "action": "edit",
-      "tokens": 153,
-      "at": "2026-08-06T11:50:34.596Z"
+      "tokens": 147,
+      "at": "2026-08-07T05:52:16.402Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+      "action": "edit",
+      "tokens": 248,
+      "at": "2026-08-07T05:53:07.239Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+      "action": "edit",
+      "tokens": 288,
+      "at": "2026-08-07T05:53:19.773Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+      "action": "edit",
+      "tokens": 159,
+      "at": "2026-08-07T05:53:34.117Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+      "action": "edit",
+      "tokens": 50,
+      "at": "2026-08-07T05:53:46.327Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+      "action": "edit",
+      "tokens": 64,
+      "at": "2026-08-07T05:53:55.329Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+      "action": "edit",
+      "tokens": 67,
+      "at": "2026-08-07T05:54:03.456Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "action": "edit",
+      "tokens": 56,
+      "at": "2026-08-07T05:54:11.331Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "action": "edit",
+      "tokens": 41,
+      "at": "2026-08-07T05:54:19.451Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "action": "edit",
+      "tokens": 228,
+      "at": "2026-08-07T05:54:29.815Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "action": "edit",
+      "tokens": 462,
+      "at": "2026-08-07T05:54:45.544Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "action": "edit",
+      "tokens": 782,
+      "at": "2026-08-07T05:55:07.554Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "action": "edit",
+      "tokens": 72,
+      "at": "2026-08-07T06:01:25.101Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "action": "edit",
+      "tokens": 48,
+      "at": "2026-08-07T06:01:36.487Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "action": "edit",
+      "tokens": 176,
+      "at": "2026-08-07T06:01:47.042Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/components/dashboard/ManualAttendanceModal.tsx",
+      "action": "edit",
+      "tokens": 73,
+      "at": "2026-08-07T06:01:56.598Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/bg.json",
+      "action": "edit",
+      "tokens": 32,
+      "at": "2026-08-07T06:02:24.923Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/messages/en.json",
+      "action": "edit",
+      "tokens": 32,
+      "at": "2026-08-07T06:02:37.268Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/src/main/java/org/example/attendTrack/report/ReportService.java",
+      "action": "edit",
+      "tokens": 135,
+      "at": "2026-08-07T06:04:07.906Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "action": "edit",
+      "tokens": 46,
+      "at": "2026-08-07T06:05:28.843Z"
+    },
+    {
+      "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/reports/page.tsx",
+      "action": "edit",
+      "tokens": 444,
+      "at": "2026-08-07T06:05:42.974Z"
     }
   ],
   "edit_counts": {
-    "src/main/java/org/example/attendTrack/attendance/dto/WorkerDayStatus.java": 1,
-    "src/main/java/org/example/attendTrack/attendance/dto/ManualAttendanceRequest.java": 1,
-    "src/main/java/org/example/attendTrack/attendance/AttendanceService.java": 3,
-    "frontend/messages/bg.json": 2,
-    "frontend/messages/en.json": 2,
-    "frontend/components/dashboard/ManualAttendanceModal.tsx": 2,
-    "src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java": 1,
-    "src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java": 1,
-    "src/main/java/org/example/attendTrack/attendance/AttendanceController.java": 2
+    "src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java": 3,
+    "frontend/messages/bg.json": 3,
+    "frontend/messages/en.json": 3,
+    "frontend/app/[locale]/(admin)/reports/page.tsx": 10,
+    "src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java": 1,
+    "src/main/java/org/example/attendTrack/report/ReportService.java": 5,
+    "frontend/components/dashboard/ManualAttendanceModal.tsx": 4
   },
-  "anatomy_hits": 9,
+  "anatomy_hits": 7,
   "anatomy_misses": 0,
-  "repeated_reads_warned": 0,
+  "repeated_reads_warned": 10,
   "cerebrum_warnings": 0,
-  "stop_count": 8
+  "stop_count": 15
 }

@@ -1329,3 +1329,56 @@
 | 14:50 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | 6→7 lines | ~62 |
 | 14:50 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | expanded (+9 lines) | ~143 |
 | 14:52 | Session end: 15 writes across 9 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 13 reads | ~39889 tok |
+| 08:14 | Session end: 15 writes across 9 files (WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, bg.json, en.json) | 14 reads | ~39889 tok |
+
+## Session: 2026-08-07 08:37
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 08:40 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | inline fix | ~31 |
+| 08:41 | Edited frontend/messages/bg.json | 1→2 lines | ~29 |
+| 08:41 | Edited frontend/messages/en.json | 1→2 lines | ~27 |
+| 08:41 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 3→3 lines | ~36 |
+| 08:41 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified has() | ~657 |
+| 08:42 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 2→2 lines | ~27 |
+| 09:15 | Fixed dedup key in AutoCheckoutScheduler: workerId:siteId → workerId:siteId:date | AutoCheckoutScheduler.java | prevents multi-day open sessions from being skipped | ~45 |
+| 09:15 | Added filterAutoCheckout i18n key | bg.json, en.json | "Само авто-затворени" / "Auto-closed only" | ~30 |
+| 09:15 | Added auto-checkout filter toggle to WorkedHoursTable | reports/page.tsx | orange toggle + count badge, client-side filter | ~80 |
+| 08:43 | Session end: 6 writes across 4 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx) | 4 reads | ~20831 tok |
+| 08:43 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | "0 1 0 * * *" → "0 0 9 * * *" | ~10 |
+| 08:43 | Session end: 7 writes across 4 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx) | 4 reads | ~20842 tok |
+| 08:44 | Session end: 7 writes across 4 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx) | 4 reads | ~20842 tok |
+| 08:46 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | "0 0 9 * * *" → "0 1 0 * * *" | ~10 |
+| 08:46 | Session end: 8 writes across 4 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx) | 4 reads | ~20853 tok |
+| 08:47 | Session end: 8 writes across 4 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx) | 4 reads | ~20853 tok |
+| 08:48 | Session end: 8 writes across 4 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx) | 4 reads | ~20853 tok |
+| 08:49 | Session end: 8 writes across 4 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx) | 4 reads | ~20853 tok |
+| 08:50 | Session end: 8 writes across 4 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx) | 6 reads | ~30726 tok |
+| 08:52 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | 5→7 lines | ~138 |
+| 08:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified isLocationValid() | ~231 |
+| 08:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified getLat() | ~268 |
+| 08:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 6→7 lines | ~149 |
+| 08:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 1→2 lines | ~47 |
+| 08:53 | Edited frontend/messages/bg.json | 1→4 lines | ~64 |
+| 08:54 | Edited frontend/messages/en.json | 1→4 lines | ~67 |
+| 08:54 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: checkInLocationValid, checkOutLocationValid | ~56 |
+| 08:54 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 1→2 lines | ~41 |
+| 08:54 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: r | ~228 |
+| 08:54 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | expanded (+16 lines) | ~462 |
+| 08:55 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: dark, dark | ~782 |
+| 08:55 | Session end: 20 writes across 6 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 6 reads | ~34225 tok |
+| 09:00 | Session end: 20 writes across 6 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 6 reads | ~34225 tok |
+| 09:01 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | 3→4 lines | ~72 |
+| 09:01 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | modified if() | ~48 |
+| 09:01 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | expanded (+13 lines) | ~176 |
+| 09:01 | Edited frontend/components/dashboard/ManualAttendanceModal.tsx | 2→2 lines | ~73 |
+| 09:02 | Edited frontend/messages/bg.json | 1→2 lines | ~32 |
+| 09:02 | Edited frontend/messages/en.json | 1→2 lines | ~32 |
+| 09:02 | Session end: 26 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 7 reads | ~38022 tok |
+| 09:04 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 6→7 lines | ~126 |
+| 09:04 | Session end: 27 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 7 reads | ~38201 tok |
+| 09:04 | Session end: 27 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 7 reads | ~38201 tok |
+| 09:05 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 3→3 lines | ~46 |
+| 09:05 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified MissingTable() | ~444 |
+| 09:05 | Session end: 29 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 7 reads | ~39022 tok |
+| 09:07 | Session end: 29 writes across 7 files (AutoCheckoutScheduler.java, bg.json, en.json, page.tsx, WorkedHoursRow.java) | 7 reads | ~39022 tok |
