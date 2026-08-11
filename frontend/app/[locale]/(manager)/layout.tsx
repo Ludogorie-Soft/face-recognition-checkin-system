@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import { SyncBanner } from '@/components/offline/SyncBanner'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { LanguageToggle } from '@/components/layout/LanguageToggle'
-import { LogOut, ClipboardCheck, LayoutDashboard, LogIn, ScanFace } from 'lucide-react'
+import { LogOut, ClipboardCheck, LayoutDashboard, ScanFace } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { prefetchModels } from '@/lib/prefetchModels'
 import { getToken, isTokenValid, getUserRole, removeToken } from '@/lib/auth'
@@ -61,7 +61,7 @@ export default function VerifyLayout({ children }: { children: React.ReactNode }
           {isAdmin && <NotificationBell />}
           <LanguageToggle />
           <ThemeToggle />
-          {isAdmin ? (
+          {isAdmin && (
             <button
               onClick={logout}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
@@ -69,14 +69,6 @@ export default function VerifyLayout({ children }: { children: React.ReactNode }
             >
               <LogOut size={16} />
             </button>
-          ) : (
-            <Link
-              href={`/${locale}/login`}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              aria-label="Login"
-            >
-              <LogIn size={16} />
-            </Link>
           )}
         </div>
       </header>

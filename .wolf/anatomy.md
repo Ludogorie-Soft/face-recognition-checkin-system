@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-07T11:06:49.474Z
-> Files: 151 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-11T07:01:15.485Z
+> Files: 152 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -14,6 +14,7 @@
 - `GUIDE_BG.md` — AttendTrack — Ръководство за потребителя (~2385 tok)
 - `GUIDE_EN.md` — AttendTrack — User Guide (~2311 tok)
 - `nginx.conf` (~313 tok)
+- `nginx.prod.conf` (~224 tok)
 - `OFFLINE_WORKFLOW_SIMPLE.md` — AttendTrack — Как работи без интернет (~736 tok)
 - `OFFLINE_WORKFLOW.md` — AttendTrack — Офлайн режим (~1930 tok)
 - `OFFLINE_WORKFLOW.md` — Офлайн архитектура: 4 фази, sync flow, race condition защита, ограничения (~800 tok)
@@ -79,7 +80,7 @@
 
 ## frontend/app/[locale]/(manager)/
 
-- `layout.tsx` — VerifyLayout (~946 tok)
+- `layout.tsx` — VerifyLayout (~844 tok)
 
 ## frontend/app/[locale]/(manager)/verify/
 
