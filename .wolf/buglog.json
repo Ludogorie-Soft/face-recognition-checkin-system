@@ -3235,6 +3235,22 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-08-11T09:14:42.440Z"
+    },
+    {
+      "id": "bug-200",
+      "timestamp": "2026-08-11T09:21:18.337Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/app/[locale]/(admin)/dashboard/page.tsx",
+      "root_cause": "Had \"flex flex-col gap-3\"",
+      "fix": "Changed to \"flex flex-col gap-3 max-h-80 overflow-y-auto\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-11T09:21:18.337Z"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-11T09:14:42.423Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-11T09:35:23.769Z
 > Files: 153 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -52,7 +52,7 @@
 
 ## frontend/app/[locale]/(admin)/dashboard/
 
-- `page.tsx` — StatCard (~4089 tok)
+- `page.tsx` — StatCard (~4101 tok)
 
 ## frontend/app/[locale]/(admin)/reports/
 

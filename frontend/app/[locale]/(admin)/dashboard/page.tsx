@@ -112,7 +112,7 @@ function SiteBreakdown({ sites }: { sites: SiteAttendance[] }) {
       {sites.length === 0
         ? <p className="text-sm text-muted-foreground">{t('noSites')}</p>
         : (
-          <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
+          <div className="flex flex-col gap-3 h-80 overflow-y-auto">
             {sites.map(site => {
               const pct = site.totalWorkers > 0
                 ? Math.round((site.presentCount / site.totalWorkers) * 100)
@@ -166,7 +166,7 @@ function RecentActivity({ entries }: { entries: ActivityEntry[] }) {
       {entries.length === 0
         ? <p className="text-sm text-muted-foreground">{t('noActivity')}</p>
         : (
-          <div className="flex flex-col divide-y divide-border max-h-80 overflow-y-auto">
+          <div className="flex flex-col divide-y divide-border h-80 overflow-y-auto">
             {entries.map((entry, i) => {
               const isCheckIn = entry.type === 'CHECK_IN'
               const dt = new Date(entry.recordedAt)
@@ -214,7 +214,7 @@ function Alerts({ autoCheckouts, outOfZoneCount }: { autoCheckouts: number, outO
           </p>
         )
         : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
             {outOfZoneCount > 0 && (
               <div className="flex items-start gap-2 text-sm text-destructive">
                 <ShieldAlert size={14} className="mt-0.5 shrink-0" />
@@ -262,7 +262,7 @@ function OutOfZoneList({ entries }: { entries: OutOfZoneEntry[] }) {
           </p>
         )
         : (
-          <div className="flex flex-col divide-y divide-border">
+          <div className="flex flex-col divide-y divide-border max-h-80 overflow-y-auto">
             {entries.map((entry, i) => (
               <div key={i} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0" />
