@@ -112,7 +112,7 @@ function SiteBreakdown({ sites }: { sites: SiteAttendance[] }) {
       {sites.length === 0
         ? <p className="text-sm text-muted-foreground">{t('noSites')}</p>
         : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
             {sites.map(site => {
               const pct = site.totalWorkers > 0
                 ? Math.round((site.presentCount / site.totalWorkers) * 100)
@@ -166,7 +166,7 @@ function RecentActivity({ entries }: { entries: ActivityEntry[] }) {
       {entries.length === 0
         ? <p className="text-sm text-muted-foreground">{t('noActivity')}</p>
         : (
-          <div className="flex flex-col divide-y divide-border">
+          <div className="flex flex-col divide-y divide-border max-h-80 overflow-y-auto">
             {entries.map((entry, i) => {
               const isCheckIn = entry.type === 'CHECK_IN'
               const dt = new Date(entry.recordedAt)

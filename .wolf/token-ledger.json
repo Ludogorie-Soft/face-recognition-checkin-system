@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-06-17T06:06:35.448Z",
   "lifetime": {
-    "total_tokens_estimated": 7297776,
-    "total_reads": 5947,
-    "total_writes": 6420,
+    "total_tokens_estimated": 7325781,
+    "total_reads": 5969,
+    "total_writes": 6443,
     "total_sessions": 32,
-    "anatomy_hits": 2671,
+    "anatomy_hits": 2693,
     "anatomy_misses": 1823,
-    "repeated_reads_blocked": 1402,
-    "estimated_savings_vs_bare_cli": 7241386
+    "repeated_reads_blocked": 1405,
+    "estimated_savings_vs_bare_cli": 7248318
   },
   "sessions": [
     {
@@ -74487,6 +74487,338 @@
         "writes_count": 3,
         "repeated_reads_blocked": 0,
         "anatomy_lookups": 4
+      }
+    },
+    {
+      "id": "session-2026-08-10-1758",
+      "started": "2026-08-10T14:58:26.805Z",
+      "ended": "2026-08-11T09:02:51.246Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.conf",
+          "tokens_estimated": 313,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/page.tsx",
+          "tokens_estimated": 61,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
+          "tokens_estimated": 2259,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 946,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.prod.conf",
+          "tokens_estimated": 240,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/admin/page.tsx",
+          "tokens_estimated": 61,
+          "action": "create"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 3579,
+        "output_tokens_estimated": 432,
+        "reads_count": 4,
+        "writes_count": 4,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 4
+      }
+    },
+    {
+      "id": "session-2026-08-10-1758",
+      "started": "2026-08-10T14:58:26.805Z",
+      "ended": "2026-08-11T09:03:11.249Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.conf",
+          "tokens_estimated": 313,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/page.tsx",
+          "tokens_estimated": 61,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
+          "tokens_estimated": 2259,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 946,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.prod.conf",
+          "tokens_estimated": 240,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/admin/page.tsx",
+          "tokens_estimated": 61,
+          "action": "create"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 3579,
+        "output_tokens_estimated": 432,
+        "reads_count": 4,
+        "writes_count": 4,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 4
+      }
+    },
+    {
+      "id": "session-2026-08-10-1758",
+      "started": "2026-08-10T14:58:26.805Z",
+      "ended": "2026-08-11T09:10:36.432Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.conf",
+          "tokens_estimated": 313,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/page.tsx",
+          "tokens_estimated": 61,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
+          "tokens_estimated": 2259,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 844,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.prod.conf",
+          "tokens_estimated": 240,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/admin/page.tsx",
+          "tokens_estimated": 61,
+          "action": "create"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 3477,
+        "output_tokens_estimated": 432,
+        "reads_count": 4,
+        "writes_count": 4,
+        "repeated_reads_blocked": 1,
+        "anatomy_lookups": 4
+      }
+    },
+    {
+      "id": "session-2026-08-10-1758",
+      "started": "2026-08-10T14:58:26.805Z",
+      "ended": "2026-08-11T09:14:04.234Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.conf",
+          "tokens_estimated": 313,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/page.tsx",
+          "tokens_estimated": 61,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
+          "tokens_estimated": 2259,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 844,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/dashboard/page.tsx",
+          "tokens_estimated": 4075,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.prod.conf",
+          "tokens_estimated": 240,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/admin/page.tsx",
+          "tokens_estimated": 61,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/dashboard/page.tsx",
+          "tokens_estimated": 38,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 7552,
+        "output_tokens_estimated": 470,
+        "reads_count": 5,
+        "writes_count": 5,
+        "repeated_reads_blocked": 1,
+        "anatomy_lookups": 5
+      }
+    },
+    {
+      "id": "session-2026-08-10-1758",
+      "started": "2026-08-10T14:58:26.805Z",
+      "ended": "2026-08-11T09:14:45.948Z",
+      "reads": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.conf",
+          "tokens_estimated": 313,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/page.tsx",
+          "tokens_estimated": 61,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/verify/page.tsx",
+          "tokens_estimated": 2259,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 844,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/dashboard/page.tsx",
+          "tokens_estimated": 4075,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/nginx.prod.conf",
+          "tokens_estimated": 240,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(manager)/layout.tsx",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/admin/page.tsx",
+          "tokens_estimated": 61,
+          "action": "create"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/dashboard/page.tsx",
+          "tokens_estimated": 38,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/user/Documents/projects/AttendTrack/frontend/app/[locale]/(admin)/dashboard/page.tsx",
+          "tokens_estimated": 30,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 7552,
+        "output_tokens_estimated": 500,
+        "reads_count": 5,
+        "writes_count": 6,
+        "repeated_reads_blocked": 1,
+        "anatomy_lookups": 5
       }
     }
   ],
