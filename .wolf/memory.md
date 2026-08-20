@@ -3,6 +3,8 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 
+| 11:00 | ManualOverrideModal: sort workers A-Z + add search input | frontend/components/verify/ManualOverrideModal.tsx | done | ~600 tok |
+
 | 2026-08-07 | Added Settings page (/settings) — manual auto-checkout trigger with date range, result display; added Settings link in AdminSidebar | settings/page.tsx, AdminSidebar.tsx, bg.json, en.json | success | ~1200 |
 
 | 2026-08-06 | ManualAttendanceModal — per-worker time picker, session summary (Вход/Изход/Отработени ч.), modal sm:max-w-xl | WorkerDayStatus.java, ManualAttendanceRequest.java, AttendanceService.java, ManualAttendanceModal.tsx, bg.json, en.json | success | ~4000 |
@@ -1502,3 +1504,26 @@
 | 12:35 | Edited frontend/app/[locale]/(admin)/dashboard/page.tsx | 10→10 lines | ~129 |
 | 12:35 | Edited frontend/app/[locale]/(admin)/dashboard/page.tsx | 10→10 lines | ~136 |
 | 12:35 | Session end: 12 writes across 3 files (nginx.prod.conf, layout.tsx, page.tsx) | 5 reads | ~8711 tok |
+
+## Session: 2026-08-20 15:01
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:03 | Edited frontend/components/verify/ManualOverrideModal.tsx | CSS: sensitivity | ~1316 |
+| 15:04 | Session end: 1 writes across 1 files (ManualOverrideModal.tsx) | 3 reads | ~3575 tok |
+| 15:04 | Session end: 1 writes across 1 files (ManualOverrideModal.tsx) | 3 reads | ~3575 tok |
+| 15:06 | Session end: 1 writes across 1 files (ManualOverrideModal.tsx) | 5 reads | ~19324 tok |
+| 15:06 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: siteId, siteId | ~162 |
+| 15:06 | Edited src/main/java/org/example/attendTrack/report/ReportController.java | 5→5 lines | ~87 |
+| 15:07 | Edited src/main/java/org/example/attendTrack/report/ReportController.java | 5→5 lines | ~86 |
+| 11:07 | Fix Excel export за 'Всички обекти': siteId||undefined frontend + required=false backend | reports/page.tsx, ReportController.java | done | ~400 tok |
+| 15:07 | Session end: 4 writes across 3 files (ManualOverrideModal.tsx, page.tsx, ReportController.java) | 5 reads | ~19671 tok |
+| 15:56 | Edited frontend/messages/bg.json | 2→3 lines | ~36 |
+| 15:56 | Edited frontend/messages/en.json | 2→3 lines | ~35 |
+| 15:56 | Session end: 6 writes across 5 files (ManualOverrideModal.tsx, page.tsx, ReportController.java, bg.json, en.json) | 7 reads | ~22854 tok |
+| 16:03 | Session end: 6 writes across 5 files (ManualOverrideModal.tsx, page.tsx, ReportController.java, bg.json, en.json) | 7 reads | ~22854 tok |
+
+## Session: 2026-08-20 16:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|

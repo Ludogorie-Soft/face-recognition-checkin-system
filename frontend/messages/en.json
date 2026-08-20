@@ -187,6 +187,7 @@
     "success": "{name} — recorded successfully",
     "manualConfirm": "Manual confirmation",
     "selectWorker": "Select worker",
+    "searchWorker": "Search worker...",
     "confidence": "Confidence: {value}%",
     "noDescriptors": "No workers with registered face",
     "modelsLoading": "Loading models...",

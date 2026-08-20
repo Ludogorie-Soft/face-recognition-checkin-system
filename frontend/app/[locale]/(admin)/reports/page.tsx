@@ -272,14 +272,14 @@ export default function ReportsPage() {
       let filename = ''
       if (tab === 'attendance') {
         const response = await api.get('/api/reports/attendance/export', {
-          params: { siteId, from: dateFrom, to: dateTo },
+          params: { siteId: siteId || undefined, from: dateFrom, to: dateTo },
           responseType: 'blob',
         })
         url = URL.createObjectURL(response.data)
         filename = `attendance_${dateFrom}_${dateTo}.xlsx`
       } else if (tab === 'hours') {
         const response = await api.get('/api/reports/hours/export', {
-          params: { siteId, from: dateFrom, to: dateTo },
+          params: { siteId: siteId || undefined, from: dateFrom, to: dateTo },
           responseType: 'blob',
         })
         url = URL.createObjectURL(response.data)

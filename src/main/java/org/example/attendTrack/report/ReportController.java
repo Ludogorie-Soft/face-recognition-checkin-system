@@ -47,7 +47,7 @@ public class ReportController {
 
     @GetMapping("/attendance/export")
     public ResponseEntity<byte[]> exportAttendance(
-            @RequestParam UUID siteId,
+            @RequestParam(required = false) UUID siteId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
@@ -90,7 +90,7 @@ public class ReportController {
 
     @GetMapping("/hours/export")
     public ResponseEntity<byte[]> exportWorkedHours(
-            @RequestParam UUID siteId,
+            @RequestParam(required = false) UUID siteId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 

@@ -3251,6 +3251,46 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-11T09:21:18.337Z"
+    },
+    {
+      "id": "bug-201",
+      "timestamp": "2026-08-20T12:03:51.375Z",
+      "error_message": "Significant refactor of ",
+      "file": "frontend/components/verify/ManualOverrideModal.tsx",
+      "root_cause": "18 lines replaced/restructured",
+      "fix": "Rewrote 93→126 lines (18 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-20T12:03:51.375Z"
+    },
+    {
+      "id": "bug-202",
+      "timestamp": "2026-08-20T12:06:47.123Z",
+      "error_message": "Excel export fails with HTTP 400 when 'Всички обекти' is selected",
+      "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
+      "root_cause": "handleExport sent siteId as empty string '' instead of omitting the param. Backend @RequestParam UUID siteId could not parse empty string as UUID.",
+      "fix": "Changed params: { siteId } to { siteId: siteId || undefined } for attendance/export and hours/export calls",
+      "tags": ["export", "excel", "reports", "siteId", "all-sites"],
+      "related_bugs": ["bug-203"],
+      "occurrences": 1,
+      "last_seen": "2026-08-20T12:06:47.123Z"
+    },
+    {
+      "id": "bug-203",
+      "timestamp": "2026-08-20T12:07:00.000Z",
+      "error_message": "Excel export fails with HTTP 400 when siteId is missing (all sites)",
+      "file": "src/main/java/org/example/attendTrack/report/ReportController.java",
+      "root_cause": "Export endpoints /attendance/export and /hours/export declared @RequestParam UUID siteId (required=true), but the 'all sites' case sends no siteId. Spring cannot bind missing/empty UUID → 400.",
+      "fix": "Changed @RequestParam UUID siteId to @RequestParam(required = false) UUID siteId on both export endpoints. Service already handles null siteId correctly.",
+      "tags": ["export", "excel", "reports", "backend", "siteId", "required-false"],
+      "related_bugs": ["bug-202"],
+      "occurrences": 1,
+      "last_seen": "2026-08-20T12:07:00.000Z"
     }
   ]
 }

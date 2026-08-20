@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-11T09:35:23.769Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-20T12:56:14.397Z
 > Files: 153 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -56,7 +56,7 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~14229 tok)
+- `page.tsx` — fmtLocal (~14241 tok)
 
 ## frontend/app/[locale]/(admin)/settings/
 
@@ -130,7 +130,7 @@
 
 ## frontend/components/verify/
 
-- `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal (~705 tok)
+- `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal; workers sorted A-Z; search input filters by name; selected worker highlighted with checkmark (~1316 tok)
 - `SyncLoader.tsx` — SVG comet-arc loader; indeterminate: pure CSS spin + feGaussianBlur glow; determinate: smooth strokeDashoffset fill. No JS state. (~620 tok)
 - `VerifyCamera.tsx` — resolveWorkerSite (~5981 tok)
 
@@ -164,8 +164,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~3246 tok)
-- `en.json` (~3112 tok)
+- `bg.json` (~3258 tok)
+- `en.json` (~3124 tok)
 
 ## frontend/scripts/
 
@@ -232,7 +232,7 @@
 
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
-- `ReportController.java` — RestController: ReportController (9 endpoints); siteId optional for /attendance and /hours (~1520 tok)
+- `ReportController.java` — RestController: ReportController (9 endpoints) (~1518 tok)
 - `ReportService.java` — Service: ReportService (~9304 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/

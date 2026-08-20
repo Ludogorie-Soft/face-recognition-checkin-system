@@ -187,6 +187,7 @@
     "success": "{name} — успешно записан",
     "manualConfirm": "Ръчно потвърждение",
     "selectWorker": "Изберете работник",
+    "searchWorker": "Търси работник...",
     "confidence": "Увереност: {value}%",
     "noDescriptors": "Няма работници с регистрирано лице",
     "modelsLoading": "Зареждане на модели...",

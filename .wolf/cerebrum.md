@@ -71,6 +71,10 @@
 
 <!-- [2026-08-04] Assign modals (SiteAssignModal, WorkerSiteModal, CompanySiteModal, CompanyWorkerModal) use sm:max-w-lg for width. Do NOT revert to sm:max-w-md. -->
 
+<!-- [2026-08-20] next-intl translation keys used in a component must exist in the SAME namespace the component reads (useTranslations('X')). A key that exists in namespace 'workers' is NOT available via useTranslations('verify'). Always verify the key is in the correct namespace, not just in any namespace. -->
+
+<!-- [2026-08-20] Export endpoints (/attendance/export, /hours/export) must mirror the query endpoints: if the query accepts optional siteId (required=false), the export must too. Frontend handleExport must use `siteId: siteId || undefined` (not bare `siteId`) so empty string is not sent as a param. -->
+
 ## Decision Log
 
 - **Biometric — face recognition v2:** MediaPipe FaceLandmarker (478-landmark detection) + MobileFaceNet ONNX (InsightFace w600k_mbf, 512-dim ArcFace embeddings) via onnxruntime-web. Replaced face-api.js. Module-level singletons with reference counting (consumerCount). GPU delegate with CPU fallback. All ONNX output tensors must be disposed explicitly.
