@@ -259,6 +259,7 @@
     "checkOut": "Check Out",
     "noResults": "No results for the selected period",
     "manual": "Manual",
+    "adminManual": "Admin",
     "inZone": "In zone",
     "outOfZone": "Out of zone",
     "hoursWorked": "Hours",

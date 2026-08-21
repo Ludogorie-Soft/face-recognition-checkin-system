@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-20T12:56:14.397Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-21T07:24:44.886Z
 > Files: 153 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -56,7 +56,7 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~14241 tok)
+- `page.tsx` — fmtLocal (~14472 tok)
 
 ## frontend/app/[locale]/(admin)/settings/
 
@@ -164,8 +164,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~3258 tok)
-- `en.json` (~3124 tok)
+- `bg.json` (~3266 tok)
+- `en.json` (~3132 tok)
 
 ## frontend/scripts/
 
@@ -233,13 +233,13 @@
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints) (~1518 tok)
-- `ReportService.java` — Service: ReportService (~9304 tok)
+- `ReportService.java` — Service: ReportService (~9417 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
-- `AttendanceReportRow.java` — Class: AttendanceReportRow (~152 tok)
+- `AttendanceReportRow.java` — Class: AttendanceReportRow (~160 tok)
 - `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
-- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~796 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~827 tok)
 - `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
 
 ## src/main/java/org/example/attendTrack/site/

@@ -19,5 +19,6 @@ public record AttendanceReportRow(
         double lng,
         boolean locationValid,
         Double faceConfidence,
-        boolean manualOverride
+        boolean manualOverride,
+        boolean adminManual
 ) {}

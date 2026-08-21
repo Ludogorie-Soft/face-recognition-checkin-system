@@ -47,5 +47,6 @@ public record WorkedHoursRow(
         Double checkInLat,            // null → manual record (0,0 coords) or day-total row
         Double checkInLng,            // null → same cases as checkInLat
         Boolean checkInLocationValid, // null → manual record or day-total row
-        Boolean checkOutLocationValid // null → open shift, inferred checkout, or day-total row
+        Boolean checkOutLocationValid, // null → open shift, inferred checkout, or day-total row
+        boolean adminManualCheckIn    // true when check-in was entered manually by an admin from the dashboard
 ) {}

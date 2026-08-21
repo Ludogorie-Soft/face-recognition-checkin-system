@@ -442,7 +442,8 @@ public class ReportService {
                 a.getLng(),
                 a.isLocationValid(),
                 a.getFaceConfidence(),
-                a.isManualOverride()
+                a.isManualOverride(),
+                a.isManualOverride() && a.getManager() != null
         );
     }
 
@@ -559,7 +560,8 @@ public class ReportService {
                             hasRealCheckInCoords ? openIn.getLat() : null,
                             hasRealCheckInCoords ? openIn.getLng() : null,
                             hasRealCheckInCoords ? openIn.isLocationValid() : null,
-                            null));  // inferred checkout — no locationValid
+                            null,  // inferred checkout — no locationValid
+                            openIn.isManualOverride() && openIn.getManager() != null));
                 } else {
                     sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size(), companyName));
                 }
@@ -585,7 +587,8 @@ public class ReportService {
                         0, s.checkIn(), s.checkOut(), s.inferredCheckOut(), s.autoCheckout(),
                         s.calculatedHours(), effectiveHours, correctedHours, corrNote,
                         s.checkOutLat(), s.checkOutLng(), s.checkInLat(), s.checkInLng(),
-                        s.checkInLocationValid(), s.checkOutLocationValid()));
+                        s.checkInLocationValid(), s.checkOutLocationValid(),
+                        s.adminManualCheckIn()));
             } else {
                 // Multiple sessions: session rows carry no effectiveHours (prevents double-counting);
                 // a day-total row (pairIndex = -1) carries the sum and any correction.
@@ -607,7 +610,8 @@ public class ReportService {
                         daySum == 0 ? null : daySum, effectiveDay,
                         correctedHours, corrNote,
                         null, null, null, null,    // day-total row — no location fields
-                        null, null));              // day-total row — no locationValid
+                        null, null,                // day-total row — no locationValid
+                        false));                   // day-total row — no individual check-in
             }
         }
 
@@ -636,6 +640,7 @@ public class ReportService {
         Double coLng = hasRealCheckOutCoords ? checkOut.getLng() : null;
         Boolean ciLocationValid = hasRealCheckInCoords ? checkIn.isLocationValid() : null;
         Boolean coLocationValid = hasRealCheckOutCoords ? checkOut.isLocationValid() : null;
+        boolean adminManualCheckIn = checkIn.isManualOverride() && checkIn.getManager() != null;
         return new WorkedHoursRow(
                 checkIn.getId(),
                 checkOut != null && !inferredCheckOut ? checkOut.getId() : null,
@@ -647,7 +652,8 @@ public class ReportService {
                 inferredCheckOut, autoCheckout,
                 calculatedHours, null, null, null,
                 coLat, coLng, ciLat, ciLng,
-                ciLocationValid, coLocationValid);
+                ciLocationValid, coLocationValid,
+                adminManualCheckIn);
     }
 
     /** Rounds total minutes to the nearest quarter-hour (0.25h increments). */

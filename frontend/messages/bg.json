@@ -259,6 +259,7 @@
     "checkOut": "Излизане",
     "noResults": "Няма резултати за избрания период",
     "manual": "Ръчно",
+    "adminManual": "Админ",
     "inZone": "В зоната",
     "outOfZone": "Извън зоната",
     "hoursWorked": "Часове",

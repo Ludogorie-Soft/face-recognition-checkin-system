@@ -3275,8 +3275,16 @@
       "file": "frontend/app/[locale]/(admin)/reports/page.tsx",
       "root_cause": "handleExport sent siteId as empty string '' instead of omitting the param. Backend @RequestParam UUID siteId could not parse empty string as UUID.",
       "fix": "Changed params: { siteId } to { siteId: siteId || undefined } for attendance/export and hours/export calls",
-      "tags": ["export", "excel", "reports", "siteId", "all-sites"],
-      "related_bugs": ["bug-203"],
+      "tags": [
+        "export",
+        "excel",
+        "reports",
+        "siteId",
+        "all-sites"
+      ],
+      "related_bugs": [
+        "bug-203"
+      ],
       "occurrences": 1,
       "last_seen": "2026-08-20T12:06:47.123Z"
     },
@@ -3287,10 +3295,51 @@
       "file": "src/main/java/org/example/attendTrack/report/ReportController.java",
       "root_cause": "Export endpoints /attendance/export and /hours/export declared @RequestParam UUID siteId (required=true), but the 'all sites' case sends no siteId. Spring cannot bind missing/empty UUID → 400.",
       "fix": "Changed @RequestParam UUID siteId to @RequestParam(required = false) UUID siteId on both export endpoints. Service already handles null siteId correctly.",
-      "tags": ["export", "excel", "reports", "backend", "siteId", "required-false"],
-      "related_bugs": ["bug-202"],
+      "tags": [
+        "export",
+        "excel",
+        "reports",
+        "backend",
+        "siteId",
+        "required-false"
+      ],
+      "related_bugs": [
+        "bug-202"
+      ],
       "occurrences": 1,
       "last_seen": "2026-08-20T12:07:00.000Z"
+    },
+    {
+      "id": "bug-204",
+      "timestamp": "2026-08-21T07:14:38.914Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-21T07:14:38.914Z"
+    },
+    {
+      "id": "bug-205",
+      "timestamp": "2026-08-21T07:24:07.897Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-21T07:24:07.897Z"
     }
   ]
 }

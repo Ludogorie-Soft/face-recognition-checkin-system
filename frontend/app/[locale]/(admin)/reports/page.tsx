@@ -41,6 +41,7 @@ interface AttendanceRow {
   locationValid: boolean
   faceConfidence: number | null
   manualOverride: boolean
+  adminManual: boolean
 }
 
 interface MissingRow {
@@ -62,6 +63,7 @@ interface WorkedHoursRow {
   checkOut: string | null
   inferredCheckOut: boolean
   autoCheckout: boolean
+  adminManualCheckIn: boolean
   calculatedHours: number | null
   effectiveHours: number | null
   correctedHours: number | null
@@ -619,14 +621,21 @@ function AttendanceTable({
                   </span>
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant={row.type === 'CHECK_IN' ? 'default' : 'secondary'}
-                    className={row.type === 'CHECK_IN'
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                      : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}
-                  >
-                    {t(row.type === 'CHECK_IN' ? 'checkIn' : 'checkOut')}
-                  </Badge>
+                  <div className="flex items-center gap-1.5">
+                    <Badge
+                      variant={row.type === 'CHECK_IN' ? 'default' : 'secondary'}
+                      className={row.type === 'CHECK_IN'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}
+                    >
+                      {t(row.type === 'CHECK_IN' ? 'checkIn' : 'checkOut')}
+                    </Badge>
+                    {row.adminManual && (
+                      <Badge variant="outline" className="text-xs text-muted-foreground border-muted-foreground/40">
+                        {t('adminManual')}
+                      </Badge>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className="text-xs font-mono text-muted-foreground whitespace-nowrap">
                   <a
@@ -887,7 +896,14 @@ function WorkedHoursTable({
                 <TableCell className="font-mono text-sm">
                   {isTotalRow
                     ? <span className="text-xs text-muted-foreground">{t('total')}</span>
-                    : row.checkIn ? formatTime(row.checkIn) : '—'}
+                    : <span className="flex items-center gap-1.5">
+                        {row.checkIn ? formatTime(row.checkIn) : '—'}
+                        {row.adminManualCheckIn && (
+                          <Badge variant="outline" className="text-xs text-muted-foreground border-muted-foreground/40 font-normal">
+                            {t('adminManual')}
+                          </Badge>
+                        )}
+                      </span>}
                 </TableCell>
                 <TableCell className="font-mono text-sm">
                   {isTotalRow ? null : openShift ? (
