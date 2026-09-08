@@ -45,15 +45,22 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.sync(null, request, clientIp, userAgent));
     }
 
-    /** Real client IP behind the nginx → Next.js proxy chain (see nginx X-Real-IP / X-Forwarded-For). */
+    /**
+     * Real client IP behind the nginx → Next.js proxy chain.
+     * X-Real-IP is set by our nginx (proxy_set_header X-Real-IP $remote_addr) and OVERWRITES any
+     * client-supplied value, so it is trustworthy. X-Forwarded-For is only a fallback and we take
+     * its LAST hop (the one nginx appended via $proxy_add_x_forwarded_for) — never XFF[0], which a
+     * client can spoof.
+     */
     private static String clientIp(HttpServletRequest request) {
-        String xff = request.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) {
-            return xff.split(",")[0].trim(); // first hop = original client
-        }
         String realIp = request.getHeader("X-Real-IP");
         if (realIp != null && !realIp.isBlank()) {
             return realIp.trim();
+        }
+        String xff = request.getHeader("X-Forwarded-For");
+        if (xff != null && !xff.isBlank()) {
+            String[] parts = xff.split(",");
+            return parts[parts.length - 1].trim(); // nginx-appended hop, not the spoofable first entry
         }
         return request.getRemoteAddr();
     }

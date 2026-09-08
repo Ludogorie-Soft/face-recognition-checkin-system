@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-09-08T09:08:22.130Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-09-08T12:53:29.741Z
 > Files: 164 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -190,9 +190,9 @@
 
 - `AnomalyReason.java` — Why the sync reconciliation flagged an attendance record as anomalous. (~154 tok)
 - `Attendance.java` — Stable UUID generated on the device; enables idempotent dedup. Null for legacy records. (~803 tok)
-- `AttendanceController.java` — Real client IP behind the nginx → Next.js proxy chain (see nginx X-Real-IP / X-Forwarded-For). (~1475 tok)
+- `AttendanceController.java` — Real client IP behind the nginx → Next.js proxy chain. (~1572 tok)
 - `AttendanceRepository.java` — Exact idempotency check for device-generated events (see V9 migration). (~1939 tok)
-- `AttendanceService.java` — Key for the running check-in/out state within a single sync batch. (~5724 tok)
+- `AttendanceService.java` — Key for the running check-in/out state within a single sync batch. (~6001 tok)
 - `AttendanceSource.java` — Where an attendance record originated. Replaces the fragile (~182 tok)
 - `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1459 tok)
 
@@ -342,4 +342,4 @@
 
 ## src/test/java/org/example/attendTrack/attendance/
 
-- `AttendanceServiceReconciliationTest.java` — Unit tests for the check-in/out state-machine reconciliation in {@link AttendanceService#sync}. (~1899 tok)
+- `AttendanceServiceReconciliationTest.java` — Unit tests for the check-in/out state-machine reconciliation in {@link AttendanceService#sync}. (~2110 tok)

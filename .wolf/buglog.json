@@ -3684,6 +3684,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-09-08T09:02:23.506Z"
+    },
+    {
+      "id": "bug-227",
+      "timestamp": "2026-09-08T12:46:00.916Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceController.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 12→19 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-08T12:46:00.916Z"
+    },
+    {
+      "id": "bug-228",
+      "timestamp": "2026-09-08T12:53:00.816Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 8→13 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-08T12:53:00.816Z"
     }
   ]
 }

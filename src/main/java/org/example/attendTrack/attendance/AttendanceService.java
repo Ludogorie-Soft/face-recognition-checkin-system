@@ -64,12 +64,17 @@ public class AttendanceService {
     }
 
     /** Key for the running check-in/out state within a single sync batch. */
-    private record StateKey(UUID workerId, UUID siteId, LocalDate day) {}
+    record StateKey(UUID workerId, UUID siteId, LocalDate day) {}
 
     /** Outcome of processing one incoming record. */
-    private record ProcessResult(int saved, boolean anomaly) {}
+    record ProcessResult(int saved, boolean anomaly) {}
 
-    @Transactional
+    // Self-reference so per-record processing runs in its OWN transaction (REQUIRES_NEW):
+    // one bad record can no longer mark the whole sync batch rollback-only.
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private AttendanceService self;
+
     public AttendanceSyncResponse sync(User admin, AttendanceSyncRequest request, String clientIp, String userAgent) {
         Site site = siteRepository.findById(request.siteId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.SITE_NOT_FOUND, "Site not found: " + request.siteId()));
@@ -96,7 +101,7 @@ public class AttendanceService {
 
         for (AttendanceRecord record : ordered) {
             try {
-                ProcessResult r = processRecord(record, site, admin, checkpoints, notifiedWorkers,
+                ProcessResult r = self.processOne(record, site, admin, checkpoints, notifiedWorkers,
                         lastTypeByKey, clientIp, userAgent);
                 saved += r.saved();
                 if (r.anomaly()) anomalies++;
@@ -109,10 +114,11 @@ public class AttendanceService {
         return new AttendanceSyncResponse(saved, skipped, anomalies, errors);
     }
 
-    private ProcessResult processRecord(AttendanceRecord record, Site site, User admin,
-                                        List<SiteCheckpoint> checkpoints, Set<UUID> notifiedWorkers,
-                                        Map<StateKey, AttendanceType> lastTypeByKey,
-                                        String clientIp, String userAgent) {
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    public ProcessResult processOne(AttendanceRecord record, Site site, User admin,
+                                    List<SiteCheckpoint> checkpoints, Set<UUID> notifiedWorkers,
+                                    Map<StateKey, AttendanceType> lastTypeByKey,
+                                    String clientIp, String userAgent) {
         // Idempotency: this exact device event is already stored → nothing to do.
         if (record.clientEventId() != null
                 && attendanceRepository.existsByClientEventId(record.clientEventId())) {
@@ -122,6 +128,16 @@ public class AttendanceService {
         if (attendanceRepository.existsDuplicate(
                 record.workerId(), site.getId(), record.type(), record.recordedAt())) {
             return new ProcessResult(0, false);
+        }
+
+        // Sanity-bound the device-provided timestamp: reject clearly bogus values (wrong device
+        // clock, corrupt payload) while still allowing late offline syncs. recordedAt is device-local
+        // and synced_at is server time, so the generous window also absorbs the timezone offset.
+        LocalDateTime nowServer = LocalDateTime.now();
+        if (record.recordedAt().isAfter(nowServer.plusDays(2))
+                || record.recordedAt().isBefore(nowServer.minusDays(30))) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR,
+                    "recordedAt out of acceptable range: " + record.recordedAt());
         }
 
         User worker = userRepository.findById(record.workerId())

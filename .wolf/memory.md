@@ -1695,3 +1695,29 @@ Excel: raw attendance export gained Източник/Офлайн/IP/Устро�
 ## Session — 2026-09-08 (cont.) — DEPLOY.md corrected + indexed
 Rewrote DEPLOY.md to match real prod: host-installed Nginx via nginx.prod.conf (tracker.garant-90.com, proxy → localhost:3000, letsencrypt paths, X-Real-IP/X-Forwarded-For), docker-compose.prod.yml runs only postgres/backend/frontend (no nginx container), env file is .env, cert renewal reloads host nginx (systemctl reload nginx). Previous DEPLOY.md was stale (sslip.io + containerized garant-nginx). Indexed: updated anatomy.md DEPLOY.md description + cerebrum Key Learning (production topology). No git commit/push (per "индексирай промените" convention).
 | 12:09 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 12:11 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 12:13 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 12:16 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 12:53 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 12:54 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 12:55 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 15:24 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 15:33 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 15:37 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 15:41 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |
+| 15:46 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | modified clientIp() | ~247 |
+| 15:46 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 1 condition(s) | ~270 |
+| 15:46 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | inline fix | ~7 |
+| 15:46 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | added 1 import(s) | ~22 |
+| 15:46 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | modified recordedAtOutOfRange_isSkipped() | ~170 |
+
+## Session — 2026-09-08 (cont.) — safeguards #2 (IP) + #4 (recordedAt bounds)
+#2: AttendanceController.clientIp() now prefers X-Real-IP (nginx-set, non-spoofable) and uses XFF LAST hop, never XFF[0] (client-spoofable). #4: processRecord rejects recordedAt > now+2d or < now-30d (VALIDATION_ERROR → skipped). Reconciliation test dates switched to LocalDate.now()-relative (avoid time-brittleness) + new recordedAtOutOfRange_isSkipped test. Backend 6/6 green. Discussed next: #1 device-token auth for the open offline endpoints (no worker login by owner requirement) + #3 batch tx isolation.
+| 15:53 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified StateKey() | ~184 |
+| 15:53 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | processRecord() → processOne() | ~43 |
+| 15:53 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified processOne() | ~117 |
+| 15:53 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | 2→5 lines | ~119 |
+
+## Session — 2026-09-08 (cont.) — safeguard #3 + #1 deferred
+#3: per-record processing moved to processOne() @Transactional(REQUIRES_NEW), called via @Autowired @Lazy self-reference; sync() no longer @Transactional. StateKey/ProcessResult made package-private for CGLIB proxy. Test wires self via ReflectionTestUtils. Backend 6/6 green. #1 (device-token auth for the open /sync, /today, /sync/site endpoints) DEFERRED by owner: no worker login + must not disrupt live terminals; recommended approach = per-device token, one-time provisioning, staged soft→enforce rollout. Endpoints remain permitAll for now.
+| 15:55 | Session end: 116 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~82828 tok |

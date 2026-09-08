@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,9 @@ class AttendanceServiceReconciliationTest {
 
         service = new AttendanceService(attendanceRepository, siteRepository, siteWorkerRepository,
                 siteCheckpointRepository, userRepository, notificationService);
+        // No Spring context here, so the @Autowired self-reference (used for REQUIRES_NEW
+        // per-record transactions) must be wired manually to the same instance.
+        org.springframework.test.util.ReflectionTestUtils.setField(service, "self", service);
 
         Site site = mock(Site.class);
         when(site.getId()).thenReturn(siteId);
@@ -81,7 +85,7 @@ class AttendanceServiceReconciliationTest {
 
     @Test
     void secondCheckInSameDay_isFlaggedDuplicate() {
-        LocalDateTime day = LocalDateTime.of(2026, 9, 2, 7, 31);
+        LocalDateTime day = LocalDate.now().atTime(7, 31);
         AttendanceSyncResponse res = service.sync(null, new AttendanceSyncRequest(siteId, List.of(
                 record(AttendanceType.CHECK_IN, day),
                 record(AttendanceType.CHECK_IN, day.withHour(17).withMinute(2))
@@ -98,7 +102,7 @@ class AttendanceServiceReconciliationTest {
 
     @Test
     void checkOutWithoutCheckIn_isFlagged() {
-        LocalDateTime at = LocalDateTime.of(2026, 9, 2, 17, 6);
+        LocalDateTime at = LocalDate.now().atTime(17, 6);
         AttendanceSyncResponse res = service.sync(null, new AttendanceSyncRequest(siteId, List.of(
                 record(AttendanceType.CHECK_OUT, at)
         )), "203.0.113.7", "JUnit-UA");
@@ -110,7 +114,7 @@ class AttendanceServiceReconciliationTest {
 
     @Test
     void normalInThenOut_hasNoAnomaly() {
-        LocalDateTime day = LocalDateTime.of(2026, 9, 2, 8, 0);
+        LocalDateTime day = LocalDate.now().atTime(8, 0);
         AttendanceSyncResponse res = service.sync(null, new AttendanceSyncRequest(siteId, List.of(
                 record(AttendanceType.CHECK_IN, day),
                 record(AttendanceType.CHECK_OUT, day.withHour(17))
@@ -132,7 +136,7 @@ class AttendanceServiceReconciliationTest {
     @Test
     void outOfOrderBatch_isSortedBeforeReconciliation() {
         // CHECK_OUT arrives first in the list but happened later — must not be flagged.
-        LocalDateTime day = LocalDateTime.of(2026, 9, 2, 8, 0);
+        LocalDateTime day = LocalDate.now().atTime(8, 0);
         AttendanceSyncResponse res = service.sync(null, new AttendanceSyncRequest(siteId, List.of(
                 record(AttendanceType.CHECK_OUT, day.withHour(17)),
                 record(AttendanceType.CHECK_IN, day)
@@ -143,7 +147,7 @@ class AttendanceServiceReconciliationTest {
 
     @Test
     void duplicateClientEventId_isSkipped() {
-        LocalDateTime at = LocalDateTime.of(2026, 9, 2, 8, 0);
+        LocalDateTime at = LocalDate.now().atTime(8, 0);
         when(attendanceRepository.existsByClientEventId(any())).thenReturn(true);
 
         AttendanceSyncResponse res = service.sync(null, new AttendanceSyncRequest(siteId, List.of(
@@ -151,6 +155,18 @@ class AttendanceServiceReconciliationTest {
         )), "203.0.113.7", "JUnit-UA");
 
         assertThat(res.saved()).isZero();
+        verify(attendanceRepository, never()).save(any());
+    }
+
+    @Test
+    void recordedAtOutOfRange_isSkipped() {
+        // 10 days in the future → outside the accepted window → rejected, not stored.
+        AttendanceSyncResponse res = service.sync(null, new AttendanceSyncRequest(siteId, List.of(
+                record(AttendanceType.CHECK_IN, LocalDate.now().atTime(8, 0).plusDays(10))
+        )), "203.0.113.7", "JUnit-UA");
+
+        assertThat(res.saved()).isZero();
+        assertThat(res.skipped()).isEqualTo(1);
         verify(attendanceRepository, never()).save(any());
     }
 }
