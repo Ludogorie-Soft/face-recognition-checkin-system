@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,8 +63,14 @@ public class AttendanceService {
         return result;
     }
 
+    /** Key for the running check-in/out state within a single sync batch. */
+    private record StateKey(UUID workerId, UUID siteId, LocalDate day) {}
+
+    /** Outcome of processing one incoming record. */
+    private record ProcessResult(int saved, boolean anomaly) {}
+
     @Transactional
-    public AttendanceSyncResponse sync(User admin, AttendanceSyncRequest request) {
+    public AttendanceSyncResponse sync(User admin, AttendanceSyncRequest request, String clientIp, String userAgent) {
         Site site = siteRepository.findById(request.siteId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.SITE_NOT_FOUND, "Site not found: " + request.siteId()));
 
@@ -71,28 +78,50 @@ public class AttendanceService {
 
         int saved = 0;
         int skipped = 0;
+        int anomalies = 0;
         List<String> errors = new ArrayList<>();
         // Track workers already notified this sync — prevent notification spam for batch uploads
         Set<UUID> notifiedWorkers = new HashSet<>();
 
-        for (AttendanceRecord record : request.records()) {
+        // Running last-type per (worker, site, day), seeded lazily from the DB. Lets the
+        // state machine reconcile against BOTH already-persisted records and earlier records
+        // in this same batch — the safety net for cross-device / offline conflicts.
+        Map<StateKey, AttendanceType> lastTypeByKey = new HashMap<>();
+
+        // Offline batches can arrive out of order; process chronologically so the state
+        // machine sees events in the sequence they actually happened.
+        List<AttendanceRecord> ordered = request.records().stream()
+                .sorted(Comparator.comparing(AttendanceRecord::recordedAt))
+                .toList();
+
+        for (AttendanceRecord record : ordered) {
             try {
-                saved += processRecord(record, site, admin, checkpoints, notifiedWorkers);
+                ProcessResult r = processRecord(record, site, admin, checkpoints, notifiedWorkers,
+                        lastTypeByKey, clientIp, userAgent);
+                saved += r.saved();
+                if (r.anomaly()) anomalies++;
             } catch (Exception e) {
                 skipped++;
                 errors.add("Worker %s — %s".formatted(record.workerId(), e.getMessage()));
             }
         }
 
-        return new AttendanceSyncResponse(saved, skipped, errors);
+        return new AttendanceSyncResponse(saved, skipped, anomalies, errors);
     }
 
-    private int processRecord(AttendanceRecord record, Site site, User admin,
-                              List<SiteCheckpoint> checkpoints, Set<UUID> notifiedWorkers) {
-        // Skip duplicates
+    private ProcessResult processRecord(AttendanceRecord record, Site site, User admin,
+                                        List<SiteCheckpoint> checkpoints, Set<UUID> notifiedWorkers,
+                                        Map<StateKey, AttendanceType> lastTypeByKey,
+                                        String clientIp, String userAgent) {
+        // Idempotency: this exact device event is already stored → nothing to do.
+        if (record.clientEventId() != null
+                && attendanceRepository.existsByClientEventId(record.clientEventId())) {
+            return new ProcessResult(0, false);
+        }
+        // Legacy dedup fallback (exact worker + site + type + timestamp).
         if (attendanceRepository.existsDuplicate(
                 record.workerId(), site.getId(), record.type(), record.recordedAt())) {
-            return 0;
+            return new ProcessResult(0, false);
         }
 
         User worker = userRepository.findById(record.workerId())
@@ -118,6 +147,27 @@ public class AttendanceService {
             notificationService.notifySuspiciousCheckIn(site, worker, record.lat(), record.lng());
         }
 
+        // ── State-machine reconciliation ──────────────────────────────────────
+        // A CHECK_IN must follow a CHECK_OUT (or be the day's first record); a CHECK_OUT
+        // must follow a CHECK_IN. Violations are still persisted (offline data is never
+        // lost) but flagged so admins can review them in the report.
+        StateKey key = new StateKey(worker.getId(), site.getId(), record.recordedAt().toLocalDate());
+        AttendanceType lastType = lastTypeByKey.computeIfAbsent(key, k -> {
+            LocalDateTime dayStart = k.day().atStartOfDay();
+            List<Attendance> last = attendanceRepository.findLastForWorkerOnDay(
+                    k.workerId(), k.siteId(), dayStart, dayStart.plusDays(1), PageRequest.of(0, 1));
+            return last.isEmpty() ? null : last.get(0).getType();
+        });
+
+        AnomalyReason reason = null;
+        if (record.type() == AttendanceType.CHECK_IN && lastType == AttendanceType.CHECK_IN) {
+            reason = AnomalyReason.DUPLICATE_CHECK_IN;
+        } else if (record.type() == AttendanceType.CHECK_OUT && lastType == AttendanceType.CHECK_OUT) {
+            reason = AnomalyReason.DUPLICATE_CHECK_OUT;
+        } else if (record.type() == AttendanceType.CHECK_OUT && lastType == null) {
+            reason = AnomalyReason.CHECKOUT_WITHOUT_CHECKIN;
+        }
+
         attendanceRepository.save(Attendance.builder()
                 .worker(worker)
                 .site(site)
@@ -128,11 +178,21 @@ public class AttendanceService {
                 .locationValid(locationValid)
                 .faceConfidence(record.faceConfidence())
                 .manualOverride(record.manualOverride())
+                .clientEventId(record.clientEventId())
+                .anomaly(reason != null)
+                .anomalyReason(reason)
+                .createdOffline(record.createdOffline())
+                .source(record.manualOverride() ? AttendanceSource.TERMINAL_MANUAL : AttendanceSource.TERMINAL_FACE)
+                .ipAddress(clientIp)
+                .userAgent(userAgent)
+                .clientDeviceId(record.clientDeviceId())
+                .appVersion(record.appVersion())
                 .recordedAt(record.recordedAt())
                 .syncedAt(LocalDateTime.now())
                 .build());
 
-        return 1;
+        lastTypeByKey.put(key, record.type());
+        return new ProcessResult(1, reason != null);
     }
 
     // ── Manual attendance (admin) ─────────────────────────────────────────────
@@ -233,9 +293,18 @@ public class AttendanceService {
                 .locationValid(false)
                 .faceConfidence(null)
                 .manualOverride(true)
+                .source(AttendanceSource.ADMIN_MANUAL)
                 .recordedAt(recordedAt)
                 .syncedAt(LocalDateTime.now())
                 .build());
+    }
+
+    @Transactional(readOnly = true)
+    public org.example.attendTrack.attendance.dto.AttendanceDetail getDetail(UUID id) {
+        Attendance a = attendanceRepository.findById(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
+                        ErrorCode.ATTENDANCE_NOT_FOUND, "Attendance record not found: " + id));
+        return org.example.attendTrack.attendance.dto.AttendanceDetail.from(a);
     }
 
     @Transactional

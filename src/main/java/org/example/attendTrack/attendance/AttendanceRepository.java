@@ -27,6 +27,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             @Param("recordedAt") LocalDateTime recordedAt
     );
 
+    /** Exact idempotency check for device-generated events (see V9 migration). */
+    boolean existsByClientEventId(UUID clientEventId);
+
     @Query("""
             SELECT a FROM Attendance a
             JOIN FETCH a.worker

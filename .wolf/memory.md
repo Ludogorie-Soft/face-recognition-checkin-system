@@ -1546,3 +1546,152 @@
 | 14:45 | Added adminManualCheckIn badge to worked hours tab | WorkedHoursRow.java, ReportService.java (4 locations), reports/page.tsx | done | ~500 |
 | 10:24 | Session end: 13 writes across 6 files (AttendanceReportRow.java, ReportService.java, page.tsx, bg.json, en.json) | 9 reads | ~29378 tok |
 | 10:27 | Session end: 13 writes across 6 files (AttendanceReportRow.java, ReportService.java, page.tsx, bg.json, en.json) | 9 reads | ~29378 tok |
+| 10:47 | Session end: 13 writes across 6 files (AttendanceReportRow.java, ReportService.java, page.tsx, bg.json, en.json) | 9 reads | ~29378 tok |
+
+## Session: 2026-09-08 10:29
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-08 10:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:50 | Created src/main/resources/db/migration/V9__attendance_reconciliation.sql | — | ~283 |
+| 10:51 | Created src/main/java/org/example/attendTrack/attendance/AnomalyReason.java | — | ~154 |
+| 10:51 | Edited src/main/java/org/example/attendTrack/attendance/Attendance.java | expanded (+13 lines) | ~197 |
+| 10:51 | Edited src/main/java/org/example/attendTrack/attendance/dto/AttendanceRecord.java | modified AttendanceRecord() | ~110 |
+| 10:51 | Edited src/main/java/org/example/attendTrack/attendance/dto/AttendanceSyncResponse.java | modified AttendanceSyncResponse() | ~57 |
+| 10:51 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | 6→9 lines | ~99 |
+| 10:52 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 5 condition(s) | ~1665 |
+| 10:52 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 1 import(s) | ~29 |
+| 10:53 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | 4→5 lines | ~111 |
+| 10:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~127 |
+| 10:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 4→5 lines | ~51 |
+| 10:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified isLocationValid() | ~80 |
+| 10:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 3→3 lines | ~63 |
+| 10:53 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 4→5 lines | ~107 |
+| 10:54 | Edited frontend/lib/db.ts | modified constructor() | ~318 |
+| 10:54 | Edited frontend/lib/db.ts | expanded (+10 lines) | ~209 |
+| 10:55 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | CSS: workerId, siteId | ~193 |
+| 10:55 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | expanded (+14 lines) | ~245 |
+| 10:55 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | added 1 condition(s) | ~639 |
+| 10:56 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | expanded (+16 lines) | ~282 |
+| 10:56 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | 6→7 lines | ~52 |
+| 10:56 | Edited frontend/components/verify/VerifyCamera.tsx | expanded (+11 lines) | ~178 |
+| 10:56 | Edited frontend/components/verify/VerifyCamera.tsx | inline fix | ~25 |
+| 10:56 | Edited frontend/components/verify/VerifyCamera.tsx | added optional chaining | ~141 |
+| 10:56 | Edited frontend/components/verify/VerifyCamera.tsx | expanded (+22 lines) | ~671 |
+| 10:57 | Edited frontend/messages/bg.json | 2→3 lines | ~45 |
+| 10:57 | Edited frontend/messages/bg.json | 2→7 lines | ~113 |
+| 10:57 | Edited frontend/messages/en.json | 2→3 lines | ~46 |
+| 10:57 | Edited frontend/messages/en.json | 2→7 lines | ~112 |
+| 10:58 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: anomalyReason | ~58 |
+| 10:58 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 2→3 lines | ~59 |
+| 10:58 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added 1 condition(s) | ~214 |
+| 10:58 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | expanded (+16 lines) | ~286 |
+| 10:59 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: reason | ~120 |
+| 10:59 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: dark, dark | ~292 |
+| 10:59 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: dark | ~222 |
+| 11:00 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: reason | ~128 |
+| 11:01 | Created src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | — | ~1755 |
+| 11:01 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | 4→2 lines | ~24 |
+
+## Session — 2026-09-08 — Phase 1 Extended: attendance reconciliation
+Audit of the check-in/out flow found: (1) double check-in / stuck open sessions (02.09) caused by client-side-only state decisions + no server validation; (2) auto vs manual checkout indistinguishable (origin inferred via manualOverride+manager heuristic; sync passes admin=null); (3) no device/IP audit metadata; secondary: no DB uniqueness on attendance, second-granularity timestamps, UTC vs local "today" mismatch.
+Implemented Phase 1 Extended (mechanisms 4+3+1+2): server reconciliation with accept-and-flag anomaly (AttendanceService.sync, AnomalyReason, V9 migration + partial-unique client_event_id index), clientEventId idempotency (db.ts v6, verify handleRecord, AttendanceRecord DTO), persistent sessionStatus IndexedDB table + sessionLog keyed workerId:siteId + local-date fix (verify/page.tsx), uncertain-status both-buttons UX (VerifyCamera, online prop), anomaly surfaced in reports (WorkedHoursRow.anomalyReason, ReportService, reports/page.tsx badge+filter), i18n bg/en. Added AttendanceServiceReconciliationTest.
+Validation: frontend `npx tsc --noEmit` PASSES. Backend NOT test-run here — sandbox JDK21/Lombok mismatch breaks `mvn clean compile`/`test` on untouched files (see cerebrum Do-Not-Repeat). Deferred to Phase 2: AttendanceSource taxonomy + IP/user-agent/device audit columns; historical 02.09 data = report-only for admin manual correction.
+| 11:06 | Session end: 39 writes across 15 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 17 reads | ~59470 tok |
+| 11:09 | Session end: 39 writes across 15 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 18 reads | ~59904 tok |
+| 11:13 | Edited src/main/resources/db/migration/V9__attendance_reconciliation.sql | 4→9 lines | ~134 |
+| 11:13 | Edited src/main/java/org/example/attendTrack/attendance/Attendance.java | 6→11 lines | ~115 |
+| 11:13 | Edited src/main/java/org/example/attendTrack/attendance/dto/AttendanceRecord.java | 4→6 lines | ~73 |
+| 11:13 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 4→5 lines | ~64 |
+| 11:13 | Edited src/main/java/org/example/attendTrack/report/dto/WorkedHoursRow.java | 3→4 lines | ~97 |
+| 11:13 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~165 |
+| 11:13 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 5→6 lines | ~63 |
+| 11:13 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 3→4 lines | ~70 |
+| 11:14 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 2→2 lines | ~43 |
+| 11:14 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 3→4 lines | ~93 |
+| 11:14 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | 2→2 lines | ~54 |
+| 11:14 | Edited frontend/lib/db.ts | 4→5 lines | ~65 |
+| 11:14 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | CSS: createdOffline | ~56 |
+| 11:14 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: offline | ~70 |
+| 11:14 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | expanded (+7 lines) | ~278 |
+| 11:14 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified formatTime() | ~222 |
+| 11:14 | Edited frontend/messages/bg.json | 2→4 lines | ~61 |
+| 11:14 | Edited frontend/messages/en.json | 2→4 lines | ~62 |
+| 11:21 | Session end: 57 writes across 15 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 19 reads | ~61756 tok |
+| 11:26 | Session end: 57 writes across 15 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 19 reads | ~61756 tok |
+| 11:28 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | CSS: fresh | ~1164 |
+| 11:31 | Edited pom.xml | expanded (+13 lines) | ~199 |
+
+## Session — 2026-09-08 (cont.) — offline diagnosis + auto-refresh + tests green
+Analyzed real DB exports (attendance/users CSV). Verdict: the 02.09 double-checkin incident was NOT offline — every record for ДАНИЕЛ/МИТКО synced within seconds; only ПЕТЪР's 15:29:46 dup was delayed 79 min. Site DOES go offline generally (~12.5% of records delayed >15 min; 4 records had negative delay = device clock skew → justifies explicit created_offline flag over timestamp inference). Scheduler WORKS: only 7 genuinely-unclosed worker-days in 2 months (07-10→09-08); the 51 "open" on 09-08 are today's live sessions. Root cause confirmed = client terminal stale in-memory sessionLog (long-open kiosk / multi-terminal), online — server DB for 09-01 was closed, so scheduler is not at fault.
+Added auto-refresh of sessionLog (verify/page.tsx rebuildSessionLog): every 5 min + on visibilitychange/focus, prevents stale-tab carry-over. Added created_offline end-to-end + "Офлайн" report badge.
+Backend tests GREEN: AttendanceServiceReconciliationTest 5/5 pass. Required pom.xml maven-compiler-plugin annotationProcessorPaths (lombok 1.18.42) + JAVA_HOME=JDK21 (default JDK25 breaks Mockito inline mocks). Frontend tsc --noEmit clean.
+| 11:35 | Session end: 59 writes across 16 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 20 reads | ~63983 tok |
+| 11:36 | Session end: 59 writes across 16 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 20 reads | ~63983 tok |
+| 11:41 | Created src/main/java/org/example/attendTrack/attendance/AttendanceSource.java | — | ~182 |
+| 11:41 | Created src/main/resources/db/migration/V10__attendance_audit_metadata.sql | — | ~354 |
+| 11:42 | Edited src/main/java/org/example/attendTrack/attendance/Attendance.java | expanded (+19 lines) | ~266 |
+| 11:42 | Edited src/main/java/org/example/attendTrack/attendance/dto/AttendanceRecord.java | 5→8 lines | ~99 |
+| 11:42 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified sync() | ~117 |
+| 11:42 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified for() | ~83 |
+| 11:42 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified processRecord() | ~94 |
+| 11:42 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 5→10 lines | ~144 |
+| 11:42 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified deleteAttendance() | ~84 |
+| 11:42 | Edited src/main/java/org/example/attendTrack/attendance/AutoCheckoutScheduler.java | 7→8 lines | ~104 |
+| 11:43 | Created src/main/java/org/example/attendTrack/attendance/dto/AttendanceDetail.java | — | ~491 |
+| 11:43 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified getDetail() | ~134 |
+| 11:43 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | added 2 import(s) | ~122 |
+| 11:43 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | added 2 condition(s) | ~317 |
+| 11:43 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 2→5 lines | ~129 |
+| 11:44 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | 2→3 lines | ~63 |
+| 11:44 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | inline fix | ~11 |
+| 11:44 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | expanded (+8 lines) | ~174 |
+| 11:45 | Created frontend/lib/deviceId.ts | — | ~201 |
+| 11:45 | Edited frontend/lib/db.ts | 3→5 lines | ~89 |
+| 11:45 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | CSS: clientDeviceId, appVersion | ~76 |
+| 11:45 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | added 1 import(s) | ~39 |
+| 11:45 | Edited nginx.prod.conf | 6→9 lines | ~117 |
+| 11:46 | Edited nginx.conf | 6→9 lines | ~112 |
+| 11:46 | Created frontend/components/reports/AttendanceDetailsModal.tsx | — | ~1240 |
+| 11:47 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | inline fix | ~39 |
+| 11:47 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added 1 import(s) | ~39 |
+| 11:48 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 1→2 lines | ~40 |
+| 11:48 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | expanded (+14 lines) | ~325 |
+| 11:48 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added optional chaining | ~112 |
+| 11:48 | Edited frontend/messages/bg.json | expanded (+19 lines) | ~221 |
+| 11:49 | Edited frontend/messages/en.json | expanded (+19 lines) | ~217 |
+
+## Session — 2026-09-08 (cont.) — Phase 2: source taxonomy + audit metadata
+Implemented Phase 2. Backend: AttendanceSource enum + V10 (source, ip_address, user_agent, client_device_id, app_version, best-effort source backfill); source set at every write path (processRecord TERMINAL_FACE/MANUAL, manualRecord ADMIN_MANUAL, scheduler SCHEDULER_AUTO); IP/UA captured in AttendanceController.sync via clientIp() (X-Forwarded-For/X-Real-IP); GET /api/attendance/{id}/details + AttendanceDetail DTO; ReportService.autoCheckout now uses source with legacy heuristic fallback. Frontend: lib/deviceId.ts (localStorage UUID + APP_VERSION), db.ts + handleRecord send clientDeviceId/appVersion, AttendanceDetailsModal + "Детайли" button in WorkedHoursTable, i18n bg/en. nginx.conf + nginx.prod.conf gained X-Real-IP/X-Forwarded-For/X-Forwarded-Proto (needs nginx reload on deploy). Validation: frontend tsc clean, JSON valid, backend 5/5 tests green (now assert source/IP/device). Note: details button added to the by-site hours table; summary tab could get it later.
+| 11:51 | Session end: 91 writes across 25 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 24 reads | ~73204 tok |
+| 11:54 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | modified t() | ~152 |
+| 11:54 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added optional chaining | ~528 |
+| 11:55 | Session end: 93 writes across 25 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 24 reads | ~73949 tok |
+| 11:56 | Session end: 93 writes across 25 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 24 reads | ~73949 tok |
+| 11:59 | Edited src/main/java/org/example/attendTrack/report/dto/AttendanceReportRow.java | 5→10 lines | ~72 |
+| 11:59 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified name() | ~122 |
+| 12:00 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 5→6 lines | ~91 |
+| 12:00 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified faceConfidence() | ~180 |
+| 12:00 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 4→4 lines | ~40 |
+| 12:00 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 3→3 lines | ~71 |
+| 12:00 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 1 condition(s) | ~155 |
+| 12:00 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 2 condition(s) | ~250 |
+| 12:01 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | added 2 condition(s) | ~133 |
+| 12:01 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 6→7 lines | ~116 |
+| 12:01 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | 4→5 lines | ~58 |
+| 12:01 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | CSS: hover | ~204 |
+| 12:02 | Edited frontend/app/[locale]/(admin)/reports/page.tsx | added optional chaining | ~103 |
+
+## Session — 2026-09-08 (cont.) — Excel export + Присъствия details
+Excel: raw attendance export gained Източник/Офлайн/IP/Устройство/Аномалия cols (AttendanceReportRow + toRow extended); both hours exports (by-site + summary) gained Аномалия/Офлайн cols (anomalyReasonBg helper). Frontend: "Детайли" button added to the Присъствия tab (AttendanceTable) with its own detailsRow state + AttendanceDetailsModal (single record, checkOutId=null). Validation: frontend tsc clean, backend 5/5 green.
+| 12:04 | Session end: 106 writes across 26 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 25 reads | ~76589 tok |
+| 12:05 | Session end: 106 writes across 26 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 26 reads | ~76895 tok |
+| 12:08 | Created DEPLOY.md | — | ~2401 |
+
+## Session — 2026-09-08 (cont.) — DEPLOY.md corrected + indexed
+Rewrote DEPLOY.md to match real prod: host-installed Nginx via nginx.prod.conf (tracker.garant-90.com, proxy → localhost:3000, letsencrypt paths, X-Real-IP/X-Forwarded-For), docker-compose.prod.yml runs only postgres/backend/frontend (no nginx container), env file is .env, cert renewal reloads host nginx (systemctl reload nginx). Previous DEPLOY.md was stale (sslip.io + containerized garant-nginx). Indexed: updated anatomy.md DEPLOY.md description + cerebrum Key Learning (production topology). No git commit/push (per "индексирай промените" convention).
+| 12:09 | Session end: 107 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~81566 tok |

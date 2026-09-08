@@ -14,5 +14,12 @@ public record AttendanceRecord(
         boolean locationValid,
         Double faceConfidence,
         boolean manualOverride,
-        @NotNull LocalDateTime recordedAt
+        @NotNull LocalDateTime recordedAt,
+        // Nullable for backward compatibility with clients that predate event IDs.
+        UUID clientEventId,
+        // Device connectivity at scan time; defaults to false for older clients.
+        boolean createdOffline,
+        // Stable per-device id and frontend version; nullable for older clients.
+        String clientDeviceId,
+        String appVersion
 ) {}

@@ -13,6 +13,10 @@
 
 ## Key Learnings
 
+- **Request/IP chain:** browser → nginx → Next.js API proxy (`frontend/app/api/[...path]/route.ts`, forwards all headers except host/origin/referer/connection) → Spring backend. So Spring's `getRemoteAddr()` is the Next container, NOT the client. To capture the real client IP, nginx must set `X-Real-IP $remote_addr` + `X-Forwarded-For $proxy_add_x_forwarded_for` (both nginx.conf and nginx.prod.conf), the Next proxy forwards them (already does), and the backend reads `X-Forwarded-For` first hop / `X-Real-IP`. There is NO nginx `/api` route — everything goes through Next.
+
+- **Production topology:** `docker-compose.prod.yml` runs ONLY postgres + backend + frontend (frontend publishes :3000); there is NO nginx container. Nginx is installed ON THE HOST and reverse-proxies `https://tracker.garant-90.com` → `http://localhost:3000` using **`nginx.prod.conf`** (with the letsencrypt cert paths + the X-Real-IP/X-Forwarded-For headers). `nginx.conf` (proxy to `frontend:3000`, `*.sslip.io`) is the containerized/dev variant, NOT current prod. Backend reads env from `.env` (compose `env_file: .env`), not `.env.prod`. Reload prod nginx with `nginx -t && systemctl reload nginx` (NOT `docker compose restart nginx`). DEPLOY.md was rewritten 2026-09-08 to reflect this (previously described a stale sslip.io + containerized-nginx setup).
+
 - **Project:** garant
 - **Stack:** Spring Boot (backend) + Next.js (frontend) + PostgreSQL
 - **Auth:** JWT + Spring Security, stateless login-based authentication
@@ -75,10 +79,16 @@
 
 <!-- [2026-08-20] Export endpoints (/attendance/export, /hours/export) must mirror the query endpoints: if the query accepts optional siteId (required=false), the export must too. Frontend handleExport must use `siteId: siteId || undefined` (not bare `siteId`) so empty string is not sent as a param. -->
 
+<!-- [2026-09-08] Running mvn on this machine needs TWO things or it fails: (1) Lombok must be declared under maven-compiler-plugin <annotationProcessorPaths> (added to pom.xml, lombok 1.18.42) — without it javac either can't find Lombok symbols or crashes with `TypeTag :: UNKNOWN`; (2) JAVA_HOME must point to JDK 21, NOT the machine-default JDK 25 — on JDK 25 the project's Mockito (5.x via Spring Boot 3.3.5) cannot create inline mocks ("Mockito cannot mock this class"). Working command: `JAVA_HOME=/usr/local/Cellar/openjdk@21/21.0.12/libexec/openjdk.jdk/Contents/Home mvn -o test`. Frontend: `npx tsc --noEmit` in frontend/. -->
+
 ## Decision Log
 
 - **Biometric — face recognition v2:** MediaPipe FaceLandmarker (478-landmark detection) + MobileFaceNet ONNX (InsightFace w600k_mbf, 512-dim ArcFace embeddings) via onnxruntime-web. Replaced face-api.js. Module-level singletons with reference counting (consumerCount). GPU delegate with CPU fallback. All ONNX output tensors must be disposed explicitly.
 
 - **Biometric — face recognition v1 (replaced):** face-api.js (TensorFlow.js) — 128-dim descriptors. Replaced by v2 (see above). V2__clear_face_descriptors.sql clears the old 128-dim data.
+
+- **Attendance audit metadata (Phase 2, 2026-09-08):** Added explicit `AttendanceSource` enum (TERMINAL_FACE / TERMINAL_MANUAL / ADMIN_MANUAL / SCHEDULER_AUTO) — replaces the fragile `manualOverride && manager==null` heuristic (the report now prefers `source`, falling back to the heuristic only for pre-V10 NULL rows). Added audit columns `ip_address`, `user_agent`, `client_device_id`, `app_version` (V10, with best-effort source backfill). IP/user-agent captured server-side in `AttendanceController.sync` from the request (see request/IP chain in Key Learnings); device-id/app-version sent by the client (`frontend/lib/deviceId.ts`, localStorage UUID). New `GET /api/attendance/{id}/details` (ADMIN) + `AttendanceDetailsModal` (report "Details" button per session). nginx configs updated for X-Real-IP/X-Forwarded-For → require nginx reload on deploy.
+
+- **Attendance state-machine reconciliation (Phase 1 Extended, 2026-09-08):** The device path (VerifyCamera + /api/attendance/sync) historically decided CHECK_IN/CHECK_OUT purely client-side from a stale per-device `sessionLog` and the server never validated it — root cause of duplicate check-ins / stuck open sessions across devices/offline. Fix keeps the server as the authority: `AttendanceService.sync` sorts the batch by recordedAt, tracks running last-type per (worker,site,day) seeded from DB, and flags illegal transitions with `anomaly` + `AnomalyReason` (ACCEPT-and-FLAG, chosen over reject so offline data is never lost). `clientEventId` (UUID per event) + a partial-unique index (V9) give atomic idempotent dedup. Client hardening: persistent `sessionStatus` IndexedDB table keyed `[workerId+siteId]` (reload-safe offline), `sessionLog` keyed `workerId:siteId` (was workerId — collapsed multi-site), local (not UTC) "today", and VerifyCamera shows BOTH buttons when offline + status not server-confirmed. NOT done (Phase 2): explicit AttendanceSource taxonomy and IP/user-agent/device audit columns.
 
 - **Offline-first architecture:** PWA with IndexedDB (via Dexie.js) as local DB on device. Service Worker + Workbox for asset/model caching. Background Sync API for uploading pending attendance records when internet returns. Two sync endpoints: GET /api/sync/site/{siteId} (download workers + face descriptors) and POST /api/attendance/sync (bulk upload pending records). Face descriptors ~4KB each — 100 workers ≈ 400KB, well within IndexedDB limits.

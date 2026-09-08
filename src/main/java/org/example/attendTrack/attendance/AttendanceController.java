@@ -1,7 +1,9 @@
 package org.example.attendTrack.attendance;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.attendTrack.attendance.dto.AttendanceDetail;
 import org.example.attendTrack.attendance.dto.AttendanceSyncRequest;
 import org.example.attendTrack.attendance.dto.AttendanceSyncResponse;
 import org.example.attendTrack.attendance.dto.ManualAttendanceRequest;
@@ -36,8 +38,30 @@ public class AttendanceController {
 
     @PostMapping("/sync")
     public ResponseEntity<AttendanceSyncResponse> sync(
-            @Valid @RequestBody AttendanceSyncRequest request) {
-        return ResponseEntity.ok(attendanceService.sync(null, request));
+            @Valid @RequestBody AttendanceSyncRequest request,
+            HttpServletRequest httpRequest) {
+        String clientIp = clientIp(httpRequest);
+        String userAgent = httpRequest.getHeader("User-Agent");
+        return ResponseEntity.ok(attendanceService.sync(null, request, clientIp, userAgent));
+    }
+
+    /** Real client IP behind the nginx → Next.js proxy chain (see nginx X-Real-IP / X-Forwarded-For). */
+    private static String clientIp(HttpServletRequest request) {
+        String xff = request.getHeader("X-Forwarded-For");
+        if (xff != null && !xff.isBlank()) {
+            return xff.split(",")[0].trim(); // first hop = original client
+        }
+        String realIp = request.getHeader("X-Real-IP");
+        if (realIp != null && !realIp.isBlank()) {
+            return realIp.trim();
+        }
+        return request.getRemoteAddr();
+    }
+
+    @GetMapping("/{id}/details")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AttendanceDetail> getDetails(@PathVariable UUID id) {
+        return ResponseEntity.ok(attendanceService.getDetail(id));
     }
 
     // ── Manual attendance — admin only ────────────────────────────────────────

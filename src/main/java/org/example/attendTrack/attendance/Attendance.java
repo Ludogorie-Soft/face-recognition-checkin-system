@@ -52,6 +52,43 @@ public class Attendance {
     @Builder.Default
     private boolean manualOverride = false;
 
+    /** Stable UUID generated on the device; enables idempotent dedup. Null for legacy records. */
+    @Column(name = "client_event_id", unique = true)
+    private UUID clientEventId;
+
+    /** True when the sync reconciliation flagged this record as violating the check-in/out state machine. */
+    @Column(name = "anomaly", nullable = false)
+    @Builder.Default
+    private boolean anomaly = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "anomaly_reason", length = 40)
+    private AnomalyReason anomalyReason;
+
+    /** True when the device had no connectivity (navigator.onLine == false) at scan time. */
+    @Column(name = "created_offline", nullable = false)
+    @Builder.Default
+    private boolean createdOffline = false;
+
+    /** Where this record originated. Null only for legacy (pre-V10) rows. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source", length = 30)
+    private AttendanceSource source;
+
+    /** Client IP of the uploading terminal (from nginx X-Real-IP / X-Forwarded-For). */
+    @Column(name = "ip_address", length = 64)
+    private String ipAddress;
+
+    @Column(name = "user_agent", columnDefinition = "text")
+    private String userAgent;
+
+    /** Stable per-device identifier from the terminal's localStorage. */
+    @Column(name = "client_device_id", length = 64)
+    private String clientDeviceId;
+
+    @Column(name = "app_version", length = 30)
+    private String appVersion;
+
     @Column(name = "recorded_at", nullable = false)
     private LocalDateTime recordedAt;
 

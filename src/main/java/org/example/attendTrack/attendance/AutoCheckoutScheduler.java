@@ -109,6 +109,7 @@ public class AutoCheckoutScheduler {
                     .locationValid(checkIn.isLocationValid())
                     .faceConfidence(null)
                     .manualOverride(true)
+                    .source(AttendanceSource.SCHEDULER_AUTO)
                     .recordedAt(checkOutTime)
                     .syncedAt(LocalDateTime.now())
                     .build());

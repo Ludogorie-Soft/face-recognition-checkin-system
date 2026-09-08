@@ -1,25 +1,25 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-21T07:24:44.886Z
-> Files: 153 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-09-08T09:08:22.130Z
+> Files: 164 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~220 tok)
 - `CLAUDE.md` — OpenWolf entry point (~57 tok)
-- `DEPLOY.md` — Деплой на AttendTrack — AWS EC2 (Amazon Linux) + Docker + HTTPS (~2098 tok)
+- `DEPLOY.md` — Прод деплой: EC2 + Docker Compose (postgres/backend/frontend) + Nginx НА ХОСТА чрез nginx.prod.conf; домейн tracker.garant-90.com; env файл .env (~2251 tok)
 - `docker-compose.prod.yml` — Docker Compose: 4 services (~306 tok)
 - `docker-compose.yml` — Docker Compose services (~320 tok)
 - `FACE_RECOGNITION_V2.md` — Face Recognition — Вариант 2: MediaPipe + MobileFaceNet ONNX (~1394 tok)
 - `GUIDE_BG.md` — AttendTrack — Ръководство за потребителя (~2385 tok)
 - `GUIDE_EN.md` — AttendTrack — User Guide (~2311 tok)
-- `nginx.conf` (~313 tok)
-- `nginx.prod.conf` (~224 tok)
+- `nginx.conf` (~358 tok)
+- `nginx.prod.conf` (~271 tok)
 - `OFFLINE_WORKFLOW_SIMPLE.md` — AttendTrack — Как работи без интернет (~736 tok)
 - `OFFLINE_WORKFLOW.md` — AttendTrack — Офлайн режим (~1930 tok)
 - `OFFLINE_WORKFLOW.md` — Офлайн архитектура: 4 фази, sync flow, race condition защита, ограничения (~800 tok)
 - `PLAN.md` — PLAN: Two-Role Refactor — ADMIN + WORKER only (~1591 tok)
-- `pom.xml` — Maven/Spring Boot 3.3.5 project config with all dependencies (~185 tok)
+- `pom.xml` (~1366 tok)
 - `README.md` — Project documentation (~2597 tok)
 - `ROADMAP.md` — AttendTrack — Roadmap (~647 tok)
 
@@ -56,7 +56,7 @@
 
 ## frontend/app/[locale]/(admin)/reports/
 
-- `page.tsx` — fmtLocal (~14472 tok)
+- `page.tsx` — fmtLocal (~16273 tok)
 
 ## frontend/app/[locale]/(admin)/settings/
 
@@ -84,7 +84,7 @@
 
 ## frontend/app/[locale]/(manager)/verify/
 
-- `page.tsx` — VerifyPage (~2259 tok)
+- `page.tsx` — statusKey (~3273 tok)
 
 ## frontend/app/[locale]/admin/
 
@@ -117,6 +117,10 @@
 
 - `SyncBanner.tsx` — SyncBanner (~1336 tok)
 
+## frontend/components/reports/
+
+- `AttendanceDetailsModal.tsx` — useDetail — renders modal (~1240 tok)
+
 ## frontend/components/sites/
 
 - `MapPicker.tsx` — DEFAULT_CENTER (~3599 tok)
@@ -132,7 +136,7 @@
 
 - `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal; workers sorted A-Z; search input filters by name; selected worker highlighted with checkmark (~1316 tok)
 - `SyncLoader.tsx` — SVG comet-arc loader; indeterminate: pure CSS spin + feGaussianBlur glow; determinate: smooth strokeDashoffset fill. No JS state. (~620 tok)
-- `VerifyCamera.tsx` — resolveWorkerSite (~5981 tok)
+- `VerifyCamera.tsx` — statusKey (~6521 tok)
 
 ## frontend/components/workers/
 
@@ -155,7 +159,8 @@
 
 - `auth.ts` — Exports TOKEN_KEY, getToken, setToken, removeToken + 5 more (~400 tok)
 - `axios.ts` — Declares api (~267 tok)
-- `db.ts` — Exports WorkerRecord, CheckpointInfo, SiteInfo, PendingAttendance, db (~652 tok)
+- `db.ts` — Exports WorkerRecord, CheckpointInfo, SiteInfo, PendingAttendance + 2 more (~998 tok)
+- `deviceId.ts` — Stable per-device identifier for attendance audit metadata. Generated once and (~201 tok)
 - `errors.ts` — Known error codes from the backend ErrorCode enum (~302 tok)
 - `faceAlignment.ts` — Face alignment: transforms a raw video frame into a normalized (~1112 tok)
 - `faceMatcher.ts` — Cosine-similarity 1:N face matcher. (~613 tok)
@@ -164,8 +169,8 @@
 
 ## frontend/messages/
 
-- `bg.json` (~3266 tok)
-- `en.json` (~3132 tok)
+- `bg.json` (~3591 tok)
+- `en.json` (~3453 tok)
 
 ## frontend/scripts/
 
@@ -183,13 +188,19 @@
 
 ## src/main/java/org/example/attendTrack/attendance/
 
-- `AttendanceController.java` — RestController: AttendanceController (10 endpoints) (~1188 tok)
-- `AttendanceRepository.java` — Class: AttendanceRepository (~1902 tok)
-- `AttendanceService.java` — Service: AttendanceService (~4627 tok)
-- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1443 tok)
+- `AnomalyReason.java` — Why the sync reconciliation flagged an attendance record as anomalous. (~154 tok)
+- `Attendance.java` — Stable UUID generated on the device; enables idempotent dedup. Null for legacy records. (~803 tok)
+- `AttendanceController.java` — Real client IP behind the nginx → Next.js proxy chain (see nginx X-Real-IP / X-Forwarded-For). (~1475 tok)
+- `AttendanceRepository.java` — Exact idempotency check for device-generated events (see V9 migration). (~1939 tok)
+- `AttendanceService.java` — Key for the running check-in/out state within a single sync batch. (~5724 tok)
+- `AttendanceSource.java` — Where an attendance record originated. Replaces the fragile (~182 tok)
+- `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1459 tok)
 
 ## src/main/java/org/example/attendTrack/attendance/dto/
 
+- `AttendanceDetail.java` — Full audit view of a single attendance record, for the admin report details modal. (~491 tok)
+- `AttendanceRecord.java` — Class: AttendanceRecord (~235 tok)
+- `AttendanceSyncResponse.java` — Class: AttendanceSyncResponse (~77 tok)
 - `ManualAttendanceRequest.java` — Class: ManualAttendanceRequest; fields: workerId, siteId, type, date, time (LocalTime, optional) (~145 tok)
 - `WorkerDayStatus.java` — Status of one worker for a given site + day; fields: workerId, workerName, attendanceId, lastType, checkInTime, checkOutTime, calculatedHours (~220 tok)
 
@@ -233,13 +244,13 @@
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints) (~1518 tok)
-- `ReportService.java` — Service: ReportService (~9417 tok)
+- `ReportService.java` — Service: ReportService (~10205 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
-- `AttendanceReportRow.java` — Class: AttendanceReportRow (~160 tok)
+- `AttendanceReportRow.java` — Class: AttendanceReportRow (~198 tok)
 - `HoursCorrectionRequest.java` — Class: HoursCorrectionRequest (~108 tok)
-- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~827 tok)
+- `WorkedHoursRow.java` — One row in the "by-site" worked hours report. (~892 tok)
 - `WorkedHoursSummaryRow.java` — One row in the summary worked hours report, grouped by worker across all sites. (~131 tok)
 
 ## src/main/java/org/example/attendTrack/site/
@@ -318,6 +329,7 @@
 ## src/main/resources/db/migration/
 
 - `V1__init.sql` — Full schema: users, sites, site_managers, site_workers, face_descriptors, attendance, push_subscriptions, notifications (~200 tok)
+- `V10__attendance_audit_metadata.sql` — V10: Explicit record origin + audit metadata. (~354 tok)
 - `V2__clear_face_descriptors.sql` — V2: Clear all 128-dim face descriptors (face-api.js). (~43 tok)
 - `V3__remove_manager_role.sql` — Migrate existing MANAGER users to ADMIN role (~82 tok)
 - `V4__hours_corrections.sql` — SQL: tables: hours_corrections (~162 tok)
@@ -326,3 +338,8 @@
 - `V6__add_company_to_users.sql` (~14 tok)
 - `V7__companies.sql` — SQL: tables: companies, company_sites, company_workers (~252 tok)
 - `V8__line_checkpoints.sql` — V8: Add line/corridor checkpoint support (~117 tok)
+- `V9__attendance_reconciliation.sql` — V9: Server-side reconciliation of the check-in / check-out state machine. (~371 tok)
+
+## src/test/java/org/example/attendTrack/attendance/
+
+- `AttendanceServiceReconciliationTest.java` — Unit tests for the check-in/out state-machine reconciliation in {@link AttendanceService#sync}. (~1899 tok)

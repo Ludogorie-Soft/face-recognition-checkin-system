@@ -19,10 +19,21 @@ interface DetectionResult {
   confidence: number
 }
 
+// A worker's last known status, plus whether it was confirmed by the server
+// (authoritative) or is only a local guess.
+export interface SessionEntry {
+  type: 'CHECK_IN' | 'CHECK_OUT'
+  serverConfirmed: boolean
+}
+
+// Keep in sync with verify/page.tsx — sessionLog is keyed by worker + site.
+const statusKey = (workerId: string, siteId: string) => `${workerId}:${siteId}`
+
 interface Props {
   sites: Map<string, SiteInfo>
   workers: WorkerRecord[]
-  sessionLog: Map<string, 'CHECK_IN' | 'CHECK_OUT'>
+  sessionLog: Map<string, SessionEntry>
+  online: boolean
   onRecord: (params: {
     workerId: string
     workerName: string
@@ -65,7 +76,7 @@ function resolveWorkerSite(
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export function VerifyCamera({ sites, workers, sessionLog, onRecord }: Props) {
+export function VerifyCamera({ sites, workers, sessionLog, online, onRecord }: Props) {
   const t = useTranslations('verify')
 
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -265,7 +276,13 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord }: Props) {
   // ── Derived ───────────────────────────────────────────────────────────────────
 
   const workersWithFace = workers.some((w) => w.descriptor !== null)
-  const lastAction = detected ? sessionLog.get(detected.workerId) : undefined
+  const detectedEntry = detected && detectedWorkerGeo
+    ? sessionLog.get(statusKey(detected.workerId, detectedWorkerGeo.siteId))
+    : undefined
+  const lastAction = detectedEntry?.type
+  // Offline and we have no server-confirmed status for this worker+site today:
+  // don't let the machine guess the direction — let a human pick.
+  const statusUncertain = !online && (!detectedEntry || !detectedEntry.serverConfirmed)
 
   const ovalStroke = detected
     ? '#4ade80'
@@ -495,7 +512,29 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord }: Props) {
                   )}
                 </div>
 
-                {lastAction === 'CHECK_IN' ? (
+                {statusUncertain ? (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs text-amber-600 dark:text-amber-400 text-center">
+                      {t('statusUnconfirmed')}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        className="h-14 text-base font-bold flex-1 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
+                        onClick={() => handleConfirm('CHECK_IN')}
+                        disabled={!detectedWorkerGeo || geo.loading}
+                      >
+                        {t('checkIn')}
+                      </Button>
+                      <Button
+                        className="h-14 text-base font-bold flex-1 bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+                        onClick={() => handleConfirm('CHECK_OUT')}
+                        disabled={!detectedWorkerGeo || geo.loading}
+                      >
+                        {t('checkOut')}
+                      </Button>
+                    </div>
+                  </div>
+                ) : lastAction === 'CHECK_IN' ? (
                   <Button
                     className="h-14 text-base font-bold w-full bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
                     onClick={() => handleConfirm('CHECK_OUT')}

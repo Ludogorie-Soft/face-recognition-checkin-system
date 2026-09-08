@@ -20,5 +20,10 @@ public record AttendanceReportRow(
         boolean locationValid,
         Double faceConfidence,
         boolean manualOverride,
-        boolean adminManual
+        boolean adminManual,
+        String source,
+        String ipAddress,
+        String clientDeviceId,
+        boolean createdOffline,
+        String anomalyReason
 ) {}

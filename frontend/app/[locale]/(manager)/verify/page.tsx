@@ -6,14 +6,19 @@ import { toast } from 'sonner'
 import { MapPin, RefreshCw } from 'lucide-react'
 import { useSites } from '@/hooks/useSites'
 import { useSiteSync } from '@/hooks/useSiteSync'
-import { VerifyCamera } from '@/components/verify/VerifyCamera'
+import { VerifyCamera, type SessionEntry } from '@/components/verify/VerifyCamera'
 import { SyncLoader } from '@/components/verify/SyncLoader'
 import { db } from '@/lib/db'
+import { getDeviceId, APP_VERSION } from '@/lib/deviceId'
 import { toLocalISOString } from '@/lib/utils'
 import api from '@/lib/axios'
-import type { SiteInfo, WorkerRecord } from '@/lib/db'
+import type { SiteInfo, WorkerRecord, LocalSessionStatus } from '@/lib/db'
 
 type Phase = 'syncing' | 'camera' | 'error'
+
+// sessionLog is keyed by `${workerId}:${siteId}` so a worker assigned to multiple
+// sites keeps an independent status per site.
+const statusKey = (workerId: string, siteId: string) => `${workerId}:${siteId}`
 
 export default function VerifyPage() {
   const t = useTranslations('verify')
@@ -24,10 +29,24 @@ export default function VerifyPage() {
   const [sitesMap, setSitesMap] = useState<Map<string, SiteInfo>>(new Map())
   const [workers, setWorkers] = useState<WorkerRecord[]>([])
   const [resyncing, setResyncing] = useState(false)
-  const [sessionLog, setSessionLog] = useState<Map<string, 'CHECK_IN' | 'CHECK_OUT'>>(new Map())
+  const [sessionLog, setSessionLog] = useState<Map<string, SessionEntry>>(new Map())
   const [cachedSiteIds, setCachedSiteIds] = useState<string[]>([])
   const [syncProgress, setSyncProgress] = useState<{ done: number; total: number } | null>(null)
+  const [online, setOnline] = useState(true)
   const syncStartedRef = useRef(false)
+
+  // Live online/offline tracking — drives the "unconfirmed status, ask a human"
+  // fallback in VerifyCamera when the terminal cannot reach the server.
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine)
+    update()
+    window.addEventListener('online', update)
+    window.addEventListener('offline', update)
+    return () => {
+      window.removeEventListener('online', update)
+      window.removeEventListener('offline', update)
+    }
+  }, [])
 
   // When offline and the API request fails, fall back to site IDs stored in IndexedDB
   useEffect(() => {
@@ -40,6 +59,54 @@ export default function VerifyPage() {
     () => (apiSites?.length ? apiSites.map((s) => s.id) : cachedSiteIds),
     [apiSites, cachedSiteIds],
   )
+
+  // ── Session log ────────────────────────────────────────────────────────────
+  // Rebuilds sessionLog from the authoritative server status + local persisted
+  // status (offline fallback) + today's db.pending (newest, wins). Called on
+  // initial sync AND periodically / on tab re-focus so a long-open kiosk terminal
+  // never keeps a stale (e.g. previous-day) status in memory.
+  const rebuildSessionLog = useCallback(async (ids: string[]) => {
+    if (ids.length === 0) return
+    // Local date — the server uses its own local day, and pending timestamps are
+    // local; a UTC slice here would drop records around midnight (BG is UTC+2/3).
+    const today = toLocalISOString().slice(0, 10) // 'YYYY-MM-DD' local
+    const next = new Map<string, SessionEntry>()
+
+    const todayResults = await Promise.allSettled(
+      ids.map((id) =>
+        api.get<Record<string, string>>('/api/attendance/today', { params: { siteId: id } }),
+      ),
+    )
+
+    const confirmedRows: LocalSessionStatus[] = []
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i]
+      const r = todayResults[i]
+      if (r.status === 'fulfilled') {
+        Object.entries(r.value.data).forEach(([wId, type]) => {
+          const t = type as 'CHECK_IN' | 'CHECK_OUT'
+          next.set(statusKey(wId, id), { type: t, serverConfirmed: true })
+          confirmedRows.push({ workerId: wId, siteId: id, type: t, date: today, serverConfirmed: true })
+        })
+      } else {
+        // Offline: fall back to the last locally persisted status for this site.
+        const cached = await db.sessionStatus.where('siteId').equals(id).toArray()
+        cached
+          .filter((s) => s.date === today)
+          .forEach((s) => next.set(statusKey(s.workerId, s.siteId), { type: s.type, serverConfirmed: s.serverConfirmed }))
+      }
+    }
+    if (confirmedRows.length) await db.sessionStatus.bulkPut(confirmedRows)
+
+    // Only today's pending records — stale records from previous days must not
+    // pollute today's session log. Local pending is always an unconfirmed guess.
+    const pending = await db.pending
+      .filter((r) => r.recordedAt.startsWith(today))
+      .toArray()
+    pending.sort((a, b) => a.recordedAt.localeCompare(b.recordedAt))
+    pending.forEach((r) => next.set(statusKey(r.workerId, r.siteId), { type: r.type, serverConfirmed: false }))
+    setSessionLog(next)
+  }, [])
 
   // ── Sync all sites ───────────────────────────────────────────────────────────
 
@@ -54,38 +121,14 @@ export default function VerifyPage() {
 
         setSitesMap(sm)
         setWorkers(ws)
-
-        // Build sessionLog: merge API records (synced) + db.pending (unsynced).
-        // Pending records are newer and take precedence.
-        const initial = new Map<string, 'CHECK_IN' | 'CHECK_OUT'>()
-        const todayResults = await Promise.allSettled(
-          ids.map((id) =>
-            api.get<Record<string, string>>('/api/attendance/today', { params: { siteId: id } }),
-          ),
-        )
-        todayResults.forEach((r) => {
-          if (r.status === 'fulfilled') {
-            Object.entries(r.value.data).forEach(([wId, type]) => {
-              initial.set(wId, type as 'CHECK_IN' | 'CHECK_OUT')
-            })
-          }
-        })
-        // Only today's pending records — stale records from previous days
-        // must not pollute today's session log.
-        const todayPrefix = new Date().toISOString().slice(0, 10) // 'YYYY-MM-DD'
-        const pending = await db.pending
-          .filter((r) => r.recordedAt.startsWith(todayPrefix))
-          .toArray()
-        pending.sort((a, b) => a.recordedAt.localeCompare(b.recordedAt))
-        pending.forEach((r) => initial.set(r.workerId, r.type))
-        setSessionLog(initial)
+        await rebuildSessionLog(ids)
 
         setPhase('camera')
       } catch {
         setPhase('error')
       }
     },
-    [syncAll],
+    [syncAll, rebuildSessionLog],
   )
 
   // Auto-trigger sync once site IDs are available
@@ -94,6 +137,26 @@ export default function VerifyPage() {
     syncStartedRef.current = true
     runSync(siteIds)
   }, [siteIds, sitesLoading, runSync])
+
+  // Keep the terminal's status fresh: refresh every 5 min and whenever the tab
+  // regains focus. Prevents an always-on kiosk from acting on a stale in-memory
+  // status (root cause of the previous-day carry-over check-out anomalies).
+  useEffect(() => {
+    if (phase !== 'camera' || siteIds.length === 0) return
+    const refresh = () => {
+      if (navigator.onLine && document.visibilityState === 'visible') {
+        rebuildSessionLog(siteIds).catch(() => {})
+      }
+    }
+    const interval = setInterval(refresh, 5 * 60 * 1000)
+    document.addEventListener('visibilitychange', refresh)
+    window.addEventListener('focus', refresh)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', refresh)
+      window.removeEventListener('focus', refresh)
+    }
+  }, [phase, siteIds, rebuildSessionLog])
 
   const handleResync = useCallback(async () => {
     if (resyncing || siteIds.length === 0) return
@@ -124,7 +187,12 @@ export default function VerifyPage() {
       faceConfidence: number | null
       manualOverride: boolean
     }) => {
+      const recordedAt = toLocalISOString()
       await db.pending.add({
+        clientEventId: crypto.randomUUID(),
+        createdOffline: !navigator.onLine,
+        clientDeviceId: getDeviceId(),
+        appVersion: APP_VERSION,
         workerId: params.workerId,
         siteId: params.siteId,
         type: params.type,
@@ -133,11 +201,25 @@ export default function VerifyPage() {
         locationValid: params.locationValid,
         faceConfidence: params.faceConfidence,
         manualOverride: params.manualOverride,
-        recordedAt: toLocalISOString(),
+        recordedAt,
         status: 'pending',
       })
 
-      setSessionLog((prev) => new Map(prev).set(params.workerId, params.type))
+      // Persist locally so the decision survives a reload while offline.
+      await db.sessionStatus.put({
+        workerId: params.workerId,
+        siteId: params.siteId,
+        type: params.type,
+        date: recordedAt.slice(0, 10),
+        serverConfirmed: false,
+      })
+
+      setSessionLog((prev) =>
+        new Map(prev).set(statusKey(params.workerId, params.siteId), {
+          type: params.type,
+          serverConfirmed: false,
+        }),
+      )
       toast.success(t('success', { name: params.workerName }))
     },
     [t],
@@ -224,6 +306,7 @@ export default function VerifyPage() {
           workers={workers}
           onRecord={handleRecord}
           sessionLog={sessionLog}
+          online={online}
         />
       </div>
     </div>

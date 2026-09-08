@@ -31,6 +31,10 @@ export interface SiteInfo {
 
 export interface PendingAttendance {
   id?: number
+  clientEventId: string  // stable UUID per event — enables idempotent server-side dedup
+  createdOffline: boolean // navigator.onLine was false at scan time
+  clientDeviceId: string  // stable per-device id (audit metadata)
+  appVersion: string      // frontend build version at record time
   workerId: string
   siteId: string
   type: 'CHECK_IN' | 'CHECK_OUT'
@@ -43,10 +47,22 @@ export interface PendingAttendance {
   status: 'pending' | 'syncing'
 }
 
+// Last known check-in/out state per (worker, site), persisted so the terminal's
+// decision survives page reloads while offline. serverConfirmed distinguishes a
+// value fetched from the server (authoritative for today) from a local-only guess.
+export interface LocalSessionStatus {
+  workerId: string
+  siteId: string
+  type: 'CHECK_IN' | 'CHECK_OUT'
+  date: string             // "YYYY-MM-DD" local — the day this status applies to
+  serverConfirmed: boolean
+}
+
 class GarantDB extends Dexie {
   workers!: Table<WorkerRecord>
   siteInfo!: Table<SiteInfo>
   pending!: Table<PendingAttendance>
+  sessionStatus!: Table<LocalSessionStatus>
 
   constructor() {
     super('garant-db')
@@ -85,6 +101,16 @@ class GarantDB extends Dexie {
       workers: '[id+siteId], siteId, name',
       siteInfo: 'id',
       pending: '++id, siteId, status, recordedAt',
+    })
+
+    // v6: pending gains clientEventId (non-indexed BLOB field) and a new
+    // sessionStatus table keyed by [workerId+siteId] for a reload-safe local
+    // record of each worker's last check-in/out state.
+    this.version(6).stores({
+      workers: '[id+siteId], siteId, name',
+      siteInfo: 'id',
+      pending: '++id, siteId, status, recordedAt',
+      sessionStatus: '[workerId+siteId], siteId',
     })
   }
 }

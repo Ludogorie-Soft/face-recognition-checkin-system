@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
-  Download, Loader2, CheckCircle2, XCircle, AlertTriangle, Pencil, AlertCircle, MapPin, Filter, ArrowUp, ArrowDown, ArrowUpDown,
+  Download, Loader2, CheckCircle2, XCircle, AlertTriangle, Pencil, AlertCircle, MapPin, Filter, ArrowUp, ArrowDown, ArrowUpDown, Info,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { AttendanceDetailsModal } from '@/components/reports/AttendanceDetailsModal'
 import { useSites } from '@/hooks/useSites'
 import { useCompanies } from '@/hooks/useCompanies'
 import api from '@/lib/axios'
@@ -74,6 +75,8 @@ interface WorkedHoursRow {
   checkInLng: number | null
   checkInLocationValid: boolean | null
   checkOutLocationValid: boolean | null
+  anomalyReason: string | null   // non-null → session flagged by sync reconciliation
+  offline: boolean               // recorded on a device with no connectivity
 }
 
 interface WorkedHoursSummaryRow {
@@ -565,6 +568,7 @@ function AttendanceTable({
 
   const [changeSiteRow, setChangeSiteRow] = useState<AttendanceRow | null>(null)
   const [selectedSiteId, setSelectedSiteId] = useState('')
+  const [detailsRow, setDetailsRow] = useState<AttendanceRow | null>(null)
 
   const changeSiteMutation = useMutation({
     mutationFn: ({ id, siteId }: { id: string; siteId: string }) =>
@@ -597,6 +601,7 @@ function AttendanceTable({
               <TableHead>{t('location')}</TableHead>
               <TableHead>{t('locationValid')}</TableHead>
               <TableHead>{t('faceConfidence')}</TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -669,6 +674,17 @@ function AttendanceTable({
                     <span className="text-muted-foreground">—</span>
                   )}
                 </TableCell>
+                <TableCell>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                    title={t('details')}
+                    onClick={() => setDetailsRow(row)}
+                  >
+                    <Info size={13} />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -708,6 +724,14 @@ function AttendanceTable({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AttendanceDetailsModal
+        open={!!detailsRow}
+        onClose={() => setDetailsRow(null)}
+        checkInId={detailsRow?.id ?? null}
+        checkOutId={null}
+        t={t}
+      />
     </>
   )
 }
@@ -774,6 +798,8 @@ function WorkedHoursTable({
   const [selectedSiteId, setSelectedSiteId] = useState('')
   const [showAutoCheckoutOnly, setShowAutoCheckoutOnly] = useState(false)
   const [showOutOfZoneOnly, setShowOutOfZoneOnly] = useState(false)
+  const [showAnomalyOnly, setShowAnomalyOnly] = useState(false)
+  const [detailsRow, setDetailsRow] = useState<WorkedHoursRow | null>(null)
 
   const changeSiteMutation = useMutation({
     mutationFn: ({ checkInId, checkOutId, siteId }: { checkInId: string; checkOutId: string | null; siteId: string }) =>
@@ -797,13 +823,23 @@ function WorkedHoursTable({
   const outOfZoneKeys = showOutOfZoneOnly
     ? new Set(rows.filter(isOutOfZone).map((r) => `${r.workerId}:${r.siteId}:${r.date}`))
     : null
+  const anomalyKeys = showAnomalyOnly
+    ? new Set(rows.filter((r) => r.pairIndex >= 0 && r.anomalyReason).map((r) => `${r.workerId}:${r.siteId}:${r.date}`))
+    : null
 
   const displayedRows = rows.filter((r) => {
     const key = `${r.workerId}:${r.siteId}:${r.date}`
     if (autoCheckoutKeys && (r.pairIndex === -1 ? !autoCheckoutKeys.has(key) : !r.autoCheckout)) return false
     if (outOfZoneKeys && (r.pairIndex === -1 ? !outOfZoneKeys.has(key) : !isOutOfZone(r))) return false
+    if (anomalyKeys && (r.pairIndex === -1 ? !anomalyKeys.has(key) : !r.anomalyReason)) return false
     return true
   })
+
+  const anomalyLabel = (reason: string | null) =>
+    reason === 'DUPLICATE_CHECK_IN' ? t('anomalyDuplicateCheckIn')
+    : reason === 'DUPLICATE_CHECK_OUT' ? t('anomalyDuplicateCheckOut')
+    : reason === 'CHECKOUT_WITHOUT_CHECKIN' ? t('anomalyCheckoutWithoutCheckin')
+    : ''
 
   return (
     <>
@@ -836,6 +872,22 @@ function WorkedHoursTable({
         <Filter size={12} />
         {t('filterOutOfZone')}
         {showOutOfZoneOnly && (
+          <span className="ml-1 bg-red-500 text-white rounded-full px-1.5 text-[10px] font-bold leading-4">
+            {displayedRows.filter((r) => r.pairIndex >= 0).length}
+          </span>
+        )}
+      </button>
+      <button
+        onClick={() => setShowAnomalyOnly((v) => !v)}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+          showAnomalyOnly
+            ? 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700'
+            : 'bg-background text-muted-foreground border-border hover:text-foreground'
+        }`}
+      >
+        <Filter size={12} />
+        {t('filterAnomaly')}
+        {showAnomalyOnly && (
           <span className="ml-1 bg-red-500 text-white rounded-full px-1.5 text-[10px] font-bold leading-4">
             {displayedRows.filter((r) => r.pairIndex >= 0).length}
           </span>
@@ -902,6 +954,21 @@ function WorkedHoursTable({
                           <Badge variant="outline" className="text-xs text-muted-foreground border-muted-foreground/40 font-normal">
                             {t('adminManual')}
                           </Badge>
+                        )}
+                        {row.anomalyReason && (
+                          <span title={anomalyLabel(row.anomalyReason)} className="inline-flex items-center gap-1 text-red-600 dark:text-red-400">
+                            <AlertTriangle size={12} />
+                            <Badge variant="outline" className="text-xs text-red-600 border-red-400/50 dark:text-red-400 font-normal">
+                              {t('anomaly')}
+                            </Badge>
+                          </span>
+                        )}
+                        {row.offline && (
+                          <span title={t('offlineHint')}>
+                            <Badge variant="outline" className="text-xs text-amber-600 border-amber-400/50 dark:text-amber-400 font-normal">
+                              {t('offline')}
+                            </Badge>
+                          </span>
                         )}
                       </span>}
                 </TableCell>
@@ -992,16 +1059,30 @@ function WorkedHoursTable({
                   )}
                 </TableCell>
                 <TableCell>
-                  {(isTotalRow || (!isTotalRow && row.effectiveHours !== null)) && !openShift && (
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                      onClick={() => onCorrect(row)}
-                    >
-                      <Pencil size={13} />
-                    </Button>
-                  )}
+                  <span className="flex items-center">
+                    {!isTotalRow && row.checkInId && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                        title={t('details')}
+                        onClick={() => setDetailsRow(row)}
+                      >
+                        <Info size={13} />
+                      </Button>
+                    )}
+                    {(isTotalRow || (!isTotalRow && row.effectiveHours !== null)) && !openShift && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                        title={t('correctHours')}
+                        onClick={() => onCorrect(row)}
+                      >
+                        <Pencil size={13} />
+                      </Button>
+                    )}
+                  </span>
                 </TableCell>
               </TableRow>
             )
@@ -1049,6 +1130,14 @@ function WorkedHoursTable({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AttendanceDetailsModal
+        open={!!detailsRow}
+        onClose={() => setDetailsRow(null)}
+        checkInId={detailsRow?.checkInId ?? null}
+        checkOutId={detailsRow?.checkOutId ?? null}
+        t={t}
+      />
     </>
   )
 }
@@ -1064,7 +1153,15 @@ function WorkedHoursSummaryTable({
   expandedWorker: string | null
   setExpandedWorker: (id: string | null) => void
 }) {
+  const [detailsRow, setDetailsRow] = useState<WorkedHoursRow | null>(null)
+  const anomalyLabel = (reason: string | null) =>
+    reason === 'DUPLICATE_CHECK_IN' ? t('anomalyDuplicateCheckIn')
+    : reason === 'DUPLICATE_CHECK_OUT' ? t('anomalyDuplicateCheckOut')
+    : reason === 'CHECKOUT_WITHOUT_CHECKIN' ? t('anomalyCheckoutWithoutCheckin')
+    : ''
+
   return (
+    <>
     <div className="flex flex-col gap-3">
       {rows.map((worker) => {
         const isExpanded = expandedWorker === worker.workerId
@@ -1133,7 +1230,19 @@ function WorkedHoursSummaryTable({
                           <TableCell className="font-mono text-sm">
                             {isTotalRow
                               ? <span className="text-xs text-muted-foreground">{t('total')}</span>
-                              : row.checkIn ? formatTime(row.checkIn) : '—'}
+                              : <span className="flex items-center gap-1.5">
+                                  {row.checkIn ? formatTime(row.checkIn) : '—'}
+                                  {row.anomalyReason && (
+                                    <span title={anomalyLabel(row.anomalyReason)} className="text-red-600 dark:text-red-400">
+                                      <AlertTriangle size={12} />
+                                    </span>
+                                  )}
+                                  {row.offline && (
+                                    <span title={t('offlineHint')} className="text-amber-600 dark:text-amber-400 text-[10px] font-medium">
+                                      {t('offline')}
+                                    </span>
+                                  )}
+                                </span>}
                           </TableCell>
                           <TableCell className="font-mono text-sm">
                             {isTotalRow ? null : openShift ? (
@@ -1200,16 +1309,30 @@ function WorkedHoursSummaryTable({
                             )}
                           </TableCell>
                           <TableCell>
-                            {(isTotalRow || (!isTotalRow && row.effectiveHours !== null)) && !openShift && (
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                                onClick={() => onCorrect(row)}
-                              >
-                                <Pencil size={13} />
-                              </Button>
-                            )}
+                            <span className="flex items-center">
+                              {!isTotalRow && row.checkInId && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                                  title={t('details')}
+                                  onClick={() => setDetailsRow(row)}
+                                >
+                                  <Info size={13} />
+                                </Button>
+                              )}
+                              {(isTotalRow || (!isTotalRow && row.effectiveHours !== null)) && !openShift && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                                  title={t('correctHours')}
+                                  onClick={() => onCorrect(row)}
+                                >
+                                  <Pencil size={13} />
+                                </Button>
+                              )}
+                            </span>
                           </TableCell>
                         </TableRow>
                       )
@@ -1222,5 +1345,14 @@ function WorkedHoursSummaryTable({
         )
       })}
     </div>
+
+    <AttendanceDetailsModal
+      open={!!detailsRow}
+      onClose={() => setDetailsRow(null)}
+      checkInId={detailsRow?.checkInId ?? null}
+      checkOutId={detailsRow?.checkOutId ?? null}
+      t={t}
+    />
+    </>
   )
 }

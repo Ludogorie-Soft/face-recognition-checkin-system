@@ -1,18 +1,22 @@
 # Деплой на AttendTrack — AWS EC2 (Amazon Linux) + Docker + HTTPS
 
-**Стек:** Spring Boot (Java 21) · Next.js 16 · PostgreSQL 16 · Nginx · Docker Compose  
-**OS:** Amazon Linux 2023  
-**HTTPS:** Let's Encrypt чрез [sslip.io](https://sslip.io) — безплатен DNS за всеки IP  
-**URL:** https://52.58.114.218.sslip.io
+**Стек:** Spring Boot (Java 21) · Next.js 16 · PostgreSQL 16 · Docker Compose · **Nginx (на хоста)**
+**OS:** Amazon Linux 2023
+**HTTPS:** Let's Encrypt (certbot)
+**Домейн / URL:** https://tracker.garant-90.com
+
+> **Архитектура на прод:** `docker-compose.prod.yml` вдига **три** контейнера — `postgres`, `backend`, `frontend` (frontend публикува порт `3000`). **Nginx НЕ е в Docker** — инсталиран е директно на хоста и реверс-проксира `https://tracker.garant-90.com` → `http://localhost:3000` чрез конфигурацията **`nginx.prod.conf`**.
+>
+> Файлът `nginx.conf` (с `proxy_pass http://frontend:3000` и домейн `*.sslip.io`) е за контейнеризиран nginx и **не се ползва** в текущия прод.
 
 ---
 
 ## Стъпка 1 — Създай EC2 инстанция
 
-1. Влез в **AWS Console → EC2 → Launch Instance**
+1. **AWS Console → EC2 → Launch Instance**
 2. **Name:** `attendtrack-prod`
 3. **AMI:** Amazon Linux 2023 AMI
-4. **Instance type:** `t3.small` минимум (2 vCPU, 2 GB RAM)  
+4. **Instance type:** `t3.small` минимум (2 vCPU, 2 GB RAM)
    > `t3.micro` може да не е достатъчен — Java + Next.js build изискват памет
 5. **Key pair:** Create new key pair → RSA → `.pem` → запази сигурно
 6. **Security Group:**
@@ -28,13 +32,13 @@
 
 ---
 
-## Стъпка 2 — Задай Elastic IP (задължително за Let's Encrypt)
+## Стъпка 2 — Elastic IP + DNS запис
 
-Let's Encrypt изисква стабилен IP — по подразбиране AWS дава динамичен.
+Let's Encrypt изисква стабилен IP и валиден DNS запис за домейна.
 
-1. AWS Console → **EC2 → Elastic IPs → Allocate Elastic IP address**
-2. **Associate Elastic IP** → избери инстанцията
-3. Elastic IP е безплатен докато инстанцията върви
+1. AWS Console → **EC2 → Elastic IPs → Allocate Elastic IP address** → **Associate** към инстанцията.
+2. В DNS доставчика на `garant-90.com` добави **A запис**: `tracker` → Elastic IP на сървъра.
+3. Изчакай DNS-ът да се разпространи (`dig tracker.garant-90.com` трябва да връща IP-то).
 
 ---
 
@@ -42,11 +46,7 @@ Let's Encrypt изисква стабилен IP — по подразбиран
 
 ```bash
 chmod 400 /path/to/your-key.pem
-ssh -i /path/to/your-key.pem ec2-user@52.58.114.218
-```
-
-След като си вътре, стани root:
-```bash
+ssh -i /path/to/your-key.pem ec2-user@<SERVER_IP>
 sudo su -
 ```
 
@@ -63,47 +63,48 @@ dnf update -y
 ## Стъпка 5 — Инсталирай Docker и Docker Compose
 
 ```bash
-# Инсталирай Docker
 dnf install -y docker
-
-# Стартирай и активирай при boot
 systemctl enable --now docker
 
-# Инсталирай Docker Compose V2 (не е включен в пакета)
+# Docker Compose V2 (не е включен в пакета)
 mkdir -p /usr/local/lib/docker/cli-plugins
 curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
   -o /usr/local/lib/docker/cli-plugins/docker-compose
 chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
-# Провери
 docker --version
 docker compose version
 ```
 
 ---
 
-## Стъпка 6 — Инсталирай Certbot
+## Стъпка 6 — Инсталирай Nginx (на хоста) и Certbot
 
 ```bash
-dnf install -y certbot
+dnf install -y nginx certbot
+systemctl enable nginx
 ```
 
 ---
 
 ## Стъпка 7 — Вземи SSL сертификат
 
+Спри nginx за момента, за да е свободен порт 80 за `--standalone`:
+
 ```bash
-certbot certonly --standalone -d 52.58.114.218.sslip.io
+systemctl stop nginx
+certbot certonly --standalone -d tracker.garant-90.com
 ```
 
-Certbot ще поиска имейл адрес за известия при изтичане.  
-Сертификатът е валиден **90 дни** — виж Стъпка 13 за автоматично подновяване.
+Certbot ще поиска имейл за известия. Сертификатът е валиден **90 дни** (виж Стъпка 13 за подновяване).
 
-След успех сертификатите са в:
+Сертификатите се записват в:
 ```
-/etc/letsencrypt/live/52.58.114.218.sslip.io/fullchain.pem
-/etc/letsencrypt/live/52.58.114.218.sslip.io/privkey.pem
+/etc/letsencrypt/live/tracker.garant-90.com/fullchain.pem
+/etc/letsencrypt/live/tracker.garant-90.com/privkey.pem
 ```
+
+> `nginx.prod.conf` сочи директно към тези пътища — не се налага копиране на сертификати.
 
 ---
 
@@ -111,26 +112,15 @@ Certbot ще поиска имейл адрес за известия при и�
 
 Изпълни **от твоята локална машина**.
 
-### 8а. Логни се в Docker Hub
-
 ```bash
 docker login
-```
-
-### 8б. Билдни образите
-
-```bash
 cd /path/to/AttendTrack
 
-docker build -t <DOCKERHUB_USERNAME>/attendtrack-backend:latest .
-docker build -t <DOCKERHUB_USERNAME>/attendtrack-frontend:latest ./frontend
-```
+docker build -t ludogoriesoft/attendtrack-backend:latest .
+docker build -t ludogoriesoft/attendtrack-frontend:latest ./frontend
 
-### 8в. Публикувай в Docker Hub
-
-```bash
-docker push <DOCKERHUB_USERNAME>/attendtrack-backend:latest
-docker push <DOCKERHUB_USERNAME>/attendtrack-frontend:latest
+docker push ludogoriesoft/attendtrack-backend:latest
+docker push ludogoriesoft/attendtrack-frontend:latest
 ```
 
 ---
@@ -144,59 +134,65 @@ docker push <DOCKERHUB_USERNAME>/attendtrack-frontend:latest
 ```bash
 cd /path/to/AttendTrack
 
-scp -i /path/to/your-key.pem docker-compose.prod.yml nginx.conf .env.prod.example \
-    ec2-user@52.58.114.218:/tmp/
+scp -i /path/to/your-key.pem docker-compose.prod.yml nginx.prod.conf .env.prod.example \
+    ec2-user@<SERVER_IP>:/tmp/
 ```
 
 **На EC2:**
 
 ```bash
-mkdir /opt/attendtrack
-mv /tmp/docker-compose.prod.yml /tmp/nginx.conf /tmp/.env.prod.example /opt/attendtrack/
+mkdir -p /opt/attendtrack
+mv /tmp/docker-compose.prod.yml /tmp/.env.prod.example /opt/attendtrack/
 cd /opt/attendtrack
 ```
 
 ---
 
-## Стъпка 10 — Генерирай VAPID ключове (Web Push)
+## Стъпка 10 — Конфигурирай Nginx (на хоста)
+
+Постави `nginx.prod.conf` като конфигурация на хостовия nginx, тествай и стартирай:
 
 ```bash
-# Инсталирай Node.js
-dnf install -y nodejs npm
+mv /tmp/nginx.prod.conf /etc/nginx/nginx.conf
+nginx -t
+systemctl start nginx
+```
 
-# Генерирай ключовете
+> `nginx.prod.conf` вече подава `X-Real-IP` и `X-Forwarded-For` към приложението — това е **задължително**, за да се записва реалното IP на терминала в одита на присъствията. Ако промениш конфигурацията по-късно: `nginx -t && systemctl reload nginx`.
+
+---
+
+## Стъпка 11 — Генерирай VAPID ключове (Web Push)
+
+```bash
+dnf install -y nodejs npm
 npx web-push generate-vapid-keys
 ```
 
-Запиши изхода — нужен е за `.env.prod`:
-```
-Public Key:  BExampl3...
-Private Key: xAmpl3...
-```
+Запиши изхода — нужен е за `.env`.
 
 ---
 
-## Стъпка 11 — Създай .env.prod
+## Стъпка 12 — Създай .env
+
+`docker-compose.prod.yml` чете променливите от файл **`.env`** (`env_file: .env`).
 
 ```bash
 cd /opt/attendtrack
-cp .env.prod.example .env.prod
-nano .env.prod
+cp .env.prod.example .env
+nano .env
 ```
 
 Попълни всички стойности:
 
 ```env
-# Docker Hub
-DOCKER_USERNAME=       # твоето Docker Hub потребителско име
-
 # Database
 DB_NAME=garant
 DB_USERNAME=garant_user
-DB_PASSWORD=           # силна парола, мин. 20 символа
+DB_PASSWORD=            # силна парола, мин. 20 символа
 
 # JWT
-JWT_SECRET=            # виж командата по-долу
+JWT_SECRET=            # openssl rand -base64 64
 JWT_EXPIRATION=604800000
 
 # Начален администратор
@@ -204,36 +200,18 @@ ADMIN_NAME=Administrator
 ADMIN_EMAIL=           # твой имейл
 ADMIN_PASSWORD=        # силна парола
 
-# CORS
-CORS_ALLOWED_ORIGINS=https://52.58.114.218.sslip.io
+# CORS — трябва да съвпада с домейна
+CORS_ALLOWED_ORIGINS=https://tracker.garant-90.com
 
-# Web Push VAPID (от Стъпка 10)
-VAPID_PUBLIC_KEY=      # Public Key
-VAPID_PRIVATE_KEY=     # Private Key
+# Web Push VAPID (от Стъпка 11)
+VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
 VAPID_SUBJECT=mailto:твоят@имейл.com
-```
-
-Генерирай JWT secret:
-```bash
-openssl rand -base64 64
-```
-
----
-
-## Стъпка 12 — Копирай SSL сертификатите
-
-```bash
-mkdir /opt/attendtrack/certs
-
-cp /etc/letsencrypt/live/52.58.114.218.sslip.io/fullchain.pem /opt/attendtrack/certs/
-cp /etc/letsencrypt/live/52.58.114.218.sslip.io/privkey.pem  /opt/attendtrack/certs/
 ```
 
 ---
 
 ## Стъпка 13 — Стартирай приложението
-
-> `nginx.conf` вече има правилния `server_name` — не се налага промяна.
 
 ```bash
 cd /opt/attendtrack
@@ -241,39 +219,42 @@ docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-`pull` сваля образите от Docker Hub. Няма нужда от локален build на EC2.
+`pull` сваля образите от Docker Hub — няма нужда от локален build на EC2.
 
 Провери статуса:
 ```bash
 docker compose -f docker-compose.prod.yml ps
 ```
 
-Очакван резултат:
+Очакван резултат (nginx е на хоста, НЕ е в списъка):
 ```
 NAME                STATUS
 garant-postgres     running
 garant-backend      running
 garant-frontend     running
-garant-nginx        running
 ```
 
-Приложението е достъпно на: **https://52.58.114.218.sslip.io**
+Провери и хостовия nginx:
+```bash
+systemctl status nginx
+```
+
+Приложението е достъпно на: **https://tracker.garant-90.com**
 
 ---
 
 ## Стъпка 14 — Автоматично подновяване на сертификата
 
+Flyway миграциите се пускат автоматично от backend-а при старт — тук се грижим само за сертификата.
+
 ```bash
 crontab -e
 ```
 
-Добави реда:
+Добави реда (подновява и презарежда хостовия nginx, за да поеме новия сертификат):
 
 ```
-0 3 * * * certbot renew --quiet && \
-  cp /etc/letsencrypt/live/52.58.114.218.sslip.io/fullchain.pem /opt/attendtrack/certs/ && \
-  cp /etc/letsencrypt/live/52.58.114.218.sslip.io/privkey.pem /opt/attendtrack/certs/ && \
-  docker compose -f /opt/attendtrack/docker-compose.prod.yml restart nginx
+0 3 * * * certbot renew --quiet --deploy-hook "systemctl reload nginx"
 ```
 
 Тествай:
@@ -286,18 +267,20 @@ certbot renew --dry-run
 ## Полезни команди
 
 ```bash
-# Статус на услугите
+# Статус на контейнерите
 docker compose -f docker-compose.prod.yml ps
 
 # Логове в реално време
 docker compose -f docker-compose.prod.yml logs -f
-
-# Логове на конкретна услуга
 docker compose -f docker-compose.prod.yml logs -f backend
 docker compose -f docker-compose.prod.yml logs -f frontend
-docker compose -f docker-compose.prod.yml logs -f nginx
 
-# Рестартирай
+# Nginx (на хоста)
+systemctl status nginx
+nginx -t && systemctl reload nginx
+tail -f /var/log/nginx/error.log
+
+# Рестартирай контейнерите
 docker compose -f docker-compose.prod.yml restart
 
 # Спри (данните се запазват)
@@ -306,13 +289,9 @@ docker compose -f docker-compose.prod.yml down
 # Спри и изтрий базата (ВНИМАНИЕ: губиш данните!)
 docker compose -f docker-compose.prod.yml down -v
 
-# Свали и рестартирай само frontend (след нов push в Docker Hub)
-docker compose -f docker-compose.prod.yml pull frontend
-docker compose -f docker-compose.prod.yml up -d frontend
-
-# Свали и рестартирай само backend
-docker compose -f docker-compose.prod.yml pull backend
-docker compose -f docker-compose.prod.yml up -d backend
+# Свали и рестартирай само frontend / backend (след нов push)
+docker compose -f docker-compose.prod.yml pull frontend && docker compose -f docker-compose.prod.yml up -d frontend
+docker compose -f docker-compose.prod.yml pull backend  && docker compose -f docker-compose.prod.yml up -d backend
 
 # Влез в PostgreSQL
 docker compose -f docker-compose.prod.yml exec postgres psql -U garant_user -d garant
@@ -327,11 +306,11 @@ docker compose -f docker-compose.prod.yml exec postgres psql -U garant_user -d g
 ```bash
 cd /path/to/AttendTrack
 
-docker build -t <DOCKERHUB_USERNAME>/attendtrack-backend:latest .
-docker build -t <DOCKERHUB_USERNAME>/attendtrack-frontend:latest ./frontend
+docker build -t ludogoriesoft/attendtrack-backend:latest .
+docker build -t ludogoriesoft/attendtrack-frontend:latest ./frontend
 
-docker push <DOCKERHUB_USERNAME>/attendtrack-backend:latest
-docker push <DOCKERHUB_USERNAME>/attendtrack-frontend:latest
+docker push ludogoriesoft/attendtrack-backend:latest
+docker push ludogoriesoft/attendtrack-frontend:latest
 ```
 
 **На EC2** — свали и рестартирай:
@@ -341,6 +320,8 @@ cd /opt/attendtrack
 docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
 ```
+
+> Ако си променил `nginx.prod.conf`, качи го наново в `/etc/nginx/nginx.conf` и `nginx -t && systemctl reload nginx`.
 
 ---
 
@@ -353,32 +334,34 @@ dd if=/dev/zero of=/swapfile bs=128M count=16
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
-# За да е постоянен след рестарт:
 echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
 ```
 
 **Backend не стартира:**
 ```bash
 docker compose -f docker-compose.prod.yml logs backend
-# Чести причини: грешна DB парола, липсващ .env.prod
+# Чести причини: грешна DB парола, липсващ .env
 ```
 
 **Nginx грешка 502:**
 ```bash
-docker compose -f docker-compose.prod.yml logs nginx
-# Frontend може да стартира бавно — изчакай 1-2 мин
+tail -f /var/log/nginx/error.log
+# Frontend може да стартира бавно — изчакай 1-2 мин. Провери: curl -I http://localhost:3000
 ```
+
+**Реалното IP не се записва в одита:**
+Провери, че `/etc/nginx/nginx.conf` (от `nginx.prod.conf`) съдържа
+`proxy_set_header X-Real-IP $remote_addr;` и `X-Forwarded-For`, после `systemctl reload nginx`.
 
 **SSL грешка:**
 ```bash
-ls -la /opt/attendtrack/certs/
+ls -la /etc/letsencrypt/live/tracker.garant-90.com/
 # Трябва да има fullchain.pem и privkey.pem
 ```
 
 **Certbot грешка (порт 80 зает):**
 ```bash
-# Спри nginx контейнера преди certbot renew
-docker compose -f docker-compose.prod.yml stop nginx
+systemctl stop nginx
 certbot renew
-docker compose -f docker-compose.prod.yml start nginx
+systemctl start nginx
 ```
