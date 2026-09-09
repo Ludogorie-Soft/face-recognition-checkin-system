@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-09-08T12:53:29.741Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-09-09T06:03:50.816Z
 > Files: 164 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -342,4 +342,4 @@
 
 ## src/test/java/org/example/attendTrack/attendance/
 
-- `AttendanceServiceReconciliationTest.java` — Unit tests for the check-in/out state-machine reconciliation in {@link AttendanceService#sync}. (~2110 tok)
+- `AttendanceServiceReconciliationTest.java` — Unit tests for the check-in/out state-machine reconciliation in {@link AttendanceService#sync}. (~2350 tok)

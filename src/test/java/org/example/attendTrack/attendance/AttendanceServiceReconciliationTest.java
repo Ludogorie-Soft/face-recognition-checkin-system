@@ -159,6 +159,23 @@ class AttendanceServiceReconciliationTest {
     }
 
     @Test
+    void checkInWhenAlreadyOpenFromEarlierBatch_isFlagged() {
+        // Real БИСЕР scenario: a CHECK_IN was persisted earlier today in a SEPARATE sync batch,
+        // so the state must be seeded from the DB, not just the in-batch map.
+        Attendance existing = mock(Attendance.class);
+        when(existing.getType()).thenReturn(AttendanceType.CHECK_IN);
+        when(attendanceRepository.findLastForWorkerOnDay(any(), any(), any(), any(), any()))
+                .thenReturn(List.of(existing));
+
+        AttendanceSyncResponse res = service.sync(null, new AttendanceSyncRequest(siteId, List.of(
+                record(AttendanceType.CHECK_IN, LocalDate.now().atTime(17, 2))
+        )), "203.0.113.7", "JUnit-UA");
+
+        assertThat(res.anomalies()).isEqualTo(1);
+        assertThat(capturedSaves().get(0).getAnomalyReason()).isEqualTo(AnomalyReason.DUPLICATE_CHECK_IN);
+    }
+
+    @Test
     void recordedAtOutOfRange_isSkipped() {
         // 10 days in the future → outside the accepted window → rejected, not stored.
         AttendanceSyncResponse res = service.sync(null, new AttendanceSyncRequest(siteId, List.of(

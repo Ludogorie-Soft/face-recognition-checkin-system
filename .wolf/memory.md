@@ -1721,3 +1721,35 @@ Rewrote DEPLOY.md to match real prod: host-installed Nginx via nginx.prod.conf (
 ## Session — 2026-09-08 (cont.) — safeguard #3 + #1 deferred
 #3: per-record processing moved to processOne() @Transactional(REQUIRES_NEW), called via @Autowired @Lazy self-reference; sync() no longer @Transactional. StateKey/ProcessResult made package-private for CGLIB proxy. Test wires self via ReflectionTestUtils. Backend 6/6 green. #1 (device-token auth for the open /sync, /today, /sync/site endpoints) DEFERRED by owner: no worker login + must not disrupt live terminals; recommended approach = per-device token, one-time provisioning, staged soft→enforce rollout. Endpoints remain permitAll for now.
 | 15:55 | Session end: 116 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~82828 tok |
+| 16:06 | Session end: 116 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~82828 tok |
+| 16:15 | Session end: 116 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 27 reads | ~82828 tok |
+| 08:20 | Session end: 116 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 31 reads | ~85303 tok |
+| 08:20 | Session end: 116 writes across 27 files (V9__attendance_reconciliation.sql, AnomalyReason.java, Attendance.java, AttendanceRecord.java, AttendanceSyncResponse.java) | 31 reads | ~85303 tok |
+
+## Session: 2026-09-09 08:23
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-09 08:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-09 08:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-09 08:55
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-09 08:55
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:03 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | modified checkInWhenAlreadyOpenFromEarlierBatch_isFlagged() | ~254 |
+| 09:08 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:10 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
