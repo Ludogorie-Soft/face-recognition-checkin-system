@@ -35,6 +35,8 @@ import static org.mockito.Mockito.when;
 class AttendanceServiceNormalizationTest {
 
     private AttendanceRepository attendanceRepository;
+    private UserRepository userRepository;
+    private User worker;
     private AttendanceService service;
 
     private final UUID siteId = UUID.randomUUID();
@@ -47,7 +49,7 @@ class AttendanceServiceNormalizationTest {
         SiteRepository siteRepository = mock(SiteRepository.class);
         SiteWorkerRepository siteWorkerRepository = mock(SiteWorkerRepository.class);
         SiteCheckpointRepository siteCheckpointRepository = mock(SiteCheckpointRepository.class);
-        UserRepository userRepository = mock(UserRepository.class);
+        userRepository = mock(UserRepository.class);
         NotificationService notificationService = mock(NotificationService.class);
 
         service = new AttendanceService(attendanceRepository, siteRepository, siteWorkerRepository,
@@ -62,8 +64,9 @@ class AttendanceServiceNormalizationTest {
         when(site.getLng()).thenReturn(23.0);
         when(site.getRadiusMeters()).thenReturn(100);
 
-        User worker = mock(User.class);
+        worker = mock(User.class);
         when(worker.getId()).thenReturn(workerId);
+        when(worker.getShiftType()).thenReturn(org.example.attendTrack.user.ShiftType.DAY);
 
         when(siteRepository.findById(siteId)).thenReturn(Optional.of(site));
         when(siteCheckpointRepository.findBySiteId(siteId)).thenReturn(List.of());
@@ -158,6 +161,57 @@ class AttendanceServiceNormalizationTest {
     void reprojection_isSafeOnEmptyDay() {
         when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any())).thenReturn(List.of());
         service.renormalizeDay(workerId, siteId, today); // must not throw
+    }
+
+    @Test
+    void shiftWorker_continuesSessionAcrossMidnight() {
+        // Guard (12/24h shift) checked in at 19:00 yesterday — today's 07:00 scan must close it.
+        when(worker.getShiftType()).thenReturn(org.example.attendTrack.user.ShiftType.SHIFT_24H);
+        Attendance yesterdayCheckIn = row(today.minusDays(1).atTime(19, 0), AttendanceType.CHECK_IN);
+        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any(), any()))
+                .thenReturn(List.of(yesterdayCheckIn));
+
+        Attendance morning = row(today.atTime(7, 0), AttendanceType.CHECK_IN); // terminal guessed wrong
+        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any()))
+                .thenReturn(List.of(morning));
+
+        service.renormalizeDay(workerId, siteId, today);
+
+        assertThat(morning.getType()).isEqualTo(AttendanceType.CHECK_OUT);
+        assertThat(morning.isIgnored()).isFalse();
+    }
+
+    @Test
+    void shiftWorker_staleOpenSessionIsNotContinued() {
+        // Guard checked in two days ago and never checked out. Today's scan must open a FRESH
+        // session, not close a 35-hour one — the stale session is left for an admin.
+        when(worker.getShiftType()).thenReturn(org.example.attendTrack.user.ShiftType.SHIFT_24H);
+        Attendance stale = row(today.minusDays(2).atTime(20, 0), AttendanceType.CHECK_IN);
+        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any(), any()))
+                .thenReturn(List.of(stale));
+
+        Attendance morning = row(today.atTime(7, 0), AttendanceType.CHECK_OUT);
+        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any()))
+                .thenReturn(List.of(morning));
+
+        service.renormalizeDay(workerId, siteId, today);
+
+        assertThat(morning.getType()).isEqualTo(AttendanceType.CHECK_IN);
+    }
+
+    @Test
+    void dayWorker_alwaysStartsTheDayWithCheckIn() {
+        Attendance yesterdayCheckIn = row(today.minusDays(1).atTime(19, 0), AttendanceType.CHECK_IN);
+        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any(), any()))
+                .thenReturn(List.of(yesterdayCheckIn));
+        Attendance morning = row(today.atTime(7, 0), AttendanceType.CHECK_OUT);
+        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any()))
+                .thenReturn(List.of(morning));
+
+        service.renormalizeDay(workerId, siteId, today);
+
+        // Day shift: yesterday never leaks into today.
+        assertThat(morning.getType()).isEqualTo(AttendanceType.CHECK_IN);
     }
 
     private Attendance row(LocalDateTime at, AttendanceType type) {

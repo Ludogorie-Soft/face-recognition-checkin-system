@@ -42,6 +42,25 @@ public class NotificationService {
         sendPushToUsers(recipientIds, subject, body);
     }
 
+    /**
+     * Alerts admins about 12/24h shifts left open. These are deliberately NOT auto-closed —
+     * inventing an end time would silently corrupt payroll, so a human enters the real one.
+     */
+    public void notifyOpenGuardShifts(List<org.example.attendTrack.dashboard.OpenShiftEntry> openShifts) {
+        if (openShifts.isEmpty()) return;
+
+        String subject = "Незатворени смени на пазачи (" + openShifts.size() + ")";
+        StringBuilder body = new StringBuilder("Следните смени стоят отворени и изискват ръчна корекция:\n\n");
+        openShifts.forEach(e -> body
+                .append("• ").append(e.workerName())
+                .append(" — ").append(e.siteName())
+                .append(", от ").append(e.since()).append('\n'));
+
+        List<User> recipients = resolveRecipients();
+        recipients.forEach(user -> sendEmail(user.getEmail(), subject, body.toString()));
+        sendPushToUsers(recipients.stream().map(User::getId).toList(), subject, body.toString());
+    }
+
     private void sendEmail(String to, String subject, String body) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();

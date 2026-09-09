@@ -1,6 +1,7 @@
 package org.example.attendTrack.user.dto;
 
 import org.example.attendTrack.user.Role;
+import org.example.attendTrack.user.ShiftType;
 import org.example.attendTrack.user.User;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ public record UserResponse(
         String phone,
         List<CompanyRef> companies,
         Role role,
+        ShiftType shiftType,
         boolean active,
         boolean faceRegistered,
         LocalDateTime createdAt
@@ -28,6 +30,7 @@ public record UserResponse(
                 user.getPhone(),
                 companies,
                 user.getRole(),
+                user.getShiftType(),
                 user.isActive(),
                 faceRegistered,
                 user.getCreatedAt()

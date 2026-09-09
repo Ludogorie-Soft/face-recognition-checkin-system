@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useDashboardStats, useDashboardExtended } from '@/hooks/useDashboard'
-import type { DayAttendance, SiteAttendance, ActivityEntry, OutOfZoneEntry } from '@/hooks/useDashboard'
+import type { DayAttendance, SiteAttendance, ActivityEntry, OutOfZoneEntry, OpenShiftEntry } from '@/hooks/useDashboard'
 import { ManualAttendanceModal } from '@/components/dashboard/ManualAttendanceModal'
 
 // ── StatCard ──────────────────────────────────────────────────────────────────
@@ -195,9 +195,13 @@ function RecentActivity({ entries }: { entries: ActivityEntry[] }) {
 
 // ── Alerts ────────────────────────────────────────────────────────────────────
 
-function Alerts({ autoCheckouts, outOfZoneCount }: { autoCheckouts: number, outOfZoneCount: number }) {
+function Alerts({ autoCheckouts, outOfZoneCount, openGuardShifts }: {
+  autoCheckouts: number
+  outOfZoneCount: number
+  openGuardShifts: OpenShiftEntry[]
+}) {
   const t = useTranslations('dashboard')
-  const hasAlerts = outOfZoneCount > 0 || autoCheckouts > 0
+  const hasAlerts = outOfZoneCount > 0 || autoCheckouts > 0 || openGuardShifts.length > 0
 
   return (
     <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
@@ -231,6 +235,18 @@ function Alerts({ autoCheckouts, outOfZoneCount }: { autoCheckouts: number, outO
                 <span>{t('autoCheckoutsLastNight', { count: autoCheckouts })}</span>
               </div>
             )}
+            {openGuardShifts.map((s, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm text-amber-600 dark:text-amber-400">
+                <Clock size={14} className="mt-0.5 shrink-0" />
+                <span>
+                  {t('openGuardShift', {
+                    name: s.workerName,
+                    site: s.siteName,
+                    since: s.since.replace('T', ' ').slice(0, 16),
+                  })}
+                </span>
+              </div>
+            ))}
           </div>
         )}
     </div>
@@ -362,6 +378,7 @@ export default function DashboardPage() {
               <Alerts
                 autoCheckouts={ext.autoCheckoutsLastNight}
                 outOfZoneCount={ext.outOfZoneToday.length}
+                openGuardShifts={ext.openGuardShifts ?? []}
               />
               <OutOfZoneList entries={ext.outOfZoneToday} />
             </div>

@@ -3,6 +3,7 @@ package org.example.attendTrack.user.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.example.attendTrack.user.Role;
+import org.example.attendTrack.user.ShiftType;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,5 +24,8 @@ public record UserRequest(
         String password,
 
         @NotNull
-        Role role
+        Role role,
+
+        // Shift pattern for workers; null = keep/default DAY. Guards use SHIFT_24H.
+        ShiftType shiftType
 ) {}

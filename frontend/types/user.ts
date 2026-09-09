@@ -1,4 +1,5 @@
 export type Role = 'ADMIN' | 'WORKER'
+export type ShiftType = 'DAY' | 'SHIFT_24H'
 
 export interface CompanyRef {
   id: string
@@ -12,6 +13,7 @@ export interface UserResponse {
   phone: string | null
   companies: CompanyRef[]
   role: Role
+  shiftType: ShiftType
   active: boolean
   faceRegistered: boolean
   createdAt: string
@@ -24,4 +26,5 @@ export interface UserRequest {
   companyIds?: string[]
   password?: string
   role: Role
+  shiftType?: ShiftType
 }

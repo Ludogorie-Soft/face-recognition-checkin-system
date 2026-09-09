@@ -133,9 +133,20 @@ export default function WorkersPage() {
                       : '—'}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge variant={ROLE_VARIANT[user.role]}>
-                      {t(`roles.${user.role}`)}
-                    </Badge>
+                    <span className="flex items-center gap-1.5">
+                      <Badge variant={ROLE_VARIANT[user.role]}>
+                        {t(`roles.${user.role}`)}
+                      </Badge>
+                      {user.shiftType === 'SHIFT_24H' && (
+                        <Badge
+                          variant="outline"
+                          className="text-xs font-normal text-amber-600 border-amber-400/50 dark:text-amber-400"
+                          title={t('shiftTypeHint')}
+                        >
+                          {t('shiftTypes.SHIFT_24H')}
+                        </Badge>
+                      )}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     {user.faceRegistered ? (

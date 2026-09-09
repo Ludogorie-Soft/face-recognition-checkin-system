@@ -141,6 +141,28 @@ class SessionProjectorTest {
     }
 
     @Test
+    void overnightShift_continuesWhenSeededWithCheckOut() {
+        // Guard checked in 19:00 yesterday; today's first scan must CLOSE that session,
+        // not open a new one.
+        var events = List.of(terminal("07:00"));
+        var res = SessionProjector.project(events, GAP, AttendanceType.CHECK_OUT);
+        assertThat(res).singleElement()
+                .satisfies(r -> {
+                    assertThat(r.type()).isEqualTo(AttendanceType.CHECK_OUT);
+                    assertThat(r.ignored()).isFalse();
+                });
+    }
+
+    @Test
+    void overnightShift_seededDayThenAlternatesNormally() {
+        // 07:00 closes yesterday's shift, 19:00 opens tonight's.
+        var events = List.of(terminal("07:00"), terminal("19:00"));
+        var res = SessionProjector.project(events, GAP, AttendanceType.CHECK_OUT);
+        assertThat(res.stream().map(SessionProjector.Resolution::type))
+                .containsExactly(AttendanceType.CHECK_OUT, AttendanceType.CHECK_IN);
+    }
+
+    @Test
     void emptyInput_yieldsEmptyOutput() {
         assertThat(project(List.of())).isEmpty();
     }

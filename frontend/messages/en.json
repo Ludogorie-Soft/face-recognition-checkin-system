@@ -78,7 +78,8 @@
     "clearedSuccess": "Record for {name} cleared",
     "clearRecord": "Clear record",
     "noWorkersAssigned": "No workers assigned to this site",
-    "sessionSummary": "In: {checkIn} · Out: {checkOut} · Worked: {hours} h."
+    "sessionSummary": "In: {checkIn} · Out: {checkOut} · Worked: {hours} h.",
+    "openGuardShift": "{name} ({site}) has an unclosed shift since {since} — needs manual correction"
   },
   "sites": {
     "title": "Sites",
@@ -161,7 +162,13 @@
     "confirmPassword": "Confirm password",
     "passwordMismatch": "Passwords do not match",
     "companiesLabel": "Companies",
-    "selectCompany": "Select company..."
+    "selectCompany": "Select company...",
+    "shiftType": "Shift type",
+    "shiftTypeHint": "24-hour shift: the session continues past midnight and is NOT closed by the end-of-day auto-checkout.",
+    "shiftTypes": {
+      "DAY": "Day shift",
+      "SHIFT_24H": "12/24-hour shift (guard)"
+    }
   },
   "verify": {
     "title": "Verify",

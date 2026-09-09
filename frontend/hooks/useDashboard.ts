@@ -33,6 +33,12 @@ export interface OutOfZoneEntry {
   recordedAt: string
 }
 
+export interface OpenShiftEntry {
+  workerName: string
+  siteName: string
+  since: string
+}
+
 export interface DashboardExtended {
   thisWeek: DayAttendance[]
   lastWeek: DayAttendance[]
@@ -40,6 +46,7 @@ export interface DashboardExtended {
   recentActivity: ActivityEntry[]
   autoCheckoutsLastNight: number
   outOfZoneToday: OutOfZoneEntry[]
+  openGuardShifts: OpenShiftEntry[]
 }
 
 export function useDashboardStats() {

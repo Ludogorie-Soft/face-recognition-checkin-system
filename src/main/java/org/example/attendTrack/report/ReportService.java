@@ -17,6 +17,7 @@ import org.example.attendTrack.report.dto.WorkedHoursSummaryRow;
 import org.example.attendTrack.site.Site;
 import org.example.attendTrack.site.SiteRepository;
 import org.example.attendTrack.site.SiteWorkerRepository;
+import org.example.attendTrack.user.ShiftType;
 import org.example.attendTrack.user.User;
 import org.example.attendTrack.user.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -125,9 +126,11 @@ public class ReportService {
         if (siteId != null) validateSiteExists(siteId);
         Set<UUID> companyWorkers = workerIdsForCompany(companyId);
 
+        LocalDateTime windowStart = shiftWindowStart(from);
+        LocalDateTime windowEnd = shiftWindowEnd(to);
         List<Attendance> allRecords = siteId != null
-                ? attendanceRepository.findBySiteAndDateRange(siteId, from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)))
-                : attendanceRepository.findAllInDateRange(from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)));
+                ? attendanceRepository.findBySiteAndDateRange(siteId, windowStart, windowEnd)
+                : attendanceRepository.findAllInDateRange(windowStart, windowEnd);
 
         List<Attendance> records = allRecords.stream()
                 .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
@@ -146,7 +149,7 @@ public class ReportService {
         Map<UUID, String> companyNames = workerCompanyNames(
                 records.stream().map(a -> a.getWorker().getId()).distinct().toList());
 
-        return buildWorkedHoursRows(records, corrections, companyNames);
+        return trimToRange(buildWorkedHoursRows(records, corrections, companyNames), from, to);
     }
 
     @Transactional(readOnly = true)
@@ -154,7 +157,7 @@ public class ReportService {
         validateDateRange(from, to);
         Set<UUID> companyWorkers = workerIdsForCompany(companyId);
         List<Attendance> records = attendanceRepository.findAllInDateRange(
-                from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)))
+                shiftWindowStart(from), shiftWindowEnd(to))
                 .stream()
                 .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
                 .toList();
@@ -169,7 +172,7 @@ public class ReportService {
         Map<UUID, String> companyNames = workerCompanyNames(
                 records.stream().map(a -> a.getWorker().getId()).distinct().toList());
 
-        List<WorkedHoursRow> rows = buildWorkedHoursRows(records, corrections, companyNames);
+        List<WorkedHoursRow> rows = trimToRange(buildWorkedHoursRows(records, corrections, companyNames), from, to);
 
         return rows.stream()
                 .collect(Collectors.groupingBy(WorkedHoursRow::workerId))
@@ -508,10 +511,14 @@ public class ReportService {
 
         record GroupKey(UUID workerId, UUID siteId, LocalDate date) {}
 
+        // A 12/24h shift crosses midnight, so its records are dated by the session they belong to
+        // rather than by the calendar day they fall in.
+        Map<UUID, LocalDate> shiftDates = shiftDatesByRecord(records);
+
         Map<GroupKey, List<Attendance>> grouped = records.stream()
                 .collect(Collectors.groupingBy(a ->
                         new GroupKey(a.getWorker().getId(), a.getSite().getId(),
-                                normalizeShiftDate(a.getRecordedAt()))));
+                                shiftDates.get(a.getId()))));
 
         List<WorkedHoursRow> rows = new ArrayList<>();
 
@@ -553,7 +560,7 @@ public class ReportService {
                 Optional<LocalDateTime> nextSiteIn = records.stream()
                         .filter(a -> a.getWorker().getId().equals(key.workerId())
                                 && !a.getSite().getId().equals(key.siteId())
-                                && normalizeShiftDate(a.getRecordedAt()).equals(key.date())
+                                && key.date().equals(shiftDates.get(a.getId()))
                                 && a.getType() == AttendanceType.CHECK_IN
                                 && a.getRecordedAt().isAfter(finalOpenIn.getRecordedAt()))
                         .map(Attendance::getRecordedAt)
@@ -690,6 +697,61 @@ public class ReportService {
      * Normalizes a timestamp to a "shift date": records between 00:00 and 06:00
      * are attributed to the previous day's shift to handle overnight shifts.
      */
+    /**
+     * A 12/24h shift can open on the day before the requested range and close after the 06:00
+     * night boundary, so the raw window is widened by a day on both sides. The extra rows are
+     * trimmed afterwards by {@link #trimToRange}.
+     */
+    private static LocalDateTime shiftWindowStart(LocalDate from) {
+        return from.minusDays(1).atStartOfDay();
+    }
+
+    private static LocalDateTime shiftWindowEnd(LocalDate to) {
+        return to.plusDays(2).atStartOfDay();
+    }
+
+    /** Keeps only the rows whose shift date falls inside the range the user actually asked for. */
+    private static List<WorkedHoursRow> trimToRange(List<WorkedHoursRow> rows, LocalDate from, LocalDate to) {
+        return rows.stream()
+                .filter(r -> r.date() != null && !r.date().isBefore(from) && !r.date().isAfter(to))
+                .toList();
+    }
+
+    /**
+     * Shift date per record. Day shifts use the calendar day (with the 06:00 night boundary);
+     * 12/24h shifts date every record by the check-in that opened its session, so a shift running
+     * 19:00 → 07:00 stays one session instead of being split across two days.
+     */
+    private static Map<UUID, LocalDate> shiftDatesByRecord(List<Attendance> records) {
+        Map<UUID, LocalDate> out = new HashMap<>();
+        Map<String, List<Attendance>> shiftGroups = new LinkedHashMap<>();
+
+        for (Attendance a : records) {
+            if (a.getWorker().getShiftType() == ShiftType.SHIFT_24H) {
+                shiftGroups.computeIfAbsent(
+                        a.getWorker().getId() + ":" + a.getSite().getId(),
+                        k -> new ArrayList<>()).add(a);
+            } else {
+                out.put(a.getId(), normalizeShiftDate(a.getRecordedAt()));
+            }
+        }
+
+        for (List<Attendance> group : shiftGroups.values()) {
+            group.sort(Comparator.comparing(Attendance::getRecordedAt));
+            LocalDate sessionDate = null;
+            for (Attendance a : group) {
+                if (a.getType() == AttendanceType.CHECK_IN) {
+                    sessionDate = a.getRecordedAt().toLocalDate();
+                    out.put(a.getId(), sessionDate);
+                } else {
+                    out.put(a.getId(), sessionDate != null ? sessionDate : a.getRecordedAt().toLocalDate());
+                    sessionDate = null;
+                }
+            }
+        }
+        return out;
+    }
+
     private static LocalDate normalizeShiftDate(LocalDateTime dt) {
         return dt.toLocalTime().isBefore(LocalTime.of(6, 0))
                 ? dt.toLocalDate().minusDays(1)
