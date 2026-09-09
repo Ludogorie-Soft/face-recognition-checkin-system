@@ -107,7 +107,7 @@ public class ReportService {
             writeHeader(sheet, headerStyle);
             writeRows(sheet, rows);
 
-            for (int i = 0; i < 17; i++) sheet.autoSizeColumn(i);
+            for (int i = 0; i < 16; i++) sheet.autoSizeColumn(i);
 
             workbook.write(out);
             return out.toByteArray();
@@ -230,7 +230,7 @@ public class ReportService {
 
             String[] headers = {"Работник", "Фирма", "Обект", "Дата", "Начало", "Край",
                                  "Часове", "Коригирани часове", "Бележка",
-                                 "Локация при влизане", "Локация при излизане", "Аномалия", "Офлайн"};
+                                 "Локация при влизане", "Локация при излизане", "Офлайн"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -283,8 +283,7 @@ public class ReportService {
                         row.createCell(10).setCellValue(
                                 "https://www.google.com/maps?q=" + r.checkOutLat() + "," + r.checkOutLng());
                     }
-                    if (r.anomalyReason() != null) row.createCell(11).setCellValue(anomalyReasonBg(r.anomalyReason()));
-                    if (r.offline()) row.createCell(12).setCellValue("ДА");
+                    if (r.offline()) row.createCell(11).setCellValue("ДА");
                 }
             }
 
@@ -309,7 +308,7 @@ public class ReportService {
 
             String[] headers = {"Работник", "Фирма", "Обект", "Дата", "Начало", "Край",
                                  "Часове", "Коригирани часове", "Бележка",
-                                 "Локация при влизане", "Локация при излизане", "Аномалия", "Офлайн"};
+                                 "Локация при влизане", "Локация при излизане", "Офлайн"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -364,8 +363,7 @@ public class ReportService {
                             row.createCell(10).setCellValue(
                                     "https://www.google.com/maps?q=" + d.checkOutLat() + "," + d.checkOutLng());
                         }
-                        if (d.anomalyReason() != null) row.createCell(11).setCellValue(anomalyReasonBg(d.anomalyReason()));
-                        if (d.offline()) row.createCell(12).setCellValue("ДА");
+                        if (d.offline()) row.createCell(11).setCellValue("ДА");
                     }
                 }
                 // Grand-total row per worker
@@ -394,7 +392,7 @@ public class ReportService {
         String[] headers = {
                 "ID работник", "Работник", "Фирма", "Обект", "Дата",
                 "Тип", "Записано в", "Ширина", "Дължина", "Валидна локация", "Разпознаване на лице", "Ръчно въведено",
-                "Източник", "Офлайн", "IP адрес", "Устройство", "Аномалия"
+                "Източник", "Офлайн", "IP адрес", "Устройство"
         };
         Row row = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
@@ -424,7 +422,6 @@ public class ReportService {
             row.createCell(13).setCellValue(r.createdOffline());
             row.createCell(14).setCellValue(r.ipAddress() != null ? r.ipAddress() : "");
             row.createCell(15).setCellValue(r.clientDeviceId() != null ? r.clientDeviceId() : "");
-            row.createCell(16).setCellValue(r.anomalyReason() != null ? r.anomalyReason() : "");
         }
     }
 
@@ -457,8 +454,7 @@ public class ReportService {
                 a.getSource() != null ? a.getSource().name() : null,
                 a.getIpAddress(),
                 a.getClientDeviceId(),
-                a.isCreatedOffline(),
-                a.getAnomalyReason() != null ? a.getAnomalyReason().name() : null
+                a.isCreatedOffline()
         );
     }
 
@@ -580,7 +576,6 @@ public class ReportService {
                             hasRealCheckInCoords ? openIn.isLocationValid() : null,
                             null,  // inferred checkout — no locationValid
                             openIn.isManualOverride() && openIn.getManager() != null,
-                            anomalyReasonOf(openIn),
                             offlineOf(openIn)));
                 } else {
                     sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size(), companyName));
@@ -608,7 +603,7 @@ public class ReportService {
                         s.calculatedHours(), effectiveHours, correctedHours, corrNote,
                         s.checkOutLat(), s.checkOutLng(), s.checkInLat(), s.checkInLng(),
                         s.checkInLocationValid(), s.checkOutLocationValid(),
-                        s.adminManualCheckIn(), s.anomalyReason(), s.offline()));
+                        s.adminManualCheckIn(), s.offline()));
             } else {
                 // Multiple sessions: session rows carry no effectiveHours (prevents double-counting);
                 // a day-total row (pairIndex = -1) carries the sum and any correction.
@@ -632,7 +627,6 @@ public class ReportService {
                         null, null, null, null,    // day-total row — no location fields
                         null, null,                // day-total row — no locationValid
                         false,                     // day-total row — no individual check-in
-                        null,                      // day-total row — no anomaly
                         false));                   // day-total row — no offline flag
             }
         }
@@ -676,27 +670,7 @@ public class ReportService {
                 coLat, coLng, ciLat, ciLng,
                 ciLocationValid, coLocationValid,
                 adminManualCheckIn,
-                anomalyReasonOf(checkIn, checkOut),
                 offlineOf(checkIn, checkOut));
-    }
-
-    /** First non-null anomaly reason among the given records (as its enum name), else null. */
-    private static String anomalyReasonOf(Attendance... records) {
-        for (Attendance a : records) {
-            if (a != null && a.getAnomalyReason() != null) return a.getAnomalyReason().name();
-        }
-        return null;
-    }
-
-    /** Bulgarian label for an anomaly reason, for Excel export. */
-    private static String anomalyReasonBg(String reason) {
-        if (reason == null) return "";
-        return switch (reason) {
-            case "DUPLICATE_CHECK_IN" -> "Двойно влизане";
-            case "DUPLICATE_CHECK_OUT" -> "Двойно излизане";
-            case "CHECKOUT_WITHOUT_CHECKIN" -> "Излизане без влизане";
-            default -> reason;
-        };
     }
 
     /** True when any of the given records was recorded on an offline device. */

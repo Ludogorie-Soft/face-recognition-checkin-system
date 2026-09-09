@@ -49,6 +49,5 @@ public record WorkedHoursRow(
         Boolean checkInLocationValid, // null → manual record or day-total row
         Boolean checkOutLocationValid, // null → open shift, inferred checkout, or day-total row
         boolean adminManualCheckIn,   // true when check-in was entered manually by an admin from the dashboard
-        String anomalyReason,         // non-null → the session's check-in or check-out was flagged by sync reconciliation
         boolean offline               // true when the check-in or check-out was recorded on a device with no connectivity
 ) {}

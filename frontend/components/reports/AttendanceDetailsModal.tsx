@@ -21,8 +21,6 @@ interface AttendanceDetail {
   clientDeviceId: string | null
   appVersion: string | null
   createdOffline: boolean
-  anomaly: boolean
-  anomalyReason: string | null
   locationValid: boolean
   lat: number
   lng: number
