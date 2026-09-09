@@ -42,6 +42,12 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean active = true;
 
+    /** Shift pattern — scheduling only, never a permission. See {@link ShiftType}. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "shift_type", nullable = false, length = 20)
+    @Builder.Default
+    private ShiftType shiftType = ShiftType.DAY;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -75,11 +81,15 @@ public class User implements UserDetails {
 
     // --- Mutators ---
 
-    public void update(String name, String email, String phone, Role role, String newPasswordHash) {
+    public void update(String name, String email, String phone, Role role, String newPasswordHash,
+                       ShiftType shiftType) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.role = role;
+        if (shiftType != null) {
+            this.shiftType = shiftType;
+        }
         if (newPasswordHash != null) {
             this.passwordHash = newPasswordHash;
         }

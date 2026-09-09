@@ -30,6 +30,24 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
     /** Exact idempotency check for device-generated events (see V9 migration). */
     boolean existsByClientEventId(UUID clientEventId);
 
+    /** Last non-ignored event before a moment — seeds the projection for shifts crossing midnight. */
+    @Query("""
+            SELECT a FROM Attendance a
+            WHERE a.worker.id = :workerId
+              AND a.site.id   = :siteId
+              AND a.ignored = false
+              AND a.recordedAt < :before
+              AND a.recordedAt >= :notBefore
+            ORDER BY a.recordedAt DESC
+            """)
+    List<Attendance> findLastKeptBefore(
+            @Param("workerId") UUID workerId,
+            @Param("siteId") UUID siteId,
+            @Param("before") LocalDateTime before,
+            @Param("notBefore") LocalDateTime notBefore,
+            Pageable pageable
+    );
+
     /** All events for one (worker, site, day) — the input to the session projection. */
     @Query("""
             SELECT a FROM Attendance a
@@ -109,6 +127,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             JOIN FETCH a.site
             WHERE a.type = 'CHECK_IN'
               AND a.ignored = false
+              AND a.worker.shiftType <> org.example.attendTrack.user.ShiftType.SHIFT_24H
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
               AND NOT EXISTS (

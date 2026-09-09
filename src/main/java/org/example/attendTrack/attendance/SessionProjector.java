@@ -48,7 +48,18 @@ public final class SessionProjector {
 
     private SessionProjector() {}
 
+    /** Day-shift projection: every day starts with a CHECK_IN. */
     public static List<Resolution> project(List<Event> events, Duration minGap) {
+        return project(events, minGap, AttendanceType.CHECK_IN);
+    }
+
+    /**
+     * @param initialExpected direction expected for the first event. Day shifts always start a day
+     *                        with CHECK_IN; a 12/24h shift that is still open from the previous day
+     *                        starts with CHECK_OUT so the session continues across midnight.
+     */
+    public static List<Resolution> project(List<Event> events, Duration minGap,
+                                           AttendanceType initialExpected) {
         // Deterministic order: by time, then by id so equal timestamps never flip between runs.
         List<Event> ordered = events.stream()
                 .sorted(Comparator.comparing(Event::at)
@@ -56,7 +67,7 @@ public final class SessionProjector {
                 .toList();
 
         List<Resolution> out = new ArrayList<>(ordered.size());
-        AttendanceType expected = AttendanceType.CHECK_IN;
+        AttendanceType expected = initialExpected;
         LocalDateTime lastKeptAt = null;
 
         for (Event e : ordered) {

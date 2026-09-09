@@ -67,6 +67,9 @@ public class AttendanceService {
     /** Identifies one (worker, site, day) whose session sequence must be re-projected. */
     record DayKey(UUID workerId, UUID siteId, LocalDate day) {}
 
+    /** How far back a 12/24h shift may still be open when projecting a new day. */
+    private static final int SHIFT_LOOKBACK_HOURS = 48;
+
     /** Two scans of the same worker at the same site closer than this are accidental re-scans. */
     @org.springframework.beans.factory.annotation.Value("${attendance.min-gap-minutes:15}")
     private int minGapMinutes;
@@ -109,6 +112,14 @@ public class AttendanceService {
             }
         }
 
+        // A 12/24h shift crosses midnight, so a change on one day can move the boundary of the
+        // next one — re-project that day as well.
+        for (DayKey key : Set.copyOf(touchedDays)) {
+            if (isShiftWorker(key.workerId())) {
+                touchedDays.add(new DayKey(key.workerId(), key.siteId(), key.day().plusDays(1)));
+            }
+        }
+
         // Derive the authoritative direction for every day this batch touched. Doing it here —
         // after the raw events are committed — is what makes the outcome independent of the order
         // in which offline terminals happen to sync.
@@ -135,6 +146,17 @@ public class AttendanceService {
                 workerId, siteId, start, start.plusDays(1));
         if (records.isEmpty()) return;
 
+        // Day shifts always start a day with a check-in. A 12/24h shift may still be open from the
+        // previous day, in which case the next scan closes it rather than opening a new session.
+        AttendanceType initialExpected = AttendanceType.CHECK_IN;
+        if (isShiftWorker(workerId)) {
+            List<Attendance> previous = attendanceRepository.findLastKeptBefore(
+                    workerId, siteId, start, start.minusHours(SHIFT_LOOKBACK_HOURS), PageRequest.of(0, 1));
+            if (!previous.isEmpty() && previous.get(0).getType() == AttendanceType.CHECK_IN) {
+                initialExpected = AttendanceType.CHECK_OUT;
+            }
+        }
+
         List<SessionProjector.Event> events = records.stream()
                 .map(a -> new SessionProjector.Event(a.getId(), a.getRecordedAt(), a.getSource(), a.getType()))
                 .toList();
@@ -142,7 +164,7 @@ public class AttendanceService {
         Map<UUID, Attendance> byId = new HashMap<>();
         records.forEach(a -> byId.put(a.getId(), a));
 
-        for (SessionProjector.Resolution r : SessionProjector.project(events, Duration.ofMinutes(minGapMinutes))) {
+        for (SessionProjector.Resolution r : SessionProjector.project(events, Duration.ofMinutes(minGapMinutes), initialExpected)) {
             Attendance a = byId.get(r.id());
             if (a == null) continue;
             boolean changed = a.getType() != r.type()
@@ -152,6 +174,13 @@ public class AttendanceService {
                 a.applyProjection(r.type(), r.ignored(), r.ignoreReason()); // flushed by dirty checking
             }
         }
+    }
+
+    /** True when the worker runs 12/24h shifts that cross midnight (guards). */
+    private boolean isShiftWorker(UUID workerId) {
+        return userRepository.findById(workerId)
+                .map(u -> u.getShiftType() == org.example.attendTrack.user.ShiftType.SHIFT_24H)
+                .orElse(false);
     }
 
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)

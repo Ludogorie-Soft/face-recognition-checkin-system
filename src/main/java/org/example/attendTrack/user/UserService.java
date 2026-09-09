@@ -77,6 +77,7 @@ public class UserService {
                 .phone(StringUtils.hasText(request.phone()) ? request.phone() : null)
                 .passwordHash(passwordEncoder.encode(rawPassword))
                 .role(request.role())
+                .shiftType(request.shiftType() != null ? request.shiftType() : ShiftType.DAY)
                 .build();
 
         User saved = userRepository.save(user);
@@ -98,7 +99,8 @@ public class UserService {
                 email,
                 StringUtils.hasText(request.phone()) ? request.phone() : null,
                 request.role(),
-                StringUtils.hasText(request.password()) ? passwordEncoder.encode(request.password()) : null
+                StringUtils.hasText(request.password()) ? passwordEncoder.encode(request.password()) : null,
+                request.shiftType()
         );
 
         User saved = userRepository.save(user);

@@ -20,7 +20,7 @@ import {
 import { useCreateWorker, useUpdateWorker } from '@/hooks/useWorkers'
 import { useCompanies } from '@/hooks/useCompanies'
 import { apiErrorMessage } from '@/lib/errors'
-import type { UserResponse, UserRequest, Role } from '@/types/user'
+import type { UserResponse, UserRequest, Role, ShiftType } from '@/types/user'
 
 interface FormValues extends Omit<UserRequest, 'companyIds'> {
   confirmPassword?: string
@@ -33,6 +33,7 @@ interface Props {
 }
 
 const ROLES: Role[] = ['WORKER', 'ADMIN']
+const SHIFT_TYPES: ShiftType[] = ['DAY', 'SHIFT_24H']
 
 function Req() {
   return <span className="text-destructive ml-0.5">*</span>
@@ -44,10 +45,11 @@ export function WorkerDialog({ open, onClose, user }: Props) {
   const te = useTranslations('errors')
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<FormValues>({
-    defaultValues: { role: 'WORKER' },
+    defaultValues: { role: 'WORKER', shiftType: 'DAY' },
   })
 
   const role = watch('role')
+  const shiftType = watch('shiftType') ?? 'DAY'
   const isAdmin = role === 'ADMIN'
   const isCreate = !user
 
@@ -65,8 +67,9 @@ export function WorkerDialog({ open, onClose, user }: Props) {
             email: user.email?.endsWith('@worker.local') ? '' : (user.email ?? ''),
             phone: user.phone ?? '',
             role: user.role,
+            shiftType: user.shiftType ?? 'DAY',
           }
-        : { name: '', email: '', phone: '', password: '', confirmPassword: '', role: 'WORKER' }
+        : { name: '', email: '', phone: '', password: '', confirmPassword: '', role: 'WORKER', shiftType: 'DAY' }
       )
       setSelectedCompanyIds(user?.companies?.map((c) => c.id) ?? [])
     }
@@ -224,6 +227,29 @@ export function WorkerDialog({ open, onClose, user }: Props) {
               </SelectContent>
             </Select>
           </div>
+
+          {!isAdmin && (
+            <div className="flex flex-col gap-1.5">
+              <Label>{t('shiftType')}</Label>
+              <Select
+                value={shiftType}
+                onValueChange={(v) => setValue('shiftType', v as ShiftType)}
+                disabled={loading}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SHIFT_TYPES.map((st) => (
+                    <SelectItem key={st} value={st}>
+                      {t(`shiftTypes.${st}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">{t('shiftTypeHint')}</p>
+            </div>
+          )}
 
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
