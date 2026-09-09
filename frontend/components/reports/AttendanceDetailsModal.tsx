@@ -29,6 +29,9 @@ interface AttendanceDetail {
   faceConfidence: number | null
   manualOverride: boolean
   managerName: string | null
+  clientType: string | null
+  ignored: boolean
+  ignoredReason: string | null
 }
 
 interface Props {
@@ -59,10 +62,9 @@ export function AttendanceDetailsModal({ open, onClose, checkInId, checkOutId, t
     : s === 'SCHEDULER_AUTO' ? t('sourceSchedulerAuto')
     : t('sourceLegacy')
 
-  const anomalyLabel = (r: string | null) =>
-    r === 'DUPLICATE_CHECK_IN' ? t('anomalyDuplicateCheckIn')
-    : r === 'DUPLICATE_CHECK_OUT' ? t('anomalyDuplicateCheckOut')
-    : r === 'CHECKOUT_WITHOUT_CHECKIN' ? t('anomalyCheckoutWithoutCheckin')
+  const ignoredLabel = (r: string | null) =>
+    r === 'RESCAN' ? t('ignoredRescan')
+    : r === 'SUPERSEDED' ? t('ignoredSuperseded')
     : '—'
 
   const fmt = (dt: string | null) => (dt ? dt.replace('T', ' ').slice(0, 19) : '—')
@@ -78,7 +80,9 @@ export function AttendanceDetailsModal({ open, onClose, checkInId, checkOutId, t
       [t('detailRecordedAt'), fmt(d.recordedAt)],
       [t('detailSyncedAt'), fmt(d.syncedAt)],
       [t('offline'), d.createdOffline ? t('yes') : t('no')],
-      [t('anomaly'), d.anomaly ? anomalyLabel(d.anomalyReason) : '—'],
+      [t('detailReported'), d.clientType && d.clientType !== d.type
+        ? `${d.clientType} → ${d.type}` : '—'],
+      [t('ignored'), d.ignored ? ignoredLabel(d.ignoredReason) : '—'],
       [t('locationValid'), d.locationValid ? t('inZone') : t('outOfZone')],
       [t('faceConfidence'), d.faceConfidence != null ? `${Math.round(d.faceConfidence)}%` : '—'],
       [t('manager'), d.managerName ?? '—'],

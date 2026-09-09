@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,11 +64,12 @@ public class AttendanceService {
         return result;
     }
 
-    /** Key for the running check-in/out state within a single sync batch. */
-    record StateKey(UUID workerId, UUID siteId, LocalDate day) {}
+    /** Identifies one (worker, site, day) whose session sequence must be re-projected. */
+    record DayKey(UUID workerId, UUID siteId, LocalDate day) {}
 
-    /** Outcome of processing one incoming record. */
-    record ProcessResult(int saved, boolean anomaly) {}
+    /** Two scans of the same worker at the same site closer than this are accidental re-scans. */
+    @org.springframework.beans.factory.annotation.Value("${attendance.min-gap-minutes:15}")
+    private int minGapMinutes;
 
     // Self-reference so per-record processing runs in its OWN transaction (REQUIRES_NEW):
     // one bad record can no longer mark the whole sync batch rollback-only.
@@ -83,51 +85,88 @@ public class AttendanceService {
 
         int saved = 0;
         int skipped = 0;
-        int anomalies = 0;
         List<String> errors = new ArrayList<>();
         // Track workers already notified this sync — prevent notification spam for batch uploads
         Set<UUID> notifiedWorkers = new HashSet<>();
+        // Days touched by this batch — each is re-projected once, after all inserts have committed.
+        Set<DayKey> touchedDays = new LinkedHashSet<>();
 
-        // Running last-type per (worker, site, day), seeded lazily from the DB. Lets the
-        // state machine reconcile against BOTH already-persisted records and earlier records
-        // in this same batch — the safety net for cross-device / offline conflicts.
-        Map<StateKey, AttendanceType> lastTypeByKey = new HashMap<>();
-
-        // Offline batches can arrive out of order; process chronologically so the state
-        // machine sees events in the sequence they actually happened.
+        // Offline batches can arrive out of order; store chronologically for stable ids/ordering.
         List<AttendanceRecord> ordered = request.records().stream()
                 .sorted(Comparator.comparing(AttendanceRecord::recordedAt))
                 .toList();
 
         for (AttendanceRecord record : ordered) {
             try {
-                ProcessResult r = self.processOne(record, site, admin, checkpoints, notifiedWorkers,
-                        lastTypeByKey, clientIp, userAgent);
-                saved += r.saved();
-                if (r.anomaly()) anomalies++;
+                if (self.processOne(record, site, admin, checkpoints, notifiedWorkers, clientIp, userAgent) > 0) {
+                    saved++;
+                    touchedDays.add(new DayKey(record.workerId(), site.getId(),
+                            record.recordedAt().toLocalDate()));
+                }
             } catch (Exception e) {
                 skipped++;
                 errors.add("Worker %s — %s".formatted(record.workerId(), e.getMessage()));
             }
         }
 
-        return new AttendanceSyncResponse(saved, skipped, anomalies, errors);
+        // Derive the authoritative direction for every day this batch touched. Doing it here —
+        // after the raw events are committed — is what makes the outcome independent of the order
+        // in which offline terminals happen to sync.
+        for (DayKey key : touchedDays) {
+            try {
+                self.renormalizeDay(key.workerId(), key.siteId(), key.day());
+            } catch (Exception e) {
+                errors.add("Re-projection failed for worker %s on %s — %s"
+                        .formatted(key.workerId(), key.day(), e.getMessage()));
+            }
+        }
+
+        return new AttendanceSyncResponse(saved, skipped, errors);
+    }
+
+    /**
+     * Recomputes the CHECK_IN / CHECK_OUT sequence for one (worker, site, day) from its raw events.
+     * Idempotent and independent of arrival order, so it is safe to run as often as needed.
+     */
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    public void renormalizeDay(UUID workerId, UUID siteId, LocalDate day) {
+        LocalDateTime start = day.atStartOfDay();
+        List<Attendance> records = attendanceRepository.findForWorkerSiteDay(
+                workerId, siteId, start, start.plusDays(1));
+        if (records.isEmpty()) return;
+
+        List<SessionProjector.Event> events = records.stream()
+                .map(a -> new SessionProjector.Event(a.getId(), a.getRecordedAt(), a.getSource(), a.getType()))
+                .toList();
+
+        Map<UUID, Attendance> byId = new HashMap<>();
+        records.forEach(a -> byId.put(a.getId(), a));
+
+        for (SessionProjector.Resolution r : SessionProjector.project(events, Duration.ofMinutes(minGapMinutes))) {
+            Attendance a = byId.get(r.id());
+            if (a == null) continue;
+            boolean changed = a.getType() != r.type()
+                    || a.isIgnored() != r.ignored()
+                    || a.getIgnoredReason() != r.ignoreReason();
+            if (changed) {
+                a.applyProjection(r.type(), r.ignored(), r.ignoreReason()); // flushed by dirty checking
+            }
+        }
     }
 
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
-    public ProcessResult processOne(AttendanceRecord record, Site site, User admin,
-                                    List<SiteCheckpoint> checkpoints, Set<UUID> notifiedWorkers,
-                                    Map<StateKey, AttendanceType> lastTypeByKey,
-                                    String clientIp, String userAgent) {
+    public int processOne(AttendanceRecord record, Site site, User admin,
+                          List<SiteCheckpoint> checkpoints, Set<UUID> notifiedWorkers,
+                          String clientIp, String userAgent) {
         // Idempotency: this exact device event is already stored → nothing to do.
         if (record.clientEventId() != null
                 && attendanceRepository.existsByClientEventId(record.clientEventId())) {
-            return new ProcessResult(0, false);
+            return 0;
         }
         // Legacy dedup fallback (exact worker + site + type + timestamp).
         if (attendanceRepository.existsDuplicate(
                 record.workerId(), site.getId(), record.type(), record.recordedAt())) {
-            return new ProcessResult(0, false);
+            return 0;
         }
 
         // Sanity-bound the device-provided timestamp: reject clearly bogus values (wrong device
@@ -163,40 +202,21 @@ public class AttendanceService {
             notificationService.notifySuspiciousCheckIn(site, worker, record.lat(), record.lng());
         }
 
-        // ── State-machine reconciliation ──────────────────────────────────────
-        // A CHECK_IN must follow a CHECK_OUT (or be the day's first record); a CHECK_OUT
-        // must follow a CHECK_IN. Violations are still persisted (offline data is never
-        // lost) but flagged so admins can review them in the report.
-        StateKey key = new StateKey(worker.getId(), site.getId(), record.recordedAt().toLocalDate());
-        AttendanceType lastType = lastTypeByKey.computeIfAbsent(key, k -> {
-            LocalDateTime dayStart = k.day().atStartOfDay();
-            List<Attendance> last = attendanceRepository.findLastForWorkerOnDay(
-                    k.workerId(), k.siteId(), dayStart, dayStart.plusDays(1), PageRequest.of(0, 1));
-            return last.isEmpty() ? null : last.get(0).getType();
-        });
-
-        AnomalyReason reason = null;
-        if (record.type() == AttendanceType.CHECK_IN && lastType == AttendanceType.CHECK_IN) {
-            reason = AnomalyReason.DUPLICATE_CHECK_IN;
-        } else if (record.type() == AttendanceType.CHECK_OUT && lastType == AttendanceType.CHECK_OUT) {
-            reason = AnomalyReason.DUPLICATE_CHECK_OUT;
-        } else if (record.type() == AttendanceType.CHECK_OUT && lastType == null) {
-            reason = AnomalyReason.CHECKOUT_WITHOUT_CHECKIN;
-        }
-
+        // The terminal is NOT trusted to decide the direction. Store the raw event exactly as
+        // reported (client_type) and let renormalizeDay() derive the authoritative `type` from the
+        // whole day's ordered events once the batch is committed.
         attendanceRepository.save(Attendance.builder()
                 .worker(worker)
                 .site(site)
                 .manager(admin)
                 .type(record.type())
+                .clientType(record.type())
                 .lat(record.lat())
                 .lng(record.lng())
                 .locationValid(locationValid)
                 .faceConfidence(record.faceConfidence())
                 .manualOverride(record.manualOverride())
                 .clientEventId(record.clientEventId())
-                .anomaly(reason != null)
-                .anomalyReason(reason)
                 .createdOffline(record.createdOffline())
                 .source(record.manualOverride() ? AttendanceSource.TERMINAL_MANUAL : AttendanceSource.TERMINAL_FACE)
                 .ipAddress(clientIp)
@@ -207,8 +227,7 @@ public class AttendanceService {
                 .syncedAt(LocalDateTime.now())
                 .build());
 
-        lastTypeByKey.put(key, record.type());
-        return new ProcessResult(1, reason != null);
+        return 1;
     }
 
     // ── Manual attendance (admin) ─────────────────────────────────────────────

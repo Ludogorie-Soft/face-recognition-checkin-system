@@ -32,21 +32,9 @@ export default function VerifyPage() {
   const [sessionLog, setSessionLog] = useState<Map<string, SessionEntry>>(new Map())
   const [cachedSiteIds, setCachedSiteIds] = useState<string[]>([])
   const [syncProgress, setSyncProgress] = useState<{ done: number; total: number } | null>(null)
-  const [online, setOnline] = useState(true)
   const syncStartedRef = useRef(false)
+  const lastStatusRefreshRef = useRef(0)
 
-  // Live online/offline tracking — drives the "unconfirmed status, ask a human"
-  // fallback in VerifyCamera when the terminal cannot reach the server.
-  useEffect(() => {
-    const update = () => setOnline(navigator.onLine)
-    update()
-    window.addEventListener('online', update)
-    window.addEventListener('offline', update)
-    return () => {
-      window.removeEventListener('online', update)
-      window.removeEventListener('offline', update)
-    }
-  }, [])
 
   // When offline and the API request fails, fall back to site IDs stored in IndexedDB
   useEffect(() => {
@@ -225,6 +213,16 @@ export default function VerifyPage() {
     [t],
   )
 
+  // Refresh the server status when a worker is recognised, so the button direction is
+  // right at the moment of the scan. Debounced, and skipped entirely when offline.
+  const handleWorkerDetected = useCallback(() => {
+    if (!navigator.onLine || siteIds.length === 0) return
+    const now = Date.now()
+    if (now - lastStatusRefreshRef.current < 10_000) return
+    lastStatusRefreshRef.current = now
+    rebuildSessionLog(siteIds).catch(() => {})
+  }, [siteIds, rebuildSessionLog])
+
   // ── Render ───────────────────────────────────────────────────────────────────
 
   if (sitesLoading) {
@@ -306,7 +304,7 @@ export default function VerifyPage() {
           workers={workers}
           onRecord={handleRecord}
           sessionLog={sessionLog}
-          online={online}
+          onWorkerDetected={handleWorkerDetected}
         />
       </div>
     </div>

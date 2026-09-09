@@ -33,7 +33,8 @@ interface Props {
   sites: Map<string, SiteInfo>
   workers: WorkerRecord[]
   sessionLog: Map<string, SessionEntry>
-  online: boolean
+  /** Called when a new worker is recognised, so the page can refresh the server status. */
+  onWorkerDetected?: (workerId: string) => void
   onRecord: (params: {
     workerId: string
     workerName: string
@@ -76,13 +77,16 @@ function resolveWorkerSite(
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export function VerifyCamera({ sites, workers, sessionLog, online, onRecord }: Props) {
+export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDetected }: Props) {
   const t = useTranslations('verify')
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const detectingRef = useRef(false)
   const missCountRef = useRef(0)
+  const notifiedWorkerRef = useRef<string | null>(null)
+  const onWorkerDetectedRef = useRef(onWorkerDetected)
+  useEffect(() => { onWorkerDetectedRef.current = onWorkerDetected }, [onWorkerDetected])
   const MISS_THRESHOLD = 3
 
   const [cameraActive, setCameraActive] = useState(false)
@@ -177,6 +181,7 @@ export function VerifyCamera({ sites, workers, sessionLog, online, onRecord }: P
             if (missCountRef.current >= MISS_THRESHOLD) {
               setFaceVisible(false)
               setDetected(null)
+              notifiedWorkerRef.current = null
             }
           } else if (matcher) {
             const best = matcher.findBestMatch(descriptor)
@@ -190,6 +195,12 @@ export function VerifyCamera({ sites, workers, sessionLog, online, onRecord }: P
                   workerName: worker.name,
                   confidence: Math.round((1 - best.distance) * 100),
                 })
+                // Ask the page to refresh this worker's server status so the button
+                // direction reflects what the server actually knows.
+                if (notifiedWorkerRef.current !== worker.id) {
+                  notifiedWorkerRef.current = worker.id
+                  onWorkerDetectedRef.current?.(worker.id)
+                }
               }
             } else {
               missCountRef.current++
@@ -280,9 +291,6 @@ export function VerifyCamera({ sites, workers, sessionLog, online, onRecord }: P
     ? sessionLog.get(statusKey(detected.workerId, detectedWorkerGeo.siteId))
     : undefined
   const lastAction = detectedEntry?.type
-  // Offline and we have no server-confirmed status for this worker+site today:
-  // don't let the machine guess the direction — let a human pick.
-  const statusUncertain = !online && (!detectedEntry || !detectedEntry.serverConfirmed)
 
   const ovalStroke = detected
     ? '#4ade80'
@@ -512,29 +520,7 @@ export function VerifyCamera({ sites, workers, sessionLog, online, onRecord }: P
                   )}
                 </div>
 
-                {statusUncertain ? (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-xs text-amber-600 dark:text-amber-400 text-center">
-                      {t('statusUnconfirmed')}
-                    </p>
-                    <div className="flex gap-2">
-                      <Button
-                        className="h-14 text-base font-bold flex-1 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
-                        onClick={() => handleConfirm('CHECK_IN')}
-                        disabled={!detectedWorkerGeo || geo.loading}
-                      >
-                        {t('checkIn')}
-                      </Button>
-                      <Button
-                        className="h-14 text-base font-bold flex-1 bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
-                        onClick={() => handleConfirm('CHECK_OUT')}
-                        disabled={!detectedWorkerGeo || geo.loading}
-                      >
-                        {t('checkOut')}
-                      </Button>
-                    </div>
-                  </div>
-                ) : lastAction === 'CHECK_IN' ? (
+                {lastAction === 'CHECK_IN' ? (
                   <Button
                     className="h-14 text-base font-bold w-full bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
                     onClick={() => handleConfirm('CHECK_OUT')}

@@ -283,11 +283,6 @@
     "periodCustom": "Custom",
     "autoCheckout": "Auto or manual checkout",
     "filterAutoCheckout": "Auto-closed only",
-    "anomaly": "Anomaly",
-    "anomalyDuplicateCheckIn": "Duplicate check-in — previous session not closed",
-    "anomalyDuplicateCheckOut": "Duplicate check-out — no open session",
-    "anomalyCheckoutWithoutCheckin": "Check-out with no preceding check-in",
-    "filterAnomaly": "Anomalies only",
     "offline": "Offline",
     "offlineHint": "Recorded while the device had no internet connection",
     "details": "Details",
@@ -318,6 +313,10 @@
     "revalidate": "Revalidate location",
     "revalidateSuccess": "Updated records: {count}",
     "changeSite": "Change site",
-    "selectSite": "Select site"
+    "selectSite": "Select site",
+    "detailReported": "Terminal reported",
+    "ignored": "Ignored",
+    "ignoredRescan": "Re-scan within 15 minutes",
+    "ignoredSuperseded": "Replaced by a real check-out"
   }
 }

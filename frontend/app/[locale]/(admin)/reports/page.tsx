@@ -798,7 +798,6 @@ function WorkedHoursTable({
   const [selectedSiteId, setSelectedSiteId] = useState('')
   const [showAutoCheckoutOnly, setShowAutoCheckoutOnly] = useState(false)
   const [showOutOfZoneOnly, setShowOutOfZoneOnly] = useState(false)
-  const [showAnomalyOnly, setShowAnomalyOnly] = useState(false)
   const [detailsRow, setDetailsRow] = useState<WorkedHoursRow | null>(null)
 
   const changeSiteMutation = useMutation({
@@ -823,23 +822,13 @@ function WorkedHoursTable({
   const outOfZoneKeys = showOutOfZoneOnly
     ? new Set(rows.filter(isOutOfZone).map((r) => `${r.workerId}:${r.siteId}:${r.date}`))
     : null
-  const anomalyKeys = showAnomalyOnly
-    ? new Set(rows.filter((r) => r.pairIndex >= 0 && r.anomalyReason).map((r) => `${r.workerId}:${r.siteId}:${r.date}`))
-    : null
 
   const displayedRows = rows.filter((r) => {
     const key = `${r.workerId}:${r.siteId}:${r.date}`
     if (autoCheckoutKeys && (r.pairIndex === -1 ? !autoCheckoutKeys.has(key) : !r.autoCheckout)) return false
     if (outOfZoneKeys && (r.pairIndex === -1 ? !outOfZoneKeys.has(key) : !isOutOfZone(r))) return false
-    if (anomalyKeys && (r.pairIndex === -1 ? !anomalyKeys.has(key) : !r.anomalyReason)) return false
     return true
   })
-
-  const anomalyLabel = (reason: string | null) =>
-    reason === 'DUPLICATE_CHECK_IN' ? t('anomalyDuplicateCheckIn')
-    : reason === 'DUPLICATE_CHECK_OUT' ? t('anomalyDuplicateCheckOut')
-    : reason === 'CHECKOUT_WITHOUT_CHECKIN' ? t('anomalyCheckoutWithoutCheckin')
-    : ''
 
   return (
     <>
@@ -872,22 +861,6 @@ function WorkedHoursTable({
         <Filter size={12} />
         {t('filterOutOfZone')}
         {showOutOfZoneOnly && (
-          <span className="ml-1 bg-red-500 text-white rounded-full px-1.5 text-[10px] font-bold leading-4">
-            {displayedRows.filter((r) => r.pairIndex >= 0).length}
-          </span>
-        )}
-      </button>
-      <button
-        onClick={() => setShowAnomalyOnly((v) => !v)}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-          showAnomalyOnly
-            ? 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700'
-            : 'bg-background text-muted-foreground border-border hover:text-foreground'
-        }`}
-      >
-        <Filter size={12} />
-        {t('filterAnomaly')}
-        {showAnomalyOnly && (
           <span className="ml-1 bg-red-500 text-white rounded-full px-1.5 text-[10px] font-bold leading-4">
             {displayedRows.filter((r) => r.pairIndex >= 0).length}
           </span>
@@ -954,14 +927,6 @@ function WorkedHoursTable({
                           <Badge variant="outline" className="text-xs text-muted-foreground border-muted-foreground/40 font-normal">
                             {t('adminManual')}
                           </Badge>
-                        )}
-                        {row.anomalyReason && (
-                          <span title={anomalyLabel(row.anomalyReason)} className="inline-flex items-center gap-1 text-red-600 dark:text-red-400">
-                            <AlertTriangle size={12} />
-                            <Badge variant="outline" className="text-xs text-red-600 border-red-400/50 dark:text-red-400 font-normal">
-                              {t('anomaly')}
-                            </Badge>
-                          </span>
                         )}
                         {row.offline && (
                           <span title={t('offlineHint')}>
@@ -1154,12 +1119,6 @@ function WorkedHoursSummaryTable({
   setExpandedWorker: (id: string | null) => void
 }) {
   const [detailsRow, setDetailsRow] = useState<WorkedHoursRow | null>(null)
-  const anomalyLabel = (reason: string | null) =>
-    reason === 'DUPLICATE_CHECK_IN' ? t('anomalyDuplicateCheckIn')
-    : reason === 'DUPLICATE_CHECK_OUT' ? t('anomalyDuplicateCheckOut')
-    : reason === 'CHECKOUT_WITHOUT_CHECKIN' ? t('anomalyCheckoutWithoutCheckin')
-    : ''
-
   return (
     <>
     <div className="flex flex-col gap-3">
@@ -1232,11 +1191,6 @@ function WorkedHoursSummaryTable({
                               ? <span className="text-xs text-muted-foreground">{t('total')}</span>
                               : <span className="flex items-center gap-1.5">
                                   {row.checkIn ? formatTime(row.checkIn) : '—'}
-                                  {row.anomalyReason && (
-                                    <span title={anomalyLabel(row.anomalyReason)} className="text-red-600 dark:text-red-400">
-                                      <AlertTriangle size={12} />
-                                    </span>
-                                  )}
                                   {row.offline && (
                                     <span title={t('offlineHint')} className="text-amber-600 dark:text-amber-400 text-[10px] font-medium">
                                       {t('offline')}

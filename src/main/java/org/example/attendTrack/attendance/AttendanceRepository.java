@@ -30,11 +30,28 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
     /** Exact idempotency check for device-generated events (see V9 migration). */
     boolean existsByClientEventId(UUID clientEventId);
 
+    /** All events for one (worker, site, day) — the input to the session projection. */
+    @Query("""
+            SELECT a FROM Attendance a
+            WHERE a.worker.id = :workerId
+              AND a.site.id   = :siteId
+              AND a.recordedAt >= :from
+              AND a.recordedAt < :to
+            ORDER BY a.recordedAt
+            """)
+    List<Attendance> findForWorkerSiteDay(
+            @Param("workerId") UUID workerId,
+            @Param("siteId") UUID siteId,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
+
     @Query("""
             SELECT a FROM Attendance a
             JOIN FETCH a.worker
             JOIN FETCH a.site
             WHERE a.site.id = :siteId
+              AND a.ignored = false
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
             ORDER BY a.worker.name, a.recordedAt
@@ -49,6 +66,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             SELECT a FROM Attendance a
             JOIN FETCH a.worker
             WHERE a.site.id = :siteId
+              AND a.ignored = false
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
             ORDER BY a.recordedAt ASC
@@ -75,7 +93,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             SELECT a FROM Attendance a
             JOIN FETCH a.worker
             JOIN FETCH a.site
-            WHERE a.recordedAt >= :from
+            WHERE a.ignored = false
+              AND a.recordedAt >= :from
               AND a.recordedAt < :to
             ORDER BY a.worker.name, a.site.id, a.recordedAt
             """)
@@ -89,6 +108,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             JOIN FETCH a.worker
             JOIN FETCH a.site
             WHERE a.type = 'CHECK_IN'
+              AND a.ignored = false
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
               AND NOT EXISTS (
@@ -96,6 +116,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
                   WHERE co.worker.id = a.worker.id
                     AND co.site.id = a.site.id
                     AND co.type = 'CHECK_OUT'
+                    AND co.ignored = false
                     AND co.recordedAt > a.recordedAt
                     AND co.recordedAt < :checkOutTo
               )
@@ -111,6 +132,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             SELECT a FROM Attendance a
             WHERE a.worker.id = :workerId
               AND a.site.id   = :siteId
+              AND a.ignored = false
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
             ORDER BY a.recordedAt DESC

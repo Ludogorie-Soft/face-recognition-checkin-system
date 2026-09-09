@@ -89,6 +89,20 @@ public class Attendance {
     @Column(name = "app_version", length = 30)
     private String appVersion;
 
+    /** Raw direction reported by the terminal. Never rewritten — {@link #type} is the derived value. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "client_type", length = 10)
+    private AttendanceType clientType;
+
+    /** True when the session projection excludes this event (accidental re-scan / superseded auto-checkout). */
+    @Column(name = "ignored", nullable = false)
+    @Builder.Default
+    private boolean ignored = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ignored_reason", length = 30)
+    private SessionProjector.IgnoreReason ignoredReason;
+
     @Column(name = "recorded_at", nullable = false)
     private LocalDateTime recordedAt;
 
@@ -98,4 +112,14 @@ public class Attendance {
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    /**
+     * Applies the derived session projection. Only the derived fields change — the raw event data
+     * (time, location, source, device) is never touched.
+     */
+    void applyProjection(AttendanceType type, boolean ignored, SessionProjector.IgnoreReason reason) {
+        this.type = type;
+        this.ignored = ignored;
+        this.ignoredReason = reason;
+    }
 }

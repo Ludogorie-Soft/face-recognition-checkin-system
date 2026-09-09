@@ -1753,3 +1753,22 @@ Rewrote DEPLOY.md to match real prod: host-installed Nginx via nginx.prod.conf (
 | 09:03 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceReconciliationTest.java | modified checkInWhenAlreadyOpenFromEarlierBatch_isFlagged() | ~254 |
 | 09:08 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
 | 09:10 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:13 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:14 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:15 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:21 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:23 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:32 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:32 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:34 | Session end: 1 writes across 1 files (AttendanceServiceReconciliationTest.java) | 0 reads | ~272 tok |
+| 09:39 | Created src/main/java/org/example/attendTrack/attendance/SessionProjector.java | — | ~1207 |
+| 09:40 | Created src/test/java/org/example/attendTrack/attendance/SessionProjectorTest.java | — | ~1753 |
+| 09:41 | Edited src/main/java/org/example/attendTrack/attendance/SessionProjector.java | modified storedType() | ~157 |
+| 09:41 | Edited src/test/java/org/example/attendTrack/attendance/SessionProjectorTest.java | modified render() | ~182 |
+| 09:47 | Created src/main/resources/db/migration/V11__session_projection.sql | — | ~346 |
+| 09:47 | Edited src/main/java/org/example/attendTrack/attendance/Attendance.java | expanded (+14 lines) | ~177 |
+| 09:48 | Edited src/main/java/org/example/attendTrack/attendance/Attendance.java | modified applyProjection() | ~142 |
+| 09:48 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+16 lines) | ~192 |
+| 09:49 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 3 condition(s) | ~1195 |
+| 10:21 | Edited src/main/java/org/example/attendTrack/attendance/dto/AttendanceSyncResponse.java | modified AttendanceSyncResponse() | ~30 |
+| 10:23 | Created src/test/java/org/example/attendTrack/attendance/AttendanceServiceNormalizationTest.java | — | ~2042 |
