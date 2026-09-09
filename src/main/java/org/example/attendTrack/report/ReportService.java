@@ -108,7 +108,7 @@ public class ReportService {
             writeHeader(sheet, headerStyle);
             writeRows(sheet, rows);
 
-            for (int i = 0; i < 16; i++) sheet.autoSizeColumn(i);
+            for (int i = 0; i < 18; i++) sheet.autoSizeColumn(i);
 
             workbook.write(out);
             return out.toByteArray();
@@ -233,7 +233,7 @@ public class ReportService {
 
             String[] headers = {"Работник", "Фирма", "Обект", "Дата", "Начало", "Край",
                                  "Часове", "Коригирани часове", "Бележка",
-                                 "Локация при влизане", "Локация при излизане", "Офлайн"};
+                                 "Локация при влизане", "Локация при излизане", "Офлайн", "Вид смяна"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -287,6 +287,7 @@ public class ReportService {
                                 "https://www.google.com/maps?q=" + r.checkOutLat() + "," + r.checkOutLng());
                     }
                     if (r.offline()) row.createCell(11).setCellValue("ДА");
+                    row.createCell(12).setCellValue(shiftLabel(r.shiftType()));
                 }
             }
 
@@ -311,7 +312,7 @@ public class ReportService {
 
             String[] headers = {"Работник", "Фирма", "Обект", "Дата", "Начало", "Край",
                                  "Часове", "Коригирани часове", "Бележка",
-                                 "Локация при влизане", "Локация при излизане", "Офлайн"};
+                                 "Локация при влизане", "Локация при излизане", "Офлайн", "Вид смяна"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -367,6 +368,7 @@ public class ReportService {
                                     "https://www.google.com/maps?q=" + d.checkOutLat() + "," + d.checkOutLng());
                         }
                         if (d.offline()) row.createCell(11).setCellValue("ДА");
+                        row.createCell(12).setCellValue(shiftLabel(d.shiftType()));
                     }
                 }
                 // Grand-total row per worker
@@ -395,7 +397,7 @@ public class ReportService {
         String[] headers = {
                 "ID работник", "Работник", "Фирма", "Обект", "Дата",
                 "Тип", "Записано в", "Ширина", "Дължина", "Валидна локация", "Разпознаване на лице", "Ръчно въведено",
-                "Източник", "Офлайн", "IP адрес", "Устройство"
+                "Източник", "Офлайн", "IP адрес", "Устройство", "Вид смяна", "Синхронизирано в"
         };
         Row row = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
@@ -425,6 +427,8 @@ public class ReportService {
             row.createCell(13).setCellValue(r.createdOffline());
             row.createCell(14).setCellValue(r.ipAddress() != null ? r.ipAddress() : "");
             row.createCell(15).setCellValue(r.clientDeviceId() != null ? r.clientDeviceId() : "");
+            row.createCell(16).setCellValue(shiftLabel(r.shiftType()));
+            row.createCell(17).setCellValue(r.syncedAt() != null ? r.syncedAt().format(DT_FORMAT) : "");
         }
     }
 
@@ -457,7 +461,9 @@ public class ReportService {
                 a.getSource() != null ? a.getSource().name() : null,
                 a.getIpAddress(),
                 a.getClientDeviceId(),
-                a.isCreatedOffline()
+                a.isCreatedOffline(),
+                a.getWorker().getShiftType() != null ? a.getWorker().getShiftType().name() : null,
+                a.getSyncedAt()
         );
     }
 
@@ -583,7 +589,8 @@ public class ReportService {
                             hasRealCheckInCoords ? openIn.isLocationValid() : null,
                             null,  // inferred checkout — no locationValid
                             openIn.isManualOverride() && openIn.getManager() != null,
-                            offlineOf(openIn)));
+                            offlineOf(openIn),
+                            shiftTypeOf(openIn)));
                 } else {
                     sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size(), companyName));
                 }
@@ -610,7 +617,7 @@ public class ReportService {
                         s.calculatedHours(), effectiveHours, correctedHours, corrNote,
                         s.checkOutLat(), s.checkOutLng(), s.checkInLat(), s.checkInLng(),
                         s.checkInLocationValid(), s.checkOutLocationValid(),
-                        s.adminManualCheckIn(), s.offline()));
+                        s.adminManualCheckIn(), s.offline(), s.shiftType()));
             } else {
                 // Multiple sessions: session rows carry no effectiveHours (prevents double-counting);
                 // a day-total row (pairIndex = -1) carries the sum and any correction.
@@ -634,7 +641,8 @@ public class ReportService {
                         null, null, null, null,    // day-total row — no location fields
                         null, null,                // day-total row — no locationValid
                         false,                     // day-total row — no individual check-in
-                        false));                   // day-total row — no offline flag
+                        false,                     // day-total row — no offline flag
+                        sessionRows.get(0).shiftType()));
             }
         }
 
@@ -677,7 +685,18 @@ public class ReportService {
                 coLat, coLng, ciLat, ciLng,
                 ciLocationValid, coLocationValid,
                 adminManualCheckIn,
-                offlineOf(checkIn, checkOut));
+                offlineOf(checkIn, checkOut),
+                shiftTypeOf(checkIn));
+    }
+
+    /** Shift pattern of the record's worker — a guard's open shift is expected, not a problem. */
+    /** Human label for the shift pattern in Excel. */
+    private static String shiftLabel(String shiftType) {
+        return "SHIFT_24H".equals(shiftType) ? "Пазач (12/24ч)" : "Дневна";
+    }
+
+    private static String shiftTypeOf(Attendance record) {
+        return record.getWorker().getShiftType() != null ? record.getWorker().getShiftType().name() : null;
     }
 
     /** True when any of the given records was recorded on an offline device. */

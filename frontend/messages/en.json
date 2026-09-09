@@ -324,6 +324,7 @@
     "detailReported": "Terminal reported",
     "ignored": "Ignored",
     "ignoredRescan": "Re-scan within 15 minutes",
-    "ignoredSuperseded": "Replaced by a real check-out"
+    "ignoredSuperseded": "Replaced by a real check-out",
+    "guard": "Guard"
   }
 }

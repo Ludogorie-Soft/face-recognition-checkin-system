@@ -24,5 +24,7 @@ public record AttendanceReportRow(
         String source,
         String ipAddress,
         String clientDeviceId,
-        boolean createdOffline
+        boolean createdOffline,
+        String shiftType,
+        LocalDateTime syncedAt
 ) {}

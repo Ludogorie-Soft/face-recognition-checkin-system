@@ -194,6 +194,7 @@
 - `AttendanceRepository.java` — Exact idempotency check for device-generated events (see V9 migration). (~2094 tok)
 - `AttendanceService.java` — Identifies one (worker, site, day) whose session sequence must be re-projected. (~6526 tok)
 - `AttendanceSource.java` — Where an attendance record originated. Replaces the fragile (~182 tok)
+- `GuardShiftMonitor.java` — Daily 09:00 alert for 12/24h shifts open past 26h. Deliberately does NOT close them — an invented end time would look like real payroll data. (~430 tok)
 - `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1459 tok)
 - `SessionProjector.java` — Pure projection of one worker's raw scan events (for a single site and day) into the correct (~1279 tok)
 
@@ -229,6 +230,7 @@
 ## src/main/java/org/example/attendTrack/dashboard/
 
 - `AbsenteeRow.java` — Class: AbsenteeRow (~39 tok)
+- `OpenShiftEntry.java` — Record: workerName, siteName, since — a guard shift left open (~55 tok)
 - `ActivityEntry.java` — Class: ActivityEntry (~67 tok)
 - `DashboardController.java` — RestController: DashboardController (3 endpoints) (~1251 tok)
 - `DashboardExtended.java` — Class: DashboardExtended (~92 tok)
@@ -282,7 +284,8 @@
 - `FaceDescriptorRepository.java` — Class: FaceDescriptorRepository (~271 tok)
 - `FaceDescriptorService.java` — Service: FaceDescriptorService (~881 tok)
 - `Role.java` — Class: Role (~22 tok)
-- `User.java` — Entity: User (~560 tok)
+- `ShiftType.java` — Enum: DAY, SHIFT_24H — scheduling attribute (guards), NOT a permission (~120 tok)
+- `User.java` — Entity: User; has role + shiftType (~640 tok)
 - `UserService.java` — Service: UserService (~2240 tok)
 
 ## src/main/java/org/example/attendTrack/user/dto/
@@ -332,6 +335,7 @@
 - `V1__init.sql` — Full schema: users, sites, site_managers, site_workers, face_descriptors, attendance, push_subscriptions, notifications (~200 tok)
 - `V10__attendance_audit_metadata.sql` — V10: Explicit record origin + audit metadata. (~354 tok)
 - `V11__session_projection.sql` — V11: Server-side normalization of check-in / check-out direction. (~346 tok)
+- `V12__user_shift_type.sql` — V12: users.shift_type (DAY default) — 12/24h shift workers (guards) (~180 tok)
 - `V2__clear_face_descriptors.sql` — V2: Clear all 128-dim face descriptors (face-api.js). (~43 tok)
 - `V3__remove_manager_role.sql` — Migrate existing MANAGER users to ADMIN role (~82 tok)
 - `V4__hours_corrections.sql` — SQL: tables: hours_corrections (~162 tok)
@@ -345,5 +349,4 @@
 ## src/test/java/org/example/attendTrack/attendance/
 
 - `AttendanceServiceNormalizationTest.java` — Wiring tests for sync + day re-projection. (~2042 tok)
-- `AttendanceServiceReconciliationTest.java` — Unit tests for the check-in/out state-machine reconciliation in {@link AttendanceService#sync}. (~2350 tok)
 - `SessionProjectorTest.java` — Exhaustive tests for the pure session projection — the core of server-side normalization. (~1779 tok)

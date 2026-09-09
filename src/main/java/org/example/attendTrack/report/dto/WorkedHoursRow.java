@@ -49,5 +49,6 @@ public record WorkedHoursRow(
         Boolean checkInLocationValid, // null → manual record or day-total row
         Boolean checkOutLocationValid, // null → open shift, inferred checkout, or day-total row
         boolean adminManualCheckIn,   // true when check-in was entered manually by an admin from the dashboard
-        boolean offline               // true when the check-in or check-out was recorded on a device with no connectivity
+        boolean offline,              // true when the check-in or check-out was recorded on a device with no connectivity
+        String shiftType              // DAY | SHIFT_24H — a guard's open shift is expected, not a problem
 ) {}
