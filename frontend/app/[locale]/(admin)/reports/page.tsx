@@ -43,6 +43,7 @@ interface AttendanceRow {
   faceConfidence: number | null
   manualOverride: boolean
   adminManual: boolean
+  shiftType: string | null
 }
 
 interface MissingRow {
@@ -76,6 +77,7 @@ interface WorkedHoursRow {
   checkInLocationValid: boolean | null
   checkOutLocationValid: boolean | null
   offline: boolean               // recorded on a device with no connectivity
+  shiftType: string | null       // SHIFT_24H = guard; an open shift is expected for them
 }
 
 interface WorkedHoursSummaryRow {
@@ -105,6 +107,18 @@ function fmtLocal(d: Date) {
 
 function today() {
   return fmtLocal(new Date())
+}
+
+function GuardTag({ shiftType, label }: { shiftType: string | null; label: string }) {
+  if (shiftType !== 'SHIFT_24H') return null
+  return (
+    <Badge
+      variant="outline"
+      className="ml-1.5 text-xs font-normal text-amber-600 border-amber-400/50 dark:text-amber-400"
+    >
+      {label}
+    </Badge>
+  )
 }
 
 function formatTime(dt: string) {
@@ -608,7 +622,10 @@ function AttendanceTable({
               <TableRow key={i}>
                 <TableCell className="text-sm">{row.date}</TableCell>
                 <TableCell className="text-sm font-mono">{formatTime(row.recordedAt.slice(11))}</TableCell>
-                <TableCell className="font-medium">{row.workerName}</TableCell>
+                <TableCell className="font-medium">
+                  {row.workerName}
+                  <GuardTag shiftType={row.shiftType} label={t('guard')} />
+                </TableCell>
                 <TableCell className="text-muted-foreground text-sm">{row.companyName ?? '—'}</TableCell>
                 <TableCell className="text-muted-foreground text-sm">
                   <span className="flex items-center gap-1.5">
@@ -898,7 +915,10 @@ function WorkedHoursTable({
                     : ''
                 }
               >
-                <TableCell className="font-medium">{row.workerName}</TableCell>
+                <TableCell className="font-medium">
+                  {row.workerName}
+                  <GuardTag shiftType={row.shiftType} label={t('guard')} />
+                </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{row.companyName ?? '—'}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   <span className="flex items-center gap-1.5">
@@ -1130,7 +1150,10 @@ function WorkedHoursSummaryTable({
               className="flex items-center justify-between px-4 py-3 bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
               onClick={() => setExpandedWorker(isExpanded ? null : worker.workerId)}
             >
-              <span className="font-medium text-foreground">{worker.workerName}</span>
+              <span className="font-medium text-foreground">
+                {worker.workerName}
+                <GuardTag shiftType={worker.details[0]?.shiftType ?? null} label={t('guard')} />
+              </span>
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-foreground">
                   {t('total')}: {worker.totalHours}h
