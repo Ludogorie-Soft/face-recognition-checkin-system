@@ -27,6 +27,9 @@ import java.util.List;
 @PreAuthorize("hasRole('ADMIN')")
 public class DashboardController {
 
+    /** A 12/24h shift open longer than this is almost certainly a forgotten check-out. */
+    private static final int GUARD_OPEN_SHIFT_ALERT_HOURS = 26;
+
     private final SiteRepository siteRepository;
     private final SiteWorkerRepository siteWorkerRepository;
     private final UserRepository userRepository;
@@ -83,9 +86,13 @@ public class DashboardController {
         List<OutOfZoneEntry> outOfZoneToday =
                 attendanceRepository.findOutOfZoneCheckInsToday(startOfDay, endOfDay);
 
+        // ── Guard shifts open longer than a shift can plausibly run ───────────
+        List<OpenShiftEntry> openGuardShifts = attendanceRepository.findOpenShiftsOlderThan(
+                LocalDateTime.now().minusHours(GUARD_OPEN_SHIFT_ALERT_HOURS));
+
         return ResponseEntity.ok(new DashboardExtended(
                 thisWeek, lastWeek, sites, recentActivity,
-                autoCheckoutsLastNight, outOfZoneToday
+                autoCheckoutsLastNight, outOfZoneToday, openGuardShifts
         ));
     }
 

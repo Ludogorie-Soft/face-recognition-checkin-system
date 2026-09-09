@@ -67,8 +67,15 @@ public class AttendanceService {
     /** Identifies one (worker, site, day) whose session sequence must be re-projected. */
     record DayKey(UUID workerId, UUID siteId, LocalDate day) {}
 
-    /** How far back a 12/24h shift may still be open when projecting a new day. */
+    /** How far back to look for a shift that is still open when projecting a new day. */
     private static final int SHIFT_LOOKBACK_HOURS = 48;
+
+    /**
+     * Longest a 12/24h shift may plausibly run. A check-in older than this is treated as forgotten:
+     * the new scan opens a fresh session and the stale one is left open for an admin to correct,
+     * rather than being closed into an absurd multi-day session.
+     */
+    private static final int MAX_OPEN_SHIFT_HOURS = 26;
 
     /** Two scans of the same worker at the same site closer than this are accidental re-scans. */
     @org.springframework.beans.factory.annotation.Value("${attendance.min-gap-minutes:15}")
@@ -114,8 +121,9 @@ public class AttendanceService {
 
         // A 12/24h shift crosses midnight, so a change on one day can move the boundary of the
         // next one — re-project that day as well.
+        Map<UUID, Boolean> shiftWorkerCache = new HashMap<>();
         for (DayKey key : Set.copyOf(touchedDays)) {
-            if (isShiftWorker(key.workerId())) {
+            if (shiftWorkerCache.computeIfAbsent(key.workerId(), this::isShiftWorker)) {
                 touchedDays.add(new DayKey(key.workerId(), key.siteId(), key.day().plusDays(1)));
             }
         }
@@ -153,7 +161,13 @@ public class AttendanceService {
             List<Attendance> previous = attendanceRepository.findLastKeptBefore(
                     workerId, siteId, start, start.minusHours(SHIFT_LOOKBACK_HOURS), PageRequest.of(0, 1));
             if (!previous.isEmpty() && previous.get(0).getType() == AttendanceType.CHECK_IN) {
-                initialExpected = AttendanceType.CHECK_OUT;
+                // Continue the session only if it could still plausibly be running. A shift left
+                // open for days must not be closed into a multi-day session by an unrelated scan.
+                long openHours = Duration.between(
+                        previous.get(0).getRecordedAt(), records.get(0).getRecordedAt()).toHours();
+                if (openHours <= MAX_OPEN_SHIFT_HOURS) {
+                    initialExpected = AttendanceType.CHECK_OUT;
+                }
             }
         }
 

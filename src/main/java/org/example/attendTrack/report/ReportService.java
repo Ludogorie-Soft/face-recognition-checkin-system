@@ -126,9 +126,11 @@ public class ReportService {
         if (siteId != null) validateSiteExists(siteId);
         Set<UUID> companyWorkers = workerIdsForCompany(companyId);
 
+        LocalDateTime windowStart = shiftWindowStart(from);
+        LocalDateTime windowEnd = shiftWindowEnd(to);
         List<Attendance> allRecords = siteId != null
-                ? attendanceRepository.findBySiteAndDateRange(siteId, from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)))
-                : attendanceRepository.findAllInDateRange(from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)));
+                ? attendanceRepository.findBySiteAndDateRange(siteId, windowStart, windowEnd)
+                : attendanceRepository.findAllInDateRange(windowStart, windowEnd);
 
         List<Attendance> records = allRecords.stream()
                 .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
@@ -147,7 +149,7 @@ public class ReportService {
         Map<UUID, String> companyNames = workerCompanyNames(
                 records.stream().map(a -> a.getWorker().getId()).distinct().toList());
 
-        return buildWorkedHoursRows(records, corrections, companyNames);
+        return trimToRange(buildWorkedHoursRows(records, corrections, companyNames), from, to);
     }
 
     @Transactional(readOnly = true)
@@ -155,7 +157,7 @@ public class ReportService {
         validateDateRange(from, to);
         Set<UUID> companyWorkers = workerIdsForCompany(companyId);
         List<Attendance> records = attendanceRepository.findAllInDateRange(
-                from.atStartOfDay(), to.plusDays(1).atTime(LocalTime.of(6, 0)))
+                shiftWindowStart(from), shiftWindowEnd(to))
                 .stream()
                 .filter(a -> companyWorkers == null || companyWorkers.contains(a.getWorker().getId()))
                 .toList();
@@ -170,7 +172,7 @@ public class ReportService {
         Map<UUID, String> companyNames = workerCompanyNames(
                 records.stream().map(a -> a.getWorker().getId()).distinct().toList());
 
-        List<WorkedHoursRow> rows = buildWorkedHoursRows(records, corrections, companyNames);
+        List<WorkedHoursRow> rows = trimToRange(buildWorkedHoursRows(records, corrections, companyNames), from, to);
 
         return rows.stream()
                 .collect(Collectors.groupingBy(WorkedHoursRow::workerId))
@@ -695,6 +697,26 @@ public class ReportService {
      * Normalizes a timestamp to a "shift date": records between 00:00 and 06:00
      * are attributed to the previous day's shift to handle overnight shifts.
      */
+    /**
+     * A 12/24h shift can open on the day before the requested range and close after the 06:00
+     * night boundary, so the raw window is widened by a day on both sides. The extra rows are
+     * trimmed afterwards by {@link #trimToRange}.
+     */
+    private static LocalDateTime shiftWindowStart(LocalDate from) {
+        return from.minusDays(1).atStartOfDay();
+    }
+
+    private static LocalDateTime shiftWindowEnd(LocalDate to) {
+        return to.plusDays(2).atStartOfDay();
+    }
+
+    /** Keeps only the rows whose shift date falls inside the range the user actually asked for. */
+    private static List<WorkedHoursRow> trimToRange(List<WorkedHoursRow> rows, LocalDate from, LocalDate to) {
+        return rows.stream()
+                .filter(r -> r.date() != null && !r.date().isBefore(from) && !r.date().isAfter(to))
+                .toList();
+    }
+
     /**
      * Shift date per record. Day shifts use the calendar day (with the 06:00 night boundary);
      * 12/24h shifts date every record by the check-in that opened its session, so a shift running

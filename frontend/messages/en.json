@@ -78,7 +78,8 @@
     "clearedSuccess": "Record for {name} cleared",
     "clearRecord": "Clear record",
     "noWorkersAssigned": "No workers assigned to this site",
-    "sessionSummary": "In: {checkIn} · Out: {checkOut} · Worked: {hours} h."
+    "sessionSummary": "In: {checkIn} · Out: {checkOut} · Worked: {hours} h.",
+    "openGuardShift": "{name} ({site}) has an unclosed shift since {since} — needs manual correction"
   },
   "sites": {
     "title": "Sites",

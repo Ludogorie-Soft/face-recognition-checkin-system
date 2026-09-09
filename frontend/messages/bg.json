@@ -78,7 +78,8 @@
     "clearedSuccess": "Записът на {name} е изчистен",
     "clearRecord": "Изчисти запис",
     "noWorkersAssigned": "Няма работници, назначени на този обект",
-    "sessionSummary": "Вход: {checkIn} · Изход: {checkOut} · Отработени: {hours} ч."
+    "sessionSummary": "Вход: {checkIn} · Изход: {checkOut} · Отработени: {hours} ч.",
+    "openGuardShift": "{name} ({site}) е с незатворена смяна от {since} — изисква ръчна корекция"
   },
   "sites": {
     "title": "Обекти",

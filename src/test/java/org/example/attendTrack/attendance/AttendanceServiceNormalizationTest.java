@@ -182,6 +182,24 @@ class AttendanceServiceNormalizationTest {
     }
 
     @Test
+    void shiftWorker_staleOpenSessionIsNotContinued() {
+        // Guard checked in two days ago and never checked out. Today's scan must open a FRESH
+        // session, not close a 35-hour one — the stale session is left for an admin.
+        when(worker.getShiftType()).thenReturn(org.example.attendTrack.user.ShiftType.SHIFT_24H);
+        Attendance stale = row(today.minusDays(2).atTime(20, 0), AttendanceType.CHECK_IN);
+        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any(), any()))
+                .thenReturn(List.of(stale));
+
+        Attendance morning = row(today.atTime(7, 0), AttendanceType.CHECK_OUT);
+        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any()))
+                .thenReturn(List.of(morning));
+
+        service.renormalizeDay(workerId, siteId, today);
+
+        assertThat(morning.getType()).isEqualTo(AttendanceType.CHECK_IN);
+    }
+
+    @Test
     void dayWorker_alwaysStartsTheDayWithCheckIn() {
         Attendance yesterdayCheckIn = row(today.minusDays(1).atTime(19, 0), AttendanceType.CHECK_IN);
         when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any(), any()))

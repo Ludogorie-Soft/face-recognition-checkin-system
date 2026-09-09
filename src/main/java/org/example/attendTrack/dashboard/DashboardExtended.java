@@ -8,5 +8,6 @@ public record DashboardExtended(
         List<SiteAttendance> sites,
         List<ActivityEntry> recentActivity,
         long autoCheckoutsLastNight,
-        List<OutOfZoneEntry> outOfZoneToday
+        List<OutOfZoneEntry> outOfZoneToday,
+        List<OpenShiftEntry> openGuardShifts
 ) {}

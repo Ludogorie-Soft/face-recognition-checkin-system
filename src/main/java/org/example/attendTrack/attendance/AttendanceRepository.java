@@ -99,6 +99,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             SELECT COUNT(DISTINCT a.worker.id)
             FROM Attendance a
             WHERE a.type = 'CHECK_IN'
+              AND a.ignored = false
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
             """)
@@ -170,6 +171,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             SELECT COUNT(DISTINCT a.worker.id)
             FROM Attendance a
             WHERE a.type = 'CHECK_IN'
+              AND a.ignored = false
               AND a.site.id = :siteId
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
@@ -191,7 +193,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
     @Query("""
             SELECT DISTINCT a.site.id
             FROM Attendance a
-            WHERE a.recordedAt >= :from
+            WHERE a.ignored = false
+              AND a.recordedAt >= :from
               AND a.recordedAt < :to
             """)
     List<UUID> findSiteIdsWithActivity(
@@ -204,6 +207,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
                 a.worker.name, a.site.name, a.type, a.recordedAt
             )
             FROM Attendance a
+            WHERE a.ignored = false
             ORDER BY a.recordedAt DESC
             """)
     List<org.example.attendTrack.dashboard.ActivityEntry> findRecentActivity(Pageable pageable);
@@ -222,10 +226,38 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             @Param("to") LocalDateTime to
     );
 
+    /**
+     * Guard shifts still open past a plausible shift length. These are never auto-closed — the
+     * admin is alerted so the real times can be entered instead of the system inventing hours.
+     */
+    @Query("""
+            SELECT new org.example.attendTrack.dashboard.OpenShiftEntry(
+                a.worker.name, a.site.name, a.recordedAt
+            )
+            FROM Attendance a
+            WHERE a.type = 'CHECK_IN'
+              AND a.ignored = false
+              AND a.worker.shiftType = org.example.attendTrack.user.ShiftType.SHIFT_24H
+              AND a.recordedAt < :openSince
+              AND NOT EXISTS (
+                  SELECT 1 FROM Attendance co
+                  WHERE co.worker.id = a.worker.id
+                    AND co.site.id = a.site.id
+                    AND co.type = 'CHECK_OUT'
+                    AND co.ignored = false
+                    AND co.recordedAt > a.recordedAt
+              )
+            ORDER BY a.recordedAt
+            """)
+    List<org.example.attendTrack.dashboard.OpenShiftEntry> findOpenShiftsOlderThan(
+            @Param("openSince") LocalDateTime openSince
+    );
+
     @Query("""
             SELECT a.worker.id, COUNT(DISTINCT cast(a.recordedAt as date))
             FROM Attendance a
             WHERE a.type = 'CHECK_IN'
+              AND a.ignored = false
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
             GROUP BY a.worker.id
@@ -241,6 +273,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             )
             FROM Attendance a
             WHERE a.locationValid = false
+              AND a.ignored = false
               AND a.type = 'CHECK_IN'
               AND a.recordedAt >= :from
               AND a.recordedAt < :to
