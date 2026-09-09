@@ -3716,6 +3716,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-09-08T12:53:00.816Z"
+    },
+    {
+      "id": "bug-229",
+      "timestamp": "2026-09-09T06:49:11.686Z",
+      "error_message": "Missing guard clause",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "No early return/throw for edge case: self.processOne(record, site, admin, checkpoints, notifiedWo",
+      "fix": "Added guard clause: if (self.processOne(record, site, admin, che)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-09T06:49:11.686Z"
+    },
+    {
+      "id": "bug-230",
+      "timestamp": "2026-09-09T07:21:16.392Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/dto/AttendanceSyncResponse.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-09T07:21:16.392Z"
     }
   ]
 }

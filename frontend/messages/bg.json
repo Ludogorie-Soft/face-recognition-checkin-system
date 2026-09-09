@@ -283,11 +283,6 @@
     "periodCustom": "Персонализиран",
     "autoCheckout": "Автоматичен или ръчен чекаут",
     "filterAutoCheckout": "Само авто-затворени",
-    "anomaly": "Аномалия",
-    "anomalyDuplicateCheckIn": "Двойно влизане — предишната сесия не е затворена",
-    "anomalyDuplicateCheckOut": "Двойно излизане — няма отворена сесия",
-    "anomalyCheckoutWithoutCheckin": "Излизане без предхождащо влизане",
-    "filterAnomaly": "Само аномалии",
     "offline": "Офлайн",
     "offlineHint": "Записът е направен без интернет връзка на устройството",
     "details": "Детайли",
@@ -318,6 +313,10 @@
     "revalidate": "Ревалидирай локация",
     "revalidateSuccess": "Обновени записи: {count}",
     "changeSite": "Промени обект",
-    "selectSite": "Избери обект"
+    "selectSite": "Избери обект",
+    "detailReported": "Терминалът прати",
+    "ignored": "Игнориран",
+    "ignoredRescan": "Повторно сканиране в рамките на 15 мин",
+    "ignoredSuperseded": "Заменен от реален чекаут"
   }
 }

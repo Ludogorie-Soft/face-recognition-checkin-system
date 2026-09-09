@@ -26,7 +26,10 @@ public record AttendanceDetail(
         double lng,
         Double faceConfidence,
         boolean manualOverride,
-        String managerName
+        String managerName,
+        String clientType,
+        boolean ignored,
+        String ignoredReason
 ) {
     public static AttendanceDetail from(Attendance a) {
         return new AttendanceDetail(
@@ -49,7 +52,10 @@ public record AttendanceDetail(
                 a.getLng(),
                 a.getFaceConfidence(),
                 a.isManualOverride(),
-                a.getManager() != null ? a.getManager().getName() : null
+                a.getManager() != null ? a.getManager().getName() : null,
+                a.getClientType() != null ? a.getClientType().name() : null,
+                a.isIgnored(),
+                a.getIgnoredReason() != null ? a.getIgnoredReason().name() : null
         );
     }
 }
