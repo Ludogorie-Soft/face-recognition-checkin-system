@@ -24,6 +24,5 @@ public record AttendanceReportRow(
         String source,
         String ipAddress,
         String clientDeviceId,
-        boolean createdOffline,
-        String anomalyReason
+        boolean createdOffline
 ) {}

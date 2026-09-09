@@ -75,7 +75,6 @@ interface WorkedHoursRow {
   checkInLng: number | null
   checkInLocationValid: boolean | null
   checkOutLocationValid: boolean | null
-  anomalyReason: string | null   // non-null → session flagged by sync reconciliation
   offline: boolean               // recorded on a device with no connectivity
 }
 
