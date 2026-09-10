@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /** Exhaustive tests for the pure session projection — the core of server-side normalization. */
 class SessionProjectorTest {
 
-    private static final Duration GAP = Duration.ofMinutes(15);
+    private static final Duration GAP = Duration.ofSeconds(60);
     private static final LocalDate DAY = LocalDate.of(2026, 9, 8);
 
     private static SessionProjector.Event terminal(String time) {
@@ -69,6 +69,14 @@ class SessionProjectorTest {
         var events = List.of(terminal("07:31:54"), terminal("07:31:55"), terminal("17:02:23"));
         assertThat(render(events))
                 .containsExactly("CHECK_IN", "IGNORED:RESCAN", "CHECK_OUT");
+    }
+
+    @Test
+    void shortButRealShift_isPreserved() {
+        // Checked in 08:00, out 08:10. Ten minutes is real data — it must NOT be swallowed as a
+        // re-scan, otherwise the shift stays open and the day gets credited to the auto-checkout.
+        var events = List.of(terminal("08:00"), terminal("08:10"));
+        assertThat(render(events)).containsExactly("CHECK_IN", "CHECK_OUT");
     }
 
     @Test
@@ -169,7 +177,7 @@ class SessionProjectorTest {
 
     @Test
     void burstOfScans_keepsOnlyTheFirst() {
-        var events = List.of(terminal("08:00"), terminal("08:01"), terminal("08:02"), terminal("08:03"));
+        var events = List.of(terminal("08:00:00"), terminal("08:00:05"), terminal("08:00:10"), terminal("08:00:15"));
         assertThat(render(events))
                 .containsExactly("CHECK_IN", "IGNORED:RESCAN", "IGNORED:RESCAN", "IGNORED:RESCAN");
     }

@@ -85,6 +85,9 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
   const detectingRef = useRef(false)
   const missCountRef = useRef(0)
   const notifiedWorkerRef = useRef<string | null>(null)
+  // Hard lock: setConfirming is async, so a fast double-tap could otherwise enter
+  // handleConfirm twice and record the same action twice.
+  const submittingRef = useRef(false)
   const onWorkerDetectedRef = useRef(onWorkerDetected)
   useEffect(() => { onWorkerDetectedRef.current = onWorkerDetected }, [onWorkerDetected])
   const MISS_THRESHOLD = 3
@@ -235,6 +238,8 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
   const handleConfirm = useCallback(
     async (type: 'CHECK_IN' | 'CHECK_OUT') => {
       if (!detected || !detectedWorkerGeo) return
+      if (submittingRef.current) return
+      submittingRef.current = true
       setConfirming(true)
       try {
         await onRecord({
@@ -252,6 +257,7 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
         setFaceVisible(false)
         missCountRef.current = 0
       } finally {
+        submittingRef.current = false
         setConfirming(false)
       }
     },
@@ -264,6 +270,8 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
       if (!geoInfo) return
       const workerRecord = workers.find((w) => w.id === workerId)
       if (!workerRecord) return
+      if (submittingRef.current) return
+      submittingRef.current = true
       setConfirming(true)
       try {
         await onRecord({
@@ -278,6 +286,7 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
           manualOverride: true,
         })
       } finally {
+        submittingRef.current = false
         setConfirming(false)
       }
     },
@@ -524,7 +533,7 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
                   <Button
                     className="h-14 text-base font-bold w-full bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
                     onClick={() => handleConfirm('CHECK_OUT')}
-                    disabled={!detectedWorkerGeo || geo.loading}
+                    disabled={confirming || !detectedWorkerGeo || geo.loading}
                   >
                     {geo.loading ? (
                       <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" />{t('locationLoading')}</span>
@@ -534,7 +543,7 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
                   <Button
                     className="h-14 text-base font-bold w-full bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
                     onClick={() => handleConfirm('CHECK_IN')}
-                    disabled={!detectedWorkerGeo || geo.loading}
+                    disabled={confirming || !detectedWorkerGeo || geo.loading}
                   >
                     {geo.loading ? (
                       <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" />{t('locationLoading')}</span>
