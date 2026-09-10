@@ -45,6 +45,11 @@ jwt:
 server:
   port: ${SERVER_PORT:8080}
 
+# Business time zone. Device timestamps are local wall-clock values, so the server must agree
+# with them — otherwise synced_at, "today" and the schedulers drift by the UTC offset.
+app:
+  timezone: ${APP_TIMEZONE:Europe/Sofia}
+
 # Initial admin account — created on first startup if no admin exists
 admin:
   name: ${ADMIN_NAME:Administrator}

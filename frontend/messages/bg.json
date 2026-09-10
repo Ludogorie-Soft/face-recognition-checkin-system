@@ -322,9 +322,6 @@
     "changeSite": "Промени обект",
     "selectSite": "Избери обект",
     "detailReported": "Терминалът прати",
-    "ignored": "Игнориран",
-    "ignoredRescan": "Повторно сканиране в рамките на 15 мин",
-    "ignoredSuperseded": "Заменен от реален чекаут",
     "guard": "Пазач"
   }
 }

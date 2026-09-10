@@ -203,6 +203,11 @@ ADMIN_PASSWORD=        # силна парола
 # CORS — трябва да съвпада с домейна
 CORS_ALLOWED_ORIGINS=https://tracker.garant-90.com
 
+# Часова зона — ВАЖНО. Времената от терминалите са локални; ако сървърът върви на UTC,
+# "Синхронизирано" изглежда преди "Записано", денят на сървъра се разминава с този на
+# устройството, а авто-чекаутът тръгва в грешен местен час. По подразбиране Europe/Sofia.
+APP_TIMEZONE=Europe/Sofia
+
 # Web Push VAPID (от Стъпка 11)
 VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=

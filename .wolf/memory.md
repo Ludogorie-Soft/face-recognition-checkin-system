@@ -1798,3 +1798,17 @@ Verified e2e on a real stack: single-day report → in=19:00 out=07:00 hours=12.
 | 12:57 | Session end: 12 writes across 9 files (AttendanceServiceReconciliationTest.java, SessionProjector.java, SessionProjectorTest.java, V11__session_projection.sql, Attendance.java) | 1 reads | ~14751 tok |
 | 12:58 | Session end: 12 writes across 9 files (AttendanceServiceReconciliationTest.java, SessionProjector.java, SessionProjectorTest.java, V11__session_projection.sql, Attendance.java) | 1 reads | ~14751 tok |
 | 13:03 | Session end: 12 writes across 9 files (AttendanceServiceReconciliationTest.java, SessionProjector.java, SessionProjectorTest.java, V11__session_projection.sql, Attendance.java) | 1 reads | ~14751 tok |
+| 13:09 | Session end: 12 writes across 9 files (AttendanceServiceReconciliationTest.java, SessionProjector.java, SessionProjectorTest.java, V11__session_projection.sql, Attendance.java) | 1 reads | ~14751 tok |
+| 13:10 | Session end: 12 writes across 9 files (AttendanceServiceReconciliationTest.java, SessionProjector.java, SessionProjectorTest.java, V11__session_projection.sql, Attendance.java) | 1 reads | ~14751 tok |
+
+## Session — 2026-09-09 (cont.) — Report/Excel completeness (PR #4, merged as c00956e)
+Audit of report + export columns found two gaps. (1) Вид смяна was nowhere: a guard's open shift is expected (no auto-checkout, session crosses midnight), so without the marker payroll review chases non-problems → added to all three Excel sheets as readable text ("Пазач (12/24ч)" / "Дневна") and as a "Пазач" badge in the Присъствия/Часове/Обобщение tables (NOT in Липсващи — name-only table). (2) synced_at was in the details modal but missing from the raw Excel — it is what separates an online record from a late offline one. Both appended at the end of the column list to avoid reindexing existing cells. Verified by generating a real .xlsx and parsing it: 18 aligned columns, both new ones populated. NOT done (user asked only for "both" gaps): a "show ignored records" toggle — ignored rows remain invisible in all reports by design.
+Final state: main = c00956e, four PRs merged today (#1 server-side normalization, #2 dead anomaly column cleanup, #3 guards/12-24h shifts, #4 report columns). Pending on the user: deploy (V11 + V12 run automatically) and marking the 4-5 guards via Работници → Вид смяна.
+| 13:11 | Session end: 12 writes across 9 files (AttendanceServiceReconciliationTest.java, SessionProjector.java, SessionProjectorTest.java, V11__session_projection.sql, Attendance.java) | 1 reads | ~14751 tok |
+| 13:24 | Session end: 12 writes across 9 files (AttendanceServiceReconciliationTest.java, SessionProjector.java, SessionProjectorTest.java, V11__session_projection.sql, Attendance.java) | 1 reads | ~14751 tok |
+| 13:25 | Session end: 12 writes across 9 files (AttendanceServiceReconciliationTest.java, SessionProjector.java, SessionProjectorTest.java, V11__session_projection.sql, Attendance.java) | 1 reads | ~14751 tok |
+
+## Session: 2026-09-10 09:54
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
