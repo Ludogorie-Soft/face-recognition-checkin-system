@@ -382,6 +382,7 @@ public class AttendanceService {
                 .locationValid(false)
                 .faceConfidence(null)
                 .manualOverride(true)
+                .clientType(req.type())
                 .source(AttendanceSource.ADMIN_MANUAL)
                 .recordedAt(recordedAt)
                 .syncedAt(LocalDateTime.now())
