@@ -56,7 +56,7 @@ class AttendanceServiceNormalizationTest {
                 siteCheckpointRepository, userRepository, notificationService);
         // No Spring context: wire the self-reference (REQUIRES_NEW proxy) and the @Value threshold.
         ReflectionTestUtils.setField(service, "self", service);
-        ReflectionTestUtils.setField(service, "minGapMinutes", 15);
+        ReflectionTestUtils.setField(service, "minGapSeconds", 60);
 
         Site site = mock(Site.class);
         when(site.getId()).thenReturn(siteId);

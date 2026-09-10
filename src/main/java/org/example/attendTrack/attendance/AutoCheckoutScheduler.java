@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class AutoCheckoutScheduler {
 
     private final AttendanceRepository attendanceRepository;
+    private final AttendanceService attendanceService;
 
     /**
      * Runs at 00:01 every day. Searches the last 7 days for workers who checked in
@@ -30,7 +32,6 @@ public class AutoCheckoutScheduler {
      * (synced hours or days after the actual check-in) are still processed.
      */
     @Scheduled(cron = "0 1 0 * * *")
-    @Transactional
     public void autoCheckoutMissedWorkers() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime from = now.toLocalDate().minusDays(7).atStartOfDay();
@@ -43,7 +44,6 @@ public class AutoCheckoutScheduler {
      * Manual retrigger — callable from the admin API to recover records missed
      * during a scheduler downtime or after a bulk offline sync.
      */
-    @Transactional
     public int triggerAutoCheckout(LocalDate from, LocalDate to) {
         LocalDateTime dtFrom = from.atStartOfDay();
         LocalDateTime dtTo = to.plusDays(1).atStartOfDay();
@@ -54,11 +54,23 @@ public class AutoCheckoutScheduler {
         return created;
     }
 
+    /**
+     * Creates the missing check-outs, then re-derives every day it wrote into so the auto record
+     * takes its place in the sequence (and can later be superseded by a real check-out). The
+     * re-projection runs outside the insert transaction so it reads committed rows.
+     */
     private int processUnclosedCheckIns(LocalDateTime from, LocalDateTime to, LocalDateTime checkOutTo) {
+        List<AttendanceService.DayKey> touched = insertMissingCheckouts(from, to, checkOutTo);
+        touched.forEach(k -> attendanceService.renormalizeDay(k.workerId(), k.siteId(), k.day()));
+        return touched.size();
+    }
+
+    @Transactional
+    List<AttendanceService.DayKey> insertMissingCheckouts(LocalDateTime from, LocalDateTime to, LocalDateTime checkOutTo) {
         List<Attendance> unclosed = attendanceRepository.findUnclosedCheckIns(from, to, checkOutTo);
         if (unclosed.isEmpty()) {
             log.debug("Auto-checkout: no unclosed check-ins in window {} → {}", from, to);
-            return 0;
+            return List.of();
         }
 
         // Keep only the latest CHECK_IN per (worker, site) — guards against duplicate sync records
@@ -74,7 +86,7 @@ public class AutoCheckoutScheduler {
         log.info("Auto-checkout: {} candidate(s) (from {} raw records, window {} → {})",
                 candidates.size(), unclosed.size(), from, to);
 
-        int created = 0;
+        List<AttendanceService.DayKey> touched = new ArrayList<>();
         for (Attendance checkIn : candidates) {
             LocalTime endTime = checkIn.getSite().getWorkEndTime();
             if (endTime == null) {
@@ -109,6 +121,9 @@ public class AutoCheckoutScheduler {
                     .locationValid(checkIn.isLocationValid())
                     .faceConfidence(null)
                     .manualOverride(true)
+                    // Mirrors the derived direction so the legacy dedup (which matches on
+                    // clientType) still recognises an auto-checkout it already created.
+                    .clientType(AttendanceType.CHECK_OUT)
                     .source(AttendanceSource.SCHEDULER_AUTO)
                     .recordedAt(checkOutTime)
                     .syncedAt(LocalDateTime.now())
@@ -116,9 +131,10 @@ public class AutoCheckoutScheduler {
 
             log.info("Auto-checkout: worker {} at site {} → {}",
                     checkIn.getWorker().getId(), checkIn.getSite().getName(), checkOutTime);
-            created++;
+            touched.add(new AttendanceService.DayKey(
+                    checkIn.getWorker().getId(), checkIn.getSite().getId(), checkInDate));
         }
 
-        return created;
+        return touched;
     }
 }

@@ -17,9 +17,14 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             FROM Attendance a
             WHERE a.worker.id = :workerId
               AND a.site.id   = :siteId
-              AND a.type      = :type
+              AND a.clientType = :type
               AND a.recordedAt = :recordedAt
             """)
+    /**
+     * Fallback dedup for terminals that predate client event ids. Matches on {@code clientType} —
+     * the direction the terminal actually reported — because {@code type} is derived and gets
+     * rewritten by the projection, which would make a re-sent record look like a new one.
+     */
     boolean existsDuplicate(
             @Param("workerId") UUID workerId,
             @Param("siteId") UUID siteId,

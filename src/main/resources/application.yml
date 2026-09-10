@@ -50,6 +50,12 @@ server:
 app:
   timezone: ${APP_TIMEZONE:Europe/Sofia}
 
+attendance:
+  # Two scans of the same worker at the same site closer than this count as one physical action
+  # (double tap / face recognised twice). Keep it in the tens of seconds — a genuinely short shift
+  # must survive. Observed accidental re-scans in production: 1-18 seconds.
+  min-gap-seconds: ${ATTENDANCE_MIN_GAP_SECONDS:60}
+
 # Initial admin account — created on first startup if no admin exists
 admin:
   name: ${ADMIN_NAME:Administrator}

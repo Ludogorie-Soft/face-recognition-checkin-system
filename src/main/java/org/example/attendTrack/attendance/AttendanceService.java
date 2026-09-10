@@ -77,9 +77,14 @@ public class AttendanceService {
      */
     private static final int MAX_OPEN_SHIFT_HOURS = 26;
 
-    /** Two scans of the same worker at the same site closer than this are accidental re-scans. */
-    @org.springframework.beans.factory.annotation.Value("${attendance.min-gap-minutes:15}")
-    private int minGapMinutes;
+    /**
+     * Two scans of the same worker at the same site closer than this are the same physical action
+     * (a double tap, or the face being recognised twice). Deliberately measured in SECONDS: a
+     * genuinely short shift — checked in 08:00, out 08:10 — is real data and must be preserved.
+     * Every accidental re-scan observed in production fell between 1 and 18 seconds.
+     */
+    @org.springframework.beans.factory.annotation.Value("${attendance.min-gap-seconds:60}")
+    private int minGapSeconds;
 
     // Self-reference so per-record processing runs in its OWN transaction (REQUIRES_NEW):
     // one bad record can no longer mark the whole sync batch rollback-only.
@@ -178,7 +183,7 @@ public class AttendanceService {
         Map<UUID, Attendance> byId = new HashMap<>();
         records.forEach(a -> byId.put(a.getId(), a));
 
-        for (SessionProjector.Resolution r : SessionProjector.project(events, Duration.ofMinutes(minGapMinutes), initialExpected)) {
+        for (SessionProjector.Resolution r : SessionProjector.project(events, Duration.ofSeconds(minGapSeconds), initialExpected)) {
             Attendance a = byId.get(r.id());
             if (a == null) continue;
             boolean changed = a.getType() != r.type()
@@ -328,8 +333,14 @@ public class AttendanceService {
                 .toList();
     }
 
-    @Transactional
+    /** Adds an admin record, then re-derives the day so the surrounding sequence stays consistent. */
     public void manualRecord(ManualAttendanceRequest req, User admin) {
+        DayKey touched = self.storeManualRecord(req, admin);
+        self.renormalizeDay(touched.workerId(), touched.siteId(), touched.day());
+    }
+
+    @Transactional
+    public DayKey storeManualRecord(ManualAttendanceRequest req, User admin) {
         User worker = userRepository.findById(req.workerId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         ErrorCode.USER_NOT_FOUND, "Worker not found: " + req.workerId()));
@@ -371,10 +382,13 @@ public class AttendanceService {
                 .locationValid(false)
                 .faceConfidence(null)
                 .manualOverride(true)
+                .clientType(req.type())
                 .source(AttendanceSource.ADMIN_MANUAL)
                 .recordedAt(recordedAt)
                 .syncedAt(LocalDateTime.now())
                 .build());
+
+        return new DayKey(worker.getId(), site.getId(), targetDate);
     }
 
     @Transactional(readOnly = true)
@@ -385,19 +399,42 @@ public class AttendanceService {
         return org.example.attendTrack.attendance.dto.AttendanceDetail.from(a);
     }
 
-    @Transactional
+    /**
+     * Deletes a record and re-derives the day it belonged to. Split in two transactions on purpose:
+     * the re-projection must see the DB after the delete has committed, otherwise it would rebuild
+     * the day from the row that is being removed.
+     */
     public void deleteAttendance(UUID id) {
-        if (!attendanceRepository.existsById(id)) {
-            throw new ApiException(HttpStatus.NOT_FOUND,
-                    ErrorCode.ATTENDANCE_NOT_FOUND, "Attendance record not found: " + id);
-        }
-        attendanceRepository.deleteById(id);
+        DayKey touched = self.removeRecord(id);
+        self.renormalizeDay(touched.workerId(), touched.siteId(), touched.day());
+    }
+
+    @Transactional
+    public DayKey removeRecord(UUID id) {
+        Attendance a = attendanceRepository.findById(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
+                        ErrorCode.ATTENDANCE_NOT_FOUND, "Attendance record not found: " + id));
+        DayKey key = new DayKey(a.getWorker().getId(), a.getSite().getId(),
+                a.getRecordedAt().toLocalDate());
+        attendanceRepository.delete(a);
+        return key;
     }
 
     // ── Change site on existing attendance record ─────────────────────────────
 
-    @Transactional
+    /**
+     * Moves a record to another site and re-derives BOTH days it touched — the record leaves one
+     * site's sequence and joins another, so each has to be rebuilt. Re-projection runs after the
+     * move has committed so it reads the record at its new site.
+     */
     public void changeSite(UUID attendanceId, UUID newSiteId) {
+        for (DayKey key : self.moveRecordToSite(attendanceId, newSiteId)) {
+            self.renormalizeDay(key.workerId(), key.siteId(), key.day());
+        }
+    }
+
+    @Transactional
+    public List<DayKey> moveRecordToSite(UUID attendanceId, UUID newSiteId) {
         Attendance a = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         ErrorCode.ATTENDANCE_NOT_FOUND, "Attendance record not found: " + attendanceId));
@@ -417,10 +454,14 @@ public class AttendanceService {
                     <= newSite.getRadiusMeters();
         }
 
+        DayKey from = new DayKey(a.getWorker().getId(), a.getSite().getId(), a.getRecordedAt().toLocalDate());
+        DayKey to = new DayKey(a.getWorker().getId(), newSiteId, a.getRecordedAt().toLocalDate());
+
         attendanceRepository.updateSite(attendanceId, newSiteId);
         if (locationValid != a.isLocationValid()) {
             attendanceRepository.updateLocationValidBulk(List.of(attendanceId), locationValid);
         }
+        return from.equals(to) ? List.of(from) : List.of(from, to);
     }
 
     // ── Retroactive location re-validation ───────────────────────────────────
