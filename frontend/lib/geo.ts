@@ -48,22 +48,44 @@ export function distanceToSegmentMeters(
   return Math.sqrt(dx * dx + dy * dy)
 }
 
+interface Checkpoint {
+  lat: number; lng: number; radiusMeters: number
+  lat2?: number | null; lng2?: number | null
+  checkpointType?: 'POINT' | 'LINE'
+}
+
 export function isWithinAnyCheckpoint(
   userLat: number, userLng: number,
-  checkpoints: Array<{
-    lat: number; lng: number; radiusMeters: number
-    lat2?: number | null; lng2?: number | null
-    checkpointType?: 'POINT' | 'LINE'
-  }>
+  checkpoints: Checkpoint[]
 ): boolean {
-  return checkpoints.some((cp) => {
-    if (cp.checkpointType === 'LINE' && cp.lat2 != null && cp.lng2 != null) {
-      return distanceToSegmentMeters(
-        userLat, userLng,
-        cp.lat, cp.lng,
-        cp.lat2, cp.lng2
-      ) <= cp.radiusMeters
-    }
-    return haversineDistance(userLat, userLng, cp.lat, cp.lng) <= cp.radiusMeters
-  })
+  return checkpoints.some((cp) => distanceToCheckpointBoundary(userLat, userLng, cp) <= 0)
+}
+
+/** Signed distance to a checkpoint's boundary in metres. Negative = inside. */
+function distanceToCheckpointBoundary(userLat: number, userLng: number, cp: Checkpoint): number {
+  const distance =
+    cp.checkpointType === 'LINE' && cp.lat2 != null && cp.lng2 != null
+      ? distanceToSegmentMeters(userLat, userLng, cp.lat, cp.lng, cp.lat2, cp.lng2)
+      : haversineDistance(userLat, userLng, cp.lat, cp.lng)
+  return distance - cp.radiusMeters
+}
+
+/**
+ * Signed distance in metres from a position to a site's zone boundary — negative inside, positive
+ * outside. Mirrors GeoResolver.distanceToZone on the server; the two must agree, because the
+ * terminal evaluates these zones offline.
+ *
+ * Checkpoints define the zone when the site has them; otherwise its own centre and radius do.
+ */
+export function distanceToZoneMeters(
+  userLat: number, userLng: number,
+  site: {
+    lat: number; lng: number; radiusMeters: number
+    checkpoints?: Checkpoint[] | null
+  },
+): number {
+  if (!site.checkpoints?.length) {
+    return haversineDistance(userLat, userLng, site.lat, site.lng) - site.radiusMeters
+  }
+  return Math.min(...site.checkpoints.map((cp) => distanceToCheckpointBoundary(userLat, userLng, cp)))
 }

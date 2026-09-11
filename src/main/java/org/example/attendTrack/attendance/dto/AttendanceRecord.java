@@ -11,6 +11,8 @@ public record AttendanceRecord(
         @NotNull AttendanceType type,
         @NotNull Double lat,
         @NotNull Double lng,
+        /** GPS accuracy radius in metres at scan time; null for clients that predate this field. */
+        Double accuracyMeters,
         boolean locationValid,
         Double faceConfidence,
         boolean manualOverride,

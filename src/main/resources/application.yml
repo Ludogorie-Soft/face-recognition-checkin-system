@@ -56,6 +56,12 @@ attendance:
   # must survive. Observed accidental re-scans in production: 1-18 seconds.
   min-gap-seconds: ${ATTENDANCE_MIN_GAP_SECONDS:60}
 
+  # A site zone is widened by the device's own reported GPS accuracy, capped here. Site corridors
+  # can be as narrow as 10 m while a phone fix is routinely ±10-20 m, so without an allowance
+  # in-zone becomes a coin toss. Without a cap, a bad fix reporting kilometres would validate
+  # anything.
+  geo-accuracy-cap-meters: ${ATTENDANCE_GEO_ACCURACY_CAP_METERS:50}
+
 # Initial admin account — created on first startup if no admin exists
 admin:
   name: ${ADMIN_NAME:Administrator}

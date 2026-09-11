@@ -51,3 +51,6 @@ frontend/public/models/mobilefacenet.onnx
 frontend/public/mediapipe/
 frontend/public/ort-wasm*.wasm
 frontend/public/ort-wasm*.mjs
+
+# Local dev preview config (backend URL / port differ per machine)
+.claude/launch.json

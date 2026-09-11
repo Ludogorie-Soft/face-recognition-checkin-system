@@ -28,6 +28,18 @@ public class Attendance {
     @JoinColumn(name = "site_id", nullable = false)
     private Site site;
 
+    /**
+     * Site the terminal claimed. {@link #site} is the server-resolved value; the two differ
+     * whenever the device guessed wrong — which it did for every scan its cached zones missed.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_site_id")
+    private Site clientSite;
+
+    /** Metres from the recorded position to the resolved site's zone. 0 = inside. */
+    @Column(name = "distance_meters")
+    private Integer distanceMeters;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
     private User manager;
@@ -41,6 +53,10 @@ public class Attendance {
 
     @Column(nullable = false)
     private double lng;
+
+    /** GPS accuracy radius the device reported for this fix. Null for pre-V14 clients. */
+    @Column(name = "accuracy_meters")
+    private Double accuracyMeters;
 
     @Column(name = "location_valid", nullable = false)
     private boolean locationValid;

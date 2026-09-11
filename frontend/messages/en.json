@@ -322,6 +322,7 @@
     "changeSite": "Change site",
     "selectSite": "Select site",
     "detailReported": "Terminal reported",
+    "detailReportedSite": "Terminal said site",
     "guard": "Guard"
   }
 }

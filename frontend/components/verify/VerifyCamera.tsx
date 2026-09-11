@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { useFaceApi } from '@/hooks/useFaceApi'
 import { useGeoLocation } from '@/hooks/useGeoLocation'
-import { isWithinAnyCheckpoint, isWithinRadius } from '@/lib/geo'
+import { distanceToZoneMeters } from '@/lib/geo'
 import { ManualOverrideModal } from './ManualOverrideModal'
 import type { SiteInfo, WorkerRecord } from '@/lib/db'
 
@@ -26,9 +26,6 @@ export interface SessionEntry {
   serverConfirmed: boolean
 }
 
-// Keep in sync with verify/page.tsx — sessionLog is keyed by worker + site.
-const statusKey = (workerId: string, siteId: string) => `${workerId}:${siteId}`
-
 interface Props {
   sites: Map<string, SiteInfo>
   workers: WorkerRecord[]
@@ -42,6 +39,7 @@ interface Props {
     type: 'CHECK_IN' | 'CHECK_OUT'
     lat: number
     lng: number
+    accuracyMeters: number
     locationValid: boolean
     faceConfidence: number | null
     manualOverride: boolean
@@ -50,29 +48,47 @@ interface Props {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-// For a detected worker (who may be assigned to multiple sites), find which
-// site the device is currently within. Falls back to the worker's first site
-// assignment if no geo match is found.
+/** Mirrors attendance.geo-accuracy-cap-meters on the server. */
+const ACCURACY_CAP_METERS = 50
+
+// For a detected worker (who may be assigned to multiple sites), work out which site the device is
+// standing in. This is only a hint — the server re-resolves it from the coordinates — but it decides
+// what the operator sees, so it has to be the nearest site rather than an arbitrary one.
+//
+// It used to fall back to the worker's FIRST assignment whenever no zone matched, which filed scans
+// at sites 76 and 163 km away and showed them as "outside zone" until someone fixed each by hand.
 function resolveWorkerSite(
   workerId: string,
   workers: WorkerRecord[],
   sites: Map<string, SiteInfo>,
   lat: number,
   lng: number,
+  accuracy: number,
 ): { siteId: string; locationValid: boolean } | null {
   const entries = workers.filter((w) => w.id === workerId)
   if (entries.length === 0) return null
 
-  const inZone = entries.find((w) => {
-    const site = sites.get(w.siteId)
-    if (!site) return false
-    return site.checkpoints?.length
-      ? isWithinAnyCheckpoint(lat, lng, site.checkpoints)
-      : isWithinRadius(lat, lng, site.lat, site.lng, site.radiusMeters)
-  })
+  // No fix yet — useGeoLocation reports 0/0 until the first position arrives. Measuring from there
+  // would rank the sites by their distance to the Gulf of Guinea.
+  if (lat === 0 && lng === 0) {
+    return { siteId: entries[0].siteId, locationValid: false }
+  }
 
-  if (inZone) return { siteId: inZone.siteId, locationValid: true }
-  return { siteId: entries[0].siteId, locationValid: false }
+  // Zones here go down to 10 m while a phone fix is routinely ±10-20 m, so a zone is widened by the
+  // fix's own error margin — capped, or a bad reading would validate the next town over. Mirrors
+  // attendance.geo-accuracy-cap-meters on the server, which has the final say anyway.
+  const tolerance = Math.min(Math.max(accuracy, 0), ACCURACY_CAP_METERS)
+
+  let best: { siteId: string; distance: number } | null = null
+  for (const entry of entries) {
+    const site = sites.get(entry.siteId)
+    if (!site) continue
+    const distance = distanceToZoneMeters(lat, lng, site) - tolerance
+    if (!best || distance < best.distance) best = { siteId: entry.siteId, distance }
+  }
+
+  if (!best) return { siteId: entries[0].siteId, locationValid: false }
+  return { siteId: best.siteId, locationValid: best.distance <= 0 }
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
@@ -125,8 +141,8 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
   // a real position arrives.
   const detectedWorkerGeo = useMemo(() => {
     if (!detected) return null
-    return resolveWorkerSite(detected.workerId, workers, sites, geo.lat, geo.lng)
-  }, [detected, geo.lat, geo.lng, workers, sites])
+    return resolveWorkerSite(detected.workerId, workers, sites, geo.lat, geo.lng, geo.accuracy)
+  }, [detected, geo.lat, geo.lng, geo.accuracy, workers, sites])
 
   // ── Camera ───────────────────────────────────────────────────────────────────
 
@@ -249,6 +265,7 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
           type,
           lat: geo.lat,
           lng: geo.lng,
+          accuracyMeters: geo.accuracy,
           locationValid: detectedWorkerGeo.locationValid,
           faceConfidence: detected.confidence,
           manualOverride: false,
@@ -261,12 +278,12 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
         setConfirming(false)
       }
     },
-    [detected, detectedWorkerGeo, geo.lat, geo.lng, onRecord],
+    [detected, detectedWorkerGeo, geo.lat, geo.lng, geo.accuracy, onRecord],
   )
 
   const handleManualRecord = useCallback(
     async (workerId: string, type: 'CHECK_IN' | 'CHECK_OUT') => {
-      const geoInfo = resolveWorkerSite(workerId, workers, sites, geo.lat, geo.lng)
+      const geoInfo = resolveWorkerSite(workerId, workers, sites, geo.lat, geo.lng, geo.accuracy)
       if (!geoInfo) return
       const workerRecord = workers.find((w) => w.id === workerId)
       if (!workerRecord) return
@@ -281,6 +298,7 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
           type,
           lat: geo.lat,
           lng: geo.lng,
+          accuracyMeters: geo.accuracy,
           locationValid: geoInfo.locationValid,
           faceConfidence: null,
           manualOverride: true,
@@ -290,14 +308,14 @@ export function VerifyCamera({ sites, workers, sessionLog, onRecord, onWorkerDet
         setConfirming(false)
       }
     },
-    [workers, sites, geo.lat, geo.lng, onRecord],
+    [workers, sites, geo.lat, geo.lng, geo.accuracy, onRecord],
   )
 
   // ── Derived ───────────────────────────────────────────────────────────────────
 
   const workersWithFace = workers.some((w) => w.descriptor !== null)
   const detectedEntry = detected && detectedWorkerGeo
-    ? sessionLog.get(statusKey(detected.workerId, detectedWorkerGeo.siteId))
+    ? sessionLog.get(detected.workerId)
     : undefined
   const lastAction = detectedEntry?.type
 

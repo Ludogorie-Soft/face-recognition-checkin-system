@@ -9,6 +9,7 @@ import org.example.attendTrack.attendance.dto.WorkerDayStatus;
 import org.example.attendTrack.common.exception.ApiException;
 import org.example.attendTrack.common.exception.ErrorCode;
 import org.example.attendTrack.notification.NotificationService;
+import org.example.attendTrack.site.GeoResolver;
 import org.example.attendTrack.site.Site;
 import org.example.attendTrack.site.SiteCheckpoint;
 import org.example.attendTrack.site.SiteCheckpointRepository;
@@ -58,14 +59,57 @@ public class AttendanceService {
         LocalDateTime end = start.plusDays(1);
 
         Map<UUID, AttendanceType> result = new LinkedHashMap<>();
-        for (Attendance a : attendanceRepository.findTodayBySite(siteId, start, end)) {
+        // The worker's own last kept event today, at whichever site they scanned. Someone checked
+        // in at another site is offered a check-OUT here, which is what actually happened.
+        for (Attendance a : attendanceRepository.findTodayForSiteWorkers(siteId, start, end)) {
             result.put(a.getWorker().getId(), a.getType()); // last record per worker wins
         }
         return result;
     }
 
-    /** Identifies one (worker, site, day) whose session sequence must be re-projected. */
-    record DayKey(UUID workerId, UUID siteId, LocalDate day) {}
+    /**
+     * Identifies one (worker, day) whose session sequence must be re-projected. Deliberately not
+     * per-site: a worker has one sequence per day across every site they scan at.
+     */
+    record DayKey(UUID workerId, LocalDate day) {}
+
+    /**
+     * Resolves the site of each scan in one sync batch, caching the per-worker assignments and
+     * per-site checkpoints it loads. A batch touches a handful of workers and sites, so this turns
+     * what would be two queries per record into two queries per distinct worker and site.
+     */
+    private final class SiteResolver {
+        private final Map<UUID, List<Site>> assignedSites = new HashMap<>();
+        private final Map<UUID, List<SiteCheckpoint>> checkpointsBySite = new HashMap<>();
+
+        GeoResolver.SiteMatch resolve(AttendanceRecord record, Site claimedSite) {
+            // No fix yet (the terminal sends 0/0 until the GPS settles): nothing to resolve from.
+            // Keep the terminal's choice rather than picking the site nearest to the Gulf of Guinea.
+            if (record.lat() == 0.0 && record.lng() == 0.0) {
+                return GeoResolver.unlocated(claimedSite);
+            }
+
+            List<Site> candidates = assignedSites.computeIfAbsent(record.workerId(), workerId ->
+                    siteWorkerRepository.findByUserIdWithSite(workerId).stream()
+                            .map(sw -> sw.getSite())
+                            .toList());
+
+            candidates.forEach(s -> checkpointsBySite.computeIfAbsent(
+                    s.getId(), siteCheckpointRepository::findBySiteId));
+
+            return GeoResolver.resolve(record.lat(), record.lng(), claimedSite,
+                            candidates, checkpointsBySite, tolerance(record.accuracyMeters()))
+                    // A worker with no assignments at all: keep the claim so processOne raises the
+                    // existing SITE_NOT_ASSIGNED error instead of a confusing NoSuchElement.
+                    .orElseGet(() -> GeoResolver.unlocated(claimedSite));
+        }
+    }
+
+    /** How far a zone may be widened for a fix of the given accuracy. Null accuracy earns nothing. */
+    private double tolerance(Double accuracyMeters) {
+        if (accuracyMeters == null || accuracyMeters <= 0) return 0;
+        return Math.min(accuracyMeters, geoAccuracyCapMeters);
+    }
 
     /** How far back to look for a shift that is still open when projecting a new day. */
     private static final int SHIFT_LOOKBACK_HOURS = 48;
@@ -86,6 +130,14 @@ public class AttendanceService {
     @org.springframework.beans.factory.annotation.Value("${attendance.min-gap-seconds:60}")
     private int minGapSeconds;
 
+    /**
+     * Upper bound on how much a device's own GPS accuracy may widen a site's zone. The allowance is
+     * real — a 10 m corridor and a ±15 m fix cannot both be taken literally — but an unbounded one
+     * would let a 5 km "accuracy" reading validate a scan from the next town.
+     */
+    @org.springframework.beans.factory.annotation.Value("${attendance.geo-accuracy-cap-meters:50}")
+    private double geoAccuracyCapMeters;
+
     // Self-reference so per-record processing runs in its OWN transaction (REQUIRES_NEW):
     // one bad record can no longer mark the whole sync batch rollback-only.
     @org.springframework.beans.factory.annotation.Autowired
@@ -93,10 +145,12 @@ public class AttendanceService {
     private AttendanceService self;
 
     public AttendanceSyncResponse sync(User admin, AttendanceSyncRequest request, String clientIp, String userAgent) {
-        Site site = siteRepository.findById(request.siteId())
+        Site claimedSite = siteRepository.findById(request.siteId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.SITE_NOT_FOUND, "Site not found: " + request.siteId()));
 
-        List<SiteCheckpoint> checkpoints = siteCheckpointRepository.findBySiteId(site.getId());
+        // The site on the request is only what the terminal believes. Resolution happens per record,
+        // from its coordinates, against every site the worker is assigned to.
+        SiteResolver resolver = new SiteResolver();
 
         int saved = 0;
         int skipped = 0;
@@ -113,10 +167,11 @@ public class AttendanceService {
 
         for (AttendanceRecord record : ordered) {
             try {
-                if (self.processOne(record, site, admin, checkpoints, notifiedWorkers, clientIp, userAgent) > 0) {
+                GeoResolver.SiteMatch match = resolver.resolve(record, claimedSite);
+                if (self.processOne(record, claimedSite, match, admin, notifiedWorkers, clientIp, userAgent) > 0) {
                     saved++;
-                    touchedDays.add(new DayKey(record.workerId(), site.getId(),
-                            record.recordedAt().toLocalDate()));
+                    // Keyed by the RESOLVED site — that is the day whose sequence actually changed.
+                    touchedDays.add(new DayKey(record.workerId(), record.recordedAt().toLocalDate()));
                 }
             } catch (Exception e) {
                 skipped++;
@@ -129,7 +184,7 @@ public class AttendanceService {
         Map<UUID, Boolean> shiftWorkerCache = new HashMap<>();
         for (DayKey key : Set.copyOf(touchedDays)) {
             if (shiftWorkerCache.computeIfAbsent(key.workerId(), this::isShiftWorker)) {
-                touchedDays.add(new DayKey(key.workerId(), key.siteId(), key.day().plusDays(1)));
+                touchedDays.add(new DayKey(key.workerId(), key.day().plusDays(1)));
             }
         }
 
@@ -138,7 +193,7 @@ public class AttendanceService {
         // in which offline terminals happen to sync.
         for (DayKey key : touchedDays) {
             try {
-                self.renormalizeDay(key.workerId(), key.siteId(), key.day());
+                self.renormalizeDay(key.workerId(), key.day());
             } catch (Exception e) {
                 errors.add("Re-projection failed for worker %s on %s — %s"
                         .formatted(key.workerId(), key.day(), e.getMessage()));
@@ -149,14 +204,20 @@ public class AttendanceService {
     }
 
     /**
-     * Recomputes the CHECK_IN / CHECK_OUT sequence for one (worker, site, day) from its raw events.
-     * Idempotent and independent of arrival order, so it is safe to run as often as needed.
+     * Recomputes one worker's CHECK_IN / CHECK_OUT sequence for a day, from their raw events at
+     * <b>every</b> site. Idempotent and independent of arrival order, so it is safe to run as often
+     * as needed.
+     *
+     * <p>The sequence is per worker rather than per site because a person has one session at a
+     * time. Someone who checks in at site A and scans at site B in the evening is ending that
+     * session, not starting a second one — the per-site version read it as a fresh check-in, opened
+     * a phantom session at B, and the nightly scheduler then closed both.
      */
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
-    public void renormalizeDay(UUID workerId, UUID siteId, LocalDate day) {
+    public void renormalizeDay(UUID workerId, LocalDate day) {
         LocalDateTime start = day.atStartOfDay();
-        List<Attendance> records = attendanceRepository.findForWorkerSiteDay(
-                workerId, siteId, start, start.plusDays(1));
+        List<Attendance> records = attendanceRepository.findForWorkerDay(
+                workerId, start, start.plusDays(1));
         if (records.isEmpty()) return;
 
         // Day shifts always start a day with a check-in. A 12/24h shift may still be open from the
@@ -164,7 +225,7 @@ public class AttendanceService {
         AttendanceType initialExpected = AttendanceType.CHECK_IN;
         if (isShiftWorker(workerId)) {
             List<Attendance> previous = attendanceRepository.findLastKeptBefore(
-                    workerId, siteId, start, start.minusHours(SHIFT_LOOKBACK_HOURS), PageRequest.of(0, 1));
+                    workerId, start, start.minusHours(SHIFT_LOOKBACK_HOURS), PageRequest.of(0, 1));
             if (!previous.isEmpty() && previous.get(0).getType() == AttendanceType.CHECK_IN) {
                 // Continue the session only if it could still plausibly be running. A shift left
                 // open for days must not be closed into a multi-day session by an unrelated scan.
@@ -203,17 +264,21 @@ public class AttendanceService {
     }
 
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
-    public int processOne(AttendanceRecord record, Site site, User admin,
-                          List<SiteCheckpoint> checkpoints, Set<UUID> notifiedWorkers,
+    public int processOne(AttendanceRecord record, Site claimedSite, GeoResolver.SiteMatch match,
+                          User admin, Set<UUID> notifiedWorkers,
                           String clientIp, String userAgent) {
+        Site site = match.site();
+
         // Idempotency: this exact device event is already stored → nothing to do.
         if (record.clientEventId() != null
                 && attendanceRepository.existsByClientEventId(record.clientEventId())) {
             return 0;
         }
-        // Legacy dedup fallback (exact worker + site + type + timestamp).
+        // Legacy dedup fallback for terminals that predate client event ids. Matches on the site the
+        // TERMINAL claimed, for the same reason it matches on clientType: site_id is derived now, so
+        // a re-sent record would otherwise be resolved afresh and look like a new event.
         if (attendanceRepository.existsDuplicate(
-                record.workerId(), site.getId(), record.type(), record.recordedAt())) {
+                record.workerId(), claimedSite.getId(), record.type(), record.recordedAt())) {
             return 0;
         }
 
@@ -231,19 +296,14 @@ public class AttendanceService {
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         ErrorCode.USER_NOT_FOUND, "Worker not found: " + record.workerId()));
 
+        // The resolver only ever returns a site the worker is assigned to, so this can fail only
+        // when the claimed site was kept for a record with no usable position.
         if (!siteWorkerRepository.existsBySiteIdAndUserId(site.getId(), worker.getId())) {
             throw new ApiException(HttpStatus.BAD_REQUEST,
                     ErrorCode.SITE_NOT_ASSIGNED, "Worker is not assigned to this site");
         }
 
-        // Server-side location validation using checkpoints
-        boolean locationValid;
-        if (!checkpoints.isEmpty()) {
-            locationValid = checkpoints.stream().anyMatch(cp ->
-                    isWithinCheckpoint(record.lat(), record.lng(), cp));
-        } else {
-            locationValid = haversineDistance(record.lat(), record.lng(), site.getLat(), site.getLng()) <= site.getRadiusMeters();
-        }
+        boolean locationValid = match.inside();
 
         if (!locationValid && notifiedWorkers.add(worker.getId())) {
             // At most one notification per worker per sync batch
@@ -256,6 +316,9 @@ public class AttendanceService {
         attendanceRepository.save(Attendance.builder()
                 .worker(worker)
                 .site(site)
+                .clientSite(claimedSite)
+                .distanceMeters(match.metresOutside())
+                .accuracyMeters(record.accuracyMeters())
                 .manager(admin)
                 .type(record.type())
                 .clientType(record.type())
@@ -293,7 +356,7 @@ public class AttendanceService {
         Map<UUID, Attendance> lastRecord = new LinkedHashMap<>();
         Map<UUID, Attendance> firstCheckIn = new LinkedHashMap<>();
         Map<UUID, Attendance> lastCheckOut = new LinkedHashMap<>();
-        for (Attendance a : attendanceRepository.findTodayBySite(siteId, from, to)) {
+        for (Attendance a : attendanceRepository.findBySiteAndDateRange(siteId, from, to)) {
             UUID wid = a.getWorker().getId();
             lastRecord.put(wid, a);
             if (a.getType() == AttendanceType.CHECK_IN) {
@@ -336,7 +399,7 @@ public class AttendanceService {
     /** Adds an admin record, then re-derives the day so the surrounding sequence stays consistent. */
     public void manualRecord(ManualAttendanceRequest req, User admin) {
         DayKey touched = self.storeManualRecord(req, admin);
-        self.renormalizeDay(touched.workerId(), touched.siteId(), touched.day());
+        self.renormalizeDay(touched.workerId(), touched.day());
     }
 
     @Transactional
@@ -360,7 +423,7 @@ public class AttendanceService {
 
         // Find current last-type for this worker+site on the target date (targeted query)
         List<Attendance> lastRecords = attendanceRepository
-                .findLastForWorkerOnDay(worker.getId(), site.getId(), dayStart, dayEnd, PageRequest.of(0, 1));
+                .findLastForWorkerOnDay(worker.getId(), dayStart, dayEnd, PageRequest.of(0, 1));
         AttendanceType lastType = lastRecords.isEmpty() ? null : lastRecords.get(0).getType();
 
         // Prevent redundant consecutive records (e.g. CHECK_IN when already checked in)
@@ -382,13 +445,16 @@ public class AttendanceService {
                 .locationValid(false)
                 .faceConfidence(null)
                 .manualOverride(true)
+                // Mirrors the stored direction and site so the legacy dedup — which matches on the
+                // client_* columns — still recognises an entry it already created.
                 .clientType(req.type())
+                .clientSite(site)
                 .source(AttendanceSource.ADMIN_MANUAL)
                 .recordedAt(recordedAt)
                 .syncedAt(LocalDateTime.now())
                 .build());
 
-        return new DayKey(worker.getId(), site.getId(), targetDate);
+        return new DayKey(worker.getId(), targetDate);
     }
 
     @Transactional(readOnly = true)
@@ -406,7 +472,7 @@ public class AttendanceService {
      */
     public void deleteAttendance(UUID id) {
         DayKey touched = self.removeRecord(id);
-        self.renormalizeDay(touched.workerId(), touched.siteId(), touched.day());
+        self.renormalizeDay(touched.workerId(), touched.day());
     }
 
     @Transactional
@@ -414,8 +480,7 @@ public class AttendanceService {
         Attendance a = attendanceRepository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         ErrorCode.ATTENDANCE_NOT_FOUND, "Attendance record not found: " + id));
-        DayKey key = new DayKey(a.getWorker().getId(), a.getSite().getId(),
-                a.getRecordedAt().toLocalDate());
+        DayKey key = new DayKey(a.getWorker().getId(), a.getRecordedAt().toLocalDate());
         attendanceRepository.delete(a);
         return key;
     }
@@ -429,7 +494,7 @@ public class AttendanceService {
      */
     public void changeSite(UUID attendanceId, UUID newSiteId) {
         for (DayKey key : self.moveRecordToSite(attendanceId, newSiteId)) {
-            self.renormalizeDay(key.workerId(), key.siteId(), key.day());
+            self.renormalizeDay(key.workerId(), key.day());
         }
     }
 
@@ -443,31 +508,54 @@ public class AttendanceService {
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         ErrorCode.SITE_NOT_FOUND, "Site not found: " + newSiteId));
 
-        // Re-compute locationValid for the new site
-        List<SiteCheckpoint> checkpoints = siteCheckpointRepository.findBySiteId(newSiteId);
-        boolean locationValid;
-        if (!checkpoints.isEmpty()) {
-            locationValid = checkpoints.stream().anyMatch(cp ->
-                    isWithinCheckpoint(a.getLat(), a.getLng(), cp));
-        } else {
-            locationValid = haversineDistance(a.getLat(), a.getLng(), newSite.getLat(), newSite.getLng())
-                    <= newSite.getRadiusMeters();
-        }
+        // Re-measure against the new site. client_site_id is deliberately left alone: it records what
+        // the terminal claimed, and that stays true no matter where an admin files the record.
+        double distance = GeoResolver.distanceToZone(a.getLat(), a.getLng(), newSite,
+                siteCheckpointRepository.findBySiteId(newSiteId), 0);
+        GeoResolver.SiteMatch match = new GeoResolver.SiteMatch(newSite, distance);
 
-        DayKey from = new DayKey(a.getWorker().getId(), a.getSite().getId(), a.getRecordedAt().toLocalDate());
-        DayKey to = new DayKey(a.getWorker().getId(), newSiteId, a.getRecordedAt().toLocalDate());
+        attendanceRepository.updateResolvedSite(
+                attendanceId, newSiteId, match.inside(), match.metresOutside());
 
-        attendanceRepository.updateSite(attendanceId, newSiteId);
-        if (locationValid != a.isLocationValid()) {
-            attendanceRepository.updateLocationValidBulk(List.of(attendanceId), locationValid);
-        }
-        return from.equals(to) ? List.of(from) : List.of(from, to);
+        // Moving a record between sites no longer splits its day: the sequence is the worker's, so
+        // the same single day has to be rebuilt either way.
+        return List.of(new DayKey(a.getWorker().getId(), a.getRecordedAt().toLocalDate()));
     }
 
-    // ── Retroactive location re-validation ───────────────────────────────────
+    // ── Retroactive site re-resolution ───────────────────────────────────────
 
-    @Transactional
+    /**
+     * Re-decides site and in-zone status for stored records, from their coordinates.
+     *
+     * <p>Repairs the days when the terminal filed scans at whichever site happened to be the
+     * worker's first assignment. Records that move sites change two days' sequences, so the
+     * re-projection runs after the updates have committed.
+     *
+     * @param siteId restrict to records currently filed at this site, or null for all
+     * @return how many records were changed
+     */
     public int revalidateLocation(UUID siteId, LocalDate from, LocalDate to) {
+        Reresolution result = self.reresolveSites(siteId, from, to);
+        for (DayKey key : result.touchedDays()) {
+            try {
+                self.renormalizeDay(key.workerId(), key.day());
+            } catch (Exception ignored) {
+                // One unprojectable day must not abort the rest of the repair.
+            }
+        }
+        return result.changed();
+    }
+
+    /** Outcome of a re-resolution pass: how many records moved, and which days must be rebuilt. */
+    record Reresolution(int changed, Set<DayKey> touchedDays) {}
+
+    /**
+     * Must stay public: Spring only applies {@code @Transactional} to public methods, so a
+     * package-private version would silently run without one and a failure part-way through would
+     * leave the repair half-applied.
+     */
+    @Transactional
+    public Reresolution reresolveSites(UUID siteId, LocalDate from, LocalDate to) {
         LocalDateTime start = from.atStartOfDay();
         LocalDateTime end = to.plusDays(1).atStartOfDay();
 
@@ -475,101 +563,40 @@ public class AttendanceService {
                 ? attendanceRepository.findBySiteAndDateRange(siteId, start, end)
                 : attendanceRepository.findAllInDateRange(start, end);
 
-        if (records.isEmpty()) return 0;
+        if (records.isEmpty()) return new Reresolution(0, Set.of());
 
-        // Bulk-load checkpoints to avoid N+1
-        Map<UUID, List<SiteCheckpoint>> checkpointsBySite;
-        if (siteId != null) {
-            checkpointsBySite = Map.of(siteId, siteCheckpointRepository.findBySiteId(siteId));
-        } else {
-            List<UUID> siteIds = records.stream()
-                    .map(a -> a.getSite().getId())
-                    .distinct()
-                    .toList();
-            checkpointsBySite = new java.util.HashMap<>();
-            siteCheckpointRepository.findBySiteIdIn(siteIds)
-                    .forEach(cp -> checkpointsBySite
-                            .computeIfAbsent(cp.getSite().getId(), k -> new ArrayList<>())
-                            .add(cp));
-        }
-
-        List<UUID> nowValid = new ArrayList<>();
-        List<UUID> nowInvalid = new ArrayList<>();
+        Map<UUID, List<Site>> assignedSites = new HashMap<>();
+        Map<UUID, List<SiteCheckpoint>> checkpointsBySite = new HashMap<>();
+        Set<DayKey> touched = new LinkedHashSet<>();
+        int changed = 0;
 
         for (Attendance a : records) {
-            List<SiteCheckpoint> cps = checkpointsBySite.getOrDefault(a.getSite().getId(), List.of());
-            boolean valid;
-            if (!cps.isEmpty()) {
-                valid = cps.stream().anyMatch(cp -> isWithinCheckpoint(a.getLat(), a.getLng(), cp));
-            } else {
-                valid = haversineDistance(a.getLat(), a.getLng(), a.getSite().getLat(), a.getSite().getLng())
-                        <= a.getSite().getRadiusMeters();
-            }
-            if (valid != a.isLocationValid()) {
-                (valid ? nowValid : nowInvalid).add(a.getId());
-            }
+            // Scheduler and admin records inherit their site by construction; only terminal scans
+            // carry a position that can be re-measured.
+            if (a.getLat() == 0.0 && a.getLng() == 0.0) continue;
+
+            UUID workerId = a.getWorker().getId();
+            List<Site> candidates = assignedSites.computeIfAbsent(workerId, id ->
+                    siteWorkerRepository.findByUserIdWithSite(id).stream().map(sw -> sw.getSite()).toList());
+            candidates.forEach(s -> checkpointsBySite.computeIfAbsent(
+                    s.getId(), siteCheckpointRepository::findBySiteId));
+
+            GeoResolver.SiteMatch match = GeoResolver
+                    .resolve(a.getLat(), a.getLng(), a.getSite(), candidates, checkpointsBySite,
+                            tolerance(a.getAccuracyMeters()))
+                    .orElse(null);
+            if (match == null) continue;
+
+            boolean siteChanged = !match.site().getId().equals(a.getSite().getId());
+            boolean validChanged = match.inside() != a.isLocationValid();
+            if (!siteChanged && !validChanged) continue;
+
+            attendanceRepository.updateResolvedSite(
+                    a.getId(), match.site().getId(), match.inside(), match.metresOutside());
+            changed++;
+
+            touched.add(new DayKey(workerId, a.getRecordedAt().toLocalDate()));
         }
-
-        if (!nowValid.isEmpty()) attendanceRepository.updateLocationValidBulk(nowValid, true);
-        if (!nowInvalid.isEmpty()) attendanceRepository.updateLocationValidBulk(nowInvalid, false);
-
-        return nowValid.size() + nowInvalid.size();
-    }
-
-    /**
-     * Returns true if (userLat, userLng) is within the checkpoint's zone.
-     * For POINT checkpoints: standard haversine circle check.
-     * For LINE checkpoints: perpendicular distance from user to the line segment ≤ radiusMeters.
-     */
-    private static boolean isWithinCheckpoint(double userLat, double userLng, SiteCheckpoint cp) {
-        if (cp.getCheckpointType() == SiteCheckpoint.CheckpointType.LINE
-                && cp.getLat2() != null && cp.getLng2() != null) {
-            return distanceToSegmentMeters(
-                    userLat, userLng,
-                    cp.getLat(), cp.getLng(),
-                    cp.getLat2(), cp.getLng2()) <= cp.getRadiusMeters();
-        }
-        return haversineDistance(userLat, userLng, cp.getLat(), cp.getLng()) <= cp.getRadiusMeters();
-    }
-
-    /**
-     * Minimum distance (metres) from point P to line segment AB.
-     * Uses a planar approximation valid for short distances (< ~1 km).
-     */
-    private static double distanceToSegmentMeters(
-            double pLat, double pLng,
-            double aLat, double aLng,
-            double bLat, double bLng) {
-        // Convert to local Cartesian coordinates (metres) relative to A
-        final double R = 6_371_000.0;
-        final double cosLat = Math.cos(Math.toRadians((aLat + bLat) / 2.0));
-        double ax = 0, ay = 0;
-        double bx = Math.toRadians(bLng - aLng) * R * cosLat;
-        double by = Math.toRadians(bLat - aLat) * R;
-        double px = Math.toRadians(pLng - aLng) * R * cosLat;
-        double py = Math.toRadians(pLat - aLat) * R;
-
-        double abx = bx - ax, aby = by - ay;
-        double len2 = abx * abx + aby * aby;
-        if (len2 < 1e-10) {
-            // Degenerate segment (endpoints identical) — fall back to point distance
-            return Math.sqrt(px * px + py * py);
-        }
-        // Project P onto AB, clamped to [0, 1]
-        double t = Math.max(0, Math.min(1, (px * abx + py * aby) / len2));
-        double closestX = ax + t * abx;
-        double closestY = ay + t * aby;
-        double dx = px - closestX, dy = py - closestY;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    private static double haversineDistance(double lat1, double lng1, double lat2, double lng2) {
-        final double R = 6_371_000.0;
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLng = Math.toRadians(lng2 - lng1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return new Reresolution(changed, touched);
     }
 }
