@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-09-09T07:23:07.723Z
-> Files: 168 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-09-11T07:27:35.747Z
+> Files: 181 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -25,6 +25,7 @@
 
 ## .claude/
 
+- `launch.json` (~85 tok)
 - `settings.json` — Claude Code settings (~441 tok)
 
 ## .claude/rules/
@@ -84,7 +85,7 @@
 
 ## frontend/app/[locale]/(manager)/verify/
 
-- `page.tsx` — statusKey (~3273 tok)
+- `page.tsx` — VerifyPage (~3305 tok)
 
 ## frontend/app/[locale]/admin/
 
@@ -119,7 +120,7 @@
 
 ## frontend/components/reports/
 
-- `AttendanceDetailsModal.tsx` — useDetail — renders modal (~1240 tok)
+- `AttendanceDetailsModal.tsx` — Set only when the terminal claimed a different site than the one the server resolved. (~1370 tok)
 
 ## frontend/components/sites/
 
@@ -136,7 +137,7 @@
 
 - `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal; workers sorted A-Z; search input filters by name; selected worker highlighted with checkmark (~1316 tok)
 - `SyncLoader.tsx` — SVG comet-arc loader; indeterminate: pure CSS spin + feGaussianBlur glow; determinate: smooth strokeDashoffset fill. No JS state. (~620 tok)
-- `VerifyCamera.tsx` — statusKey (~6521 tok)
+- `VerifyCamera.tsx` — Called when a new worker is recognised, so the page can refresh the server status. (~6766 tok)
 
 ## frontend/components/workers/
 
@@ -159,18 +160,18 @@
 
 - `auth.ts` — Exports TOKEN_KEY, getToken, setToken, removeToken + 5 more (~400 tok)
 - `axios.ts` — Declares api (~267 tok)
-- `db.ts` — Exports WorkerRecord, CheckpointInfo, SiteInfo, PendingAttendance + 2 more (~998 tok)
+- `db.ts` — GPS accuracy radius in metres at scan time. Undefined for records queued before v7. (~1167 tok)
 - `deviceId.ts` — Stable per-device identifier for attendance audit metadata. Generated once and (~201 tok)
 - `errors.ts` — Known error codes from the backend ErrorCode enum (~302 tok)
 - `faceAlignment.ts` — Face alignment: transforms a raw video frame into a normalized (~1112 tok)
 - `faceMatcher.ts` — Cosine-similarity 1:N face matcher. (~613 tok)
-- `geo.ts` — Minimum distance (metres) from point P to line segment AB. (~628 tok)
+- `geo.ts` — Minimum distance (metres) from point P to line segment AB. (~908 tok)
 - `prefetchModels.ts` — prefetchModels — silently warms the Service Worker cache with all face (~462 tok)
 
 ## frontend/messages/
 
-- `bg.json` (~3591 tok)
-- `en.json` (~3453 tok)
+- `bg.json` (~3640 tok)
+- `en.json` (~3503 tok)
 
 ## frontend/scripts/
 
@@ -189,19 +190,19 @@
 ## src/main/java/org/example/attendTrack/attendance/
 
 - `AnomalyReason.java` — Why the sync reconciliation flagged an attendance record as anomalous. (~154 tok)
-- `Attendance.java` — Stable UUID generated on the device; enables idempotent dedup. Null for legacy records. (~1060 tok)
+- `Attendance.java` — Site the terminal claimed. {@link #site} is the server-resolved value; the two differ (~1231 tok)
 - `AttendanceController.java` — Real client IP behind the nginx → Next.js proxy chain. (~1572 tok)
-- `AttendanceRepository.java` — Exact idempotency check for device-generated events (see V9 migration). (~2094 tok)
-- `AttendanceService.java` — Identifies one (worker, site, day) whose session sequence must be re-projected. (~6526 tok)
+- `AttendanceRepository.java` — Fallback dedup for terminals that predate client event ids. Matches on {@code clientType} — (~3417 tok)
+- `AttendanceService.java` — Identifies one (worker, day) whose session sequence must be re-projected. Deliberately not (~8004 tok)
 - `AttendanceSource.java` — Where an attendance record originated. Replaces the fragile (~182 tok)
-- `GuardShiftMonitor.java` — Daily 09:00 alert for 12/24h shifts open past 26h. Deliberately does NOT close them — an invented end time would look like real payroll data. (~430 tok)
 - `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1459 tok)
+- `GuardShiftMonitor.java` — Daily 09:00 alert for 12/24h shifts open past 26h. Deliberately does NOT close them — an invented end time would look like real payroll data. (~430 tok)
 - `SessionProjector.java` — Pure projection of one worker's raw scan events (for a single site and day) into the correct (~1279 tok)
 
 ## src/main/java/org/example/attendTrack/attendance/dto/
 
-- `AttendanceDetail.java` — Full audit view of a single attendance record, for the admin report details modal. (~491 tok)
-- `AttendanceRecord.java` — Class: AttendanceRecord (~235 tok)
+- `AttendanceDetail.java` — Full audit view of a single attendance record, for the admin report details modal. (~680 tok)
+- `AttendanceRecord.java` — GPS accuracy radius in metres at scan time; null for clients that predate this field. (~270 tok)
 - `AttendanceSyncResponse.java` — Class: AttendanceSyncResponse (~50 tok)
 - `ManualAttendanceRequest.java` — Class: ManualAttendanceRequest; fields: workerId, siteId, type, date, time (LocalTime, optional) (~145 tok)
 - `WorkerDayStatus.java` — Status of one worker for a given site + day; fields: workerId, workerName, attendanceId, lastType, checkInTime, checkOutTime, calculatedHours (~220 tok)
@@ -226,15 +227,16 @@
 
 - `CorsConfig.java` — ", config); (~342 tok)
 - `SecurityConfig.java` — ").permitAll() (~955 tok)
+- `TimeZoneConfig.java` — Pins the JVM default zone to app.timezone (Europe/Sofia). Device times are local wall clock; a UTC server made synced_at look earlier than recorded_at (~260 tok)
 
 ## src/main/java/org/example/attendTrack/dashboard/
 
 - `AbsenteeRow.java` — Class: AbsenteeRow (~39 tok)
-- `OpenShiftEntry.java` — Record: workerName, siteName, since — a guard shift left open (~55 tok)
 - `ActivityEntry.java` — Class: ActivityEntry (~67 tok)
 - `DashboardController.java` — RestController: DashboardController (3 endpoints) (~1251 tok)
 - `DashboardExtended.java` — Class: DashboardExtended (~92 tok)
 - `DayAttendance.java` — Class: DayAttendance (~36 tok)
+- `OpenShiftEntry.java` — Record: workerName, siteName, since — a guard shift left open (~55 tok)
 - `OutOfZoneEntry.java` — Class: OutOfZoneEntry (~46 tok)
 - `SiteAttendance.java` — Class: SiteAttendance (~45 tok)
 
@@ -247,7 +249,7 @@
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
 - `ReportController.java` — RestController: ReportController (9 endpoints) (~1518 tok)
-- `ReportService.java` — Service: ReportService (~10205 tok)
+- `ReportService.java` — Service: ReportService (~10716 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
@@ -258,6 +260,7 @@
 
 ## src/main/java/org/example/attendTrack/site/
 
+- `GeoResolver.java` — Decides which site a scan belongs to, from its coordinates. (~1920 tok)
 - `SiteCheckpoint.java` — Second endpoint — non-null only for LINE checkpoints. (~341 tok)
 - `SiteCheckpointRepository.java` — Class: SiteCheckpointRepository (~217 tok)
 - `SiteController.java` — RestController: SiteController (11 endpoints) (~892 tok)
@@ -328,7 +331,7 @@
 
 ## src/main/resources/
 
-- `application.yml` (~434 tok)
+- `application.yml` (~701 tok)
 
 ## src/main/resources/db/migration/
 
@@ -336,6 +339,8 @@
 - `V10__attendance_audit_metadata.sql` — V10: Explicit record origin + audit metadata. (~354 tok)
 - `V11__session_projection.sql` — V11: Server-side normalization of check-in / check-out direction. (~346 tok)
 - `V12__user_shift_type.sql` — V12: users.shift_type (DAY default) — 12/24h shift workers (guards) (~180 tok)
+- `V13__attendance_site_resolution.sql` — The terminal is no longer trusted to decide WHICH SITE a scan belongs to. (~338 tok)
+- `V14__attendance_gps_accuracy.sql` — The terminal has always known how good its GPS fix was — useGeoLocation reads `accuracy` from (~221 tok)
 - `V2__clear_face_descriptors.sql` — V2: Clear all 128-dim face descriptors (face-api.js). (~43 tok)
 - `V3__remove_manager_role.sql` — Migrate existing MANAGER users to ADMIN role (~82 tok)
 - `V4__hours_corrections.sql` — SQL: tables: hours_corrections (~162 tok)
@@ -348,5 +353,16 @@
 
 ## src/test/java/org/example/attendTrack/attendance/
 
-- `AttendanceServiceNormalizationTest.java` — Wiring tests for sync + day re-projection. (~2042 tok)
+- `AttendanceRepositoryQueryTest.java` — Runs every attendance query against a real persistence context. (~2847 tok)
+- `AttendanceServiceNormalizationTest.java` — Wiring tests for sync + day re-projection. (~3395 tok)
+- `AttendanceServiceSiteResolutionTest.java` — The terminal's site is a claim, not a fact — these tests pin the server's re-resolution of it. (~2802 tok)
+- `AutoCheckoutSchedulerTest.java` — The nightly auto-checkout, which invents the hours nobody scanned — so what it declines to create (~1348 tok)
 - `SessionProjectorTest.java` — Exhaustive tests for the pure session projection — the core of server-side normalization. (~1779 tok)
+
+## src/test/java/org/example/attendTrack/report/
+
+- `WorkedHoursReportTest.java` — Worked-hours pairing: the layer that turns a day's scans into sessions and hours. (~3174 tok)
+
+## src/test/java/org/example/attendTrack/site/
+
+- `GeoResolverTest.java` — Geometry and site-resolution tests. (~2562 tok)

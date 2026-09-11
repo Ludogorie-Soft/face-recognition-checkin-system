@@ -40,6 +40,8 @@ export interface PendingAttendance {
   type: 'CHECK_IN' | 'CHECK_OUT'
   lat: number
   lng: number
+  /** GPS accuracy radius in metres at scan time. Undefined for records queued before v7. */
+  accuracyMeters?: number
   locationValid: boolean
   faceConfidence: number | null
   manualOverride: boolean
@@ -47,11 +49,13 @@ export interface PendingAttendance {
   status: 'pending' | 'syncing'
 }
 
-// Last known check-in/out state per (worker, site), persisted so the terminal's
-// decision survives page reloads while offline. serverConfirmed distinguishes a
-// value fetched from the server (authoritative for today) from a local-only guess.
+// Last known check-in/out state per WORKER, persisted so the terminal's decision survives page
+// reloads while offline. Not per site: a worker has one session at a time, so a terminal at another
+// site must offer to close it, not to open a second one. serverConfirmed distinguishes a value
+// fetched from the server (authoritative for today) from a local-only guess.
 export interface LocalSessionStatus {
   workerId: string
+  /** Where the status was last observed — kept for display/debugging, not part of the key. */
   siteId: string
   type: 'CHECK_IN' | 'CHECK_OUT'
   date: string             // "YYYY-MM-DD" local — the day this status applies to
@@ -111,6 +115,27 @@ class GarantDB extends Dexie {
       siteInfo: 'id',
       pending: '++id, siteId, status, recordedAt',
       sessionStatus: '[workerId+siteId], siteId',
+    })
+
+    // v7: pending gains accuracyMeters (non-indexed) so the server can widen a site's zone by the
+    // fix's own error margin. Records queued before this upgrade simply carry undefined and get no
+    // allowance, which is exactly how they were already evaluated.
+    this.version(7).stores({
+      workers: '[id+siteId], siteId, name',
+      siteInfo: 'id',
+      pending: '++id, siteId, status, recordedAt',
+      sessionStatus: '[workerId+siteId], siteId',
+    })
+
+    // v8: sessionStatus is re-keyed by workerId alone — a worker has one session, not one per site.
+    // IndexedDB cannot change a primary key in place, so the table is dropped and recreated. Only a
+    // same-day offline cache is lost, and it is rebuilt on the next status refresh.
+    this.version(8).stores({ sessionStatus: null })
+    this.version(9).stores({
+      workers: '[id+siteId], siteId, name',
+      siteInfo: 'id',
+      pending: '++id, siteId, status, recordedAt',
+      sessionStatus: 'workerId, siteId',
     })
   }
 }

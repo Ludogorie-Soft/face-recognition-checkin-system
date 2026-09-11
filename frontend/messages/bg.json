@@ -322,6 +322,7 @@
     "changeSite": "Промени обект",
     "selectSite": "Избери обект",
     "detailReported": "Терминалът прати",
+    "detailReportedSite": "Терминалът каза обект",
     "guard": "Пазач"
   }
 }

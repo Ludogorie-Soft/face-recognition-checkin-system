@@ -61,7 +61,7 @@ public class AutoCheckoutScheduler {
      */
     private int processUnclosedCheckIns(LocalDateTime from, LocalDateTime to, LocalDateTime checkOutTo) {
         List<AttendanceService.DayKey> touched = insertMissingCheckouts(from, to, checkOutTo);
-        touched.forEach(k -> attendanceService.renormalizeDay(k.workerId(), k.siteId(), k.day()));
+        touched.forEach(k -> attendanceService.renormalizeDay(k.workerId(), k.day()));
         return touched.size();
     }
 
@@ -73,11 +73,11 @@ public class AutoCheckoutScheduler {
             return List.of();
         }
 
-        // Keep only the latest CHECK_IN per (worker, site) — guards against duplicate sync records
-        // for the same logical session.
+        // Keep only the latest CHECK_IN per (worker, day) — a worker has one session at a time, so
+        // two open check-ins at different sites are the same logical session, not two of them.
         Map<String, Attendance> lastCheckIn = new LinkedHashMap<>();
         for (Attendance a : unclosed) {
-            String key = a.getWorker().getId() + ":" + a.getSite().getId() + ":" + a.getRecordedAt().toLocalDate();
+            String key = a.getWorker().getId() + ":" + a.getRecordedAt().toLocalDate();
             lastCheckIn.merge(key, a, (existing, next) ->
                     next.getRecordedAt().isAfter(existing.getRecordedAt()) ? next : existing);
         }
@@ -121,9 +121,10 @@ public class AutoCheckoutScheduler {
                     .locationValid(checkIn.isLocationValid())
                     .faceConfidence(null)
                     .manualOverride(true)
-                    // Mirrors the derived direction so the legacy dedup (which matches on
-                    // clientType) still recognises an auto-checkout it already created.
+                    // Mirrors the derived direction and site so the legacy dedup (which matches on
+                    // the client_* columns) still recognises an auto-checkout it already created.
                     .clientType(AttendanceType.CHECK_OUT)
+                    .clientSite(checkIn.getSite())
                     .source(AttendanceSource.SCHEDULER_AUTO)
                     .recordedAt(checkOutTime)
                     .syncedAt(LocalDateTime.now())
@@ -131,8 +132,7 @@ public class AutoCheckoutScheduler {
 
             log.info("Auto-checkout: worker {} at site {} → {}",
                     checkIn.getWorker().getId(), checkIn.getSite().getName(), checkOutTime);
-            touched.add(new AttendanceService.DayKey(
-                    checkIn.getWorker().getId(), checkIn.getSite().getId(), checkInDate));
+            touched.add(new AttendanceService.DayKey(checkIn.getWorker().getId(), checkInDate));
         }
 
         return touched;

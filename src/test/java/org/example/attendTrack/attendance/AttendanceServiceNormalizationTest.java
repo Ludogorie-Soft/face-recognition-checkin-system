@@ -74,11 +74,11 @@ class AttendanceServiceNormalizationTest {
         when(siteWorkerRepository.existsBySiteIdAndUserId(siteId, workerId)).thenReturn(true);
         when(attendanceRepository.existsByClientEventId(any())).thenReturn(false);
         when(attendanceRepository.existsDuplicate(any(), any(), any(), any())).thenReturn(false);
-        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any())).thenReturn(List.of());
+        when(attendanceRepository.findForWorkerDay(any(), any(), any())).thenReturn(List.of());
     }
 
     private AttendanceRecord record(AttendanceType type, LocalDateTime at) {
-        return new AttendanceRecord(workerId, type, 43.0, 23.0, true, 0.9, false, at,
+        return new AttendanceRecord(workerId, type, 43.0, 23.0, 8.0, true, 0.9, false, at,
                 UUID.randomUUID(), false, "dev-test", "1.0.0");
     }
 
@@ -132,8 +132,7 @@ class AttendanceServiceNormalizationTest {
         sync(record(AttendanceType.CHECK_IN, today.atTime(8, 0)));
 
         // The whole day is reloaded so its direction can be derived from all events.
-        verify(attendanceRepository).findForWorkerSiteDay(
-                any(), any(), any(), any());
+        verify(attendanceRepository).findForWorkerDay(any(), any(), any());
     }
 
     @Test
@@ -142,10 +141,10 @@ class AttendanceServiceNormalizationTest {
         Attendance a1 = row(today.atTime(7, 44), AttendanceType.CHECK_IN);
         Attendance a2 = row(today.atTime(17, 2, 34), AttendanceType.CHECK_IN);
         Attendance a3 = row(today.atTime(17, 2, 36), AttendanceType.CHECK_OUT);
-        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any()))
+        when(attendanceRepository.findForWorkerDay(any(), any(), any()))
                 .thenReturn(List.of(a1, a2, a3));
 
-        service.renormalizeDay(workerId, siteId, today);
+        service.renormalizeDay(workerId, today);
 
         assertThat(a1.getType()).isEqualTo(AttendanceType.CHECK_IN);
         assertThat(a1.isIgnored()).isFalse();
@@ -159,8 +158,8 @@ class AttendanceServiceNormalizationTest {
 
     @Test
     void reprojection_isSafeOnEmptyDay() {
-        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any())).thenReturn(List.of());
-        service.renormalizeDay(workerId, siteId, today); // must not throw
+        when(attendanceRepository.findForWorkerDay(any(), any(), any())).thenReturn(List.of());
+        service.renormalizeDay(workerId, today); // must not throw
     }
 
     @Test
@@ -168,14 +167,14 @@ class AttendanceServiceNormalizationTest {
         // Guard (12/24h shift) checked in at 19:00 yesterday — today's 07:00 scan must close it.
         when(worker.getShiftType()).thenReturn(org.example.attendTrack.user.ShiftType.SHIFT_24H);
         Attendance yesterdayCheckIn = row(today.minusDays(1).atTime(19, 0), AttendanceType.CHECK_IN);
-        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any(), any()))
+        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any()))
                 .thenReturn(List.of(yesterdayCheckIn));
 
         Attendance morning = row(today.atTime(7, 0), AttendanceType.CHECK_IN); // terminal guessed wrong
-        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any()))
+        when(attendanceRepository.findForWorkerDay(any(), any(), any()))
                 .thenReturn(List.of(morning));
 
-        service.renormalizeDay(workerId, siteId, today);
+        service.renormalizeDay(workerId, today);
 
         assertThat(morning.getType()).isEqualTo(AttendanceType.CHECK_OUT);
         assertThat(morning.isIgnored()).isFalse();
@@ -187,14 +186,14 @@ class AttendanceServiceNormalizationTest {
         // session, not close a 35-hour one — the stale session is left for an admin.
         when(worker.getShiftType()).thenReturn(org.example.attendTrack.user.ShiftType.SHIFT_24H);
         Attendance stale = row(today.minusDays(2).atTime(20, 0), AttendanceType.CHECK_IN);
-        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any(), any()))
+        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any()))
                 .thenReturn(List.of(stale));
 
         Attendance morning = row(today.atTime(7, 0), AttendanceType.CHECK_OUT);
-        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any()))
+        when(attendanceRepository.findForWorkerDay(any(), any(), any()))
                 .thenReturn(List.of(morning));
 
-        service.renormalizeDay(workerId, siteId, today);
+        service.renormalizeDay(workerId, today);
 
         assertThat(morning.getType()).isEqualTo(AttendanceType.CHECK_IN);
     }
@@ -202,16 +201,63 @@ class AttendanceServiceNormalizationTest {
     @Test
     void dayWorker_alwaysStartsTheDayWithCheckIn() {
         Attendance yesterdayCheckIn = row(today.minusDays(1).atTime(19, 0), AttendanceType.CHECK_IN);
-        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any(), any()))
+        when(attendanceRepository.findLastKeptBefore(any(), any(), any(), any()))
                 .thenReturn(List.of(yesterdayCheckIn));
         Attendance morning = row(today.atTime(7, 0), AttendanceType.CHECK_OUT);
-        when(attendanceRepository.findForWorkerSiteDay(any(), any(), any(), any()))
+        when(attendanceRepository.findForWorkerDay(any(), any(), any()))
                 .thenReturn(List.of(morning));
 
-        service.renormalizeDay(workerId, siteId, today);
+        service.renormalizeDay(workerId, today);
 
         // Day shift: yesterday never leaks into today.
         assertThat(morning.getType()).isEqualTo(AttendanceType.CHECK_IN);
+    }
+
+    // ── Sessions span sites ──────────────────────────────────────────────────────
+
+    @Test
+    void scanAtAnotherSite_closesTheOpenSessionInsteadOfOpeningASecond() {
+        // ВЕНЕЛИН, 10 Sep: checked in at Ангел Кънчев at 07:47, scanned at ОБЩИНСКИ ПЪТ at 17:02.
+        // Paired per site, that evening scan read as a fresh check-in and opened a phantom session
+        // the scheduler then closed at 18:00 — inflating the day and splitting his hours in two.
+        Attendance morningAtSiteA = row(today.atTime(7, 47), AttendanceType.CHECK_IN);
+        Attendance eveningAtSiteB = row(today.atTime(17, 2), AttendanceType.CHECK_IN);
+        when(attendanceRepository.findForWorkerDay(any(), any(), any()))
+                .thenReturn(List.of(morningAtSiteA, eveningAtSiteB));
+
+        service.renormalizeDay(workerId, today);
+
+        assertThat(morningAtSiteA.getType()).isEqualTo(AttendanceType.CHECK_IN);
+        assertThat(eveningAtSiteB.getType()).isEqualTo(AttendanceType.CHECK_OUT);
+        assertThat(eveningAtSiteB.isIgnored()).isFalse();
+    }
+
+    @Test
+    void crossSiteDay_keepsAlternatingThroughFourScans() {
+        // Site A in the morning, site B in the afternoon: two real sessions, not four half-open ones.
+        Attendance inA = row(today.atTime(7, 0), AttendanceType.CHECK_IN);
+        Attendance outA = row(today.atTime(11, 0), AttendanceType.CHECK_IN);   // terminal guessed wrong
+        Attendance inB = row(today.atTime(13, 0), AttendanceType.CHECK_IN);
+        Attendance outB = row(today.atTime(17, 0), AttendanceType.CHECK_IN);   // and again
+        when(attendanceRepository.findForWorkerDay(any(), any(), any()))
+                .thenReturn(List.of(inA, outA, inB, outB));
+
+        service.renormalizeDay(workerId, today);
+
+        assertThat(inA.getType()).isEqualTo(AttendanceType.CHECK_IN);
+        assertThat(outA.getType()).isEqualTo(AttendanceType.CHECK_OUT);
+        assertThat(inB.getType()).isEqualTo(AttendanceType.CHECK_IN);
+        assertThat(outB.getType()).isEqualTo(AttendanceType.CHECK_OUT);
+    }
+
+    @Test
+    void reprojectionIsKeyedByWorkerAlone_soOneCallCoversEverySite() {
+        sync(record(AttendanceType.CHECK_IN, today.atTime(8, 0)),
+             record(AttendanceType.CHECK_OUT, today.atTime(17, 0)));
+
+        // Two records, one day, one worker — one re-projection, whatever sites they resolved to.
+        verify(attendanceRepository, org.mockito.Mockito.times(1))
+                .findForWorkerDay(any(), any(), any());
     }
 
     private Attendance row(LocalDateTime at, AttendanceType type) {

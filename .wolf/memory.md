@@ -1812,3 +1812,146 @@ Final state: main = c00956e, four PRs merged today (#1 server-side normalization
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
+
+## Session — 2026-09-10 — Нели investigation + 7 fixes (PR #5, #6)
+User reported "synced before recorded" in the details modal. Not a data bug: recorded_at is the device's local wall clock (BG) and synced_at came from LocalDateTime.now() on a UTC server, so the two sat 3h apart on screen (real gap was 6-15 s). PR #5: TimeZoneConfig pins the JVM default to app.timezone (Europe/Sofia) — set in the app, not just the container, so it behaves the same however the jar starts. Also aligns the server's "today" with the terminal's and moves auto-checkout to 00:01 local. Removed the always-empty "Игнориран" row from the details modal (ignored rows are filtered out of every report query, so a clickable row is never ignored).
+Then НЕЛИ ЦОЛОВА ЦЕНОВА showed two consecutive kept CHECK_INs on 09-10. Investigated PROD directly (read-only, host 3.74.36.217). Replayed her exact three-record input locally: main produces a consistent result, prod did not → prod was running an older image. CONFIRMED via `docker inspect garant-backend --format '{{.Image}}' | xargs docker image inspect --format '{{.Created}}'`: her records were processed ~2h before the then-current image was built. Second time a hand-built `latest` caused this.
+Checking "can it recur" found 5 real gaps, all fixed in PR #6: (1) the re-scan threshold was 15 MINUTES — it swallowed genuinely short shifts, turning a 08:00→08:10 shift into a full day via auto-checkout; now attendance.min-gap-seconds, default 60 (every real re-scan observed in prod was 1-18 s); (2) deleteAttendance / manualRecord / changeSite never re-projected the day, so admin edits left stale directions — each now re-derives its day (changeSite both sites), split into two transactions so the projection reads committed rows; (3) the confirm button only had a soft guard (setConfirming is async) — added a ref lock + disabled; (4) existsDuplicate matched on `type`, which the projection rewrites, so an old terminal re-sending a queued record inserted a DUPLICATE — now matches client_type, and scheduler/admin records set client_type too; (5) AutoCheckoutScheduler wrote without re-projecting — now returns the days it touched and re-projects them.
+Verified e2e on a real stack: 08:00→08:10 preserved; Нели's input → clean 3-min session; 2-second double press ignored; deleting a mid-day record re-derives the rest; re-sent record skipped (1 row not 2); auto-checkout twice → 1 then 0. 24/24 backend tests, tsc clean. main = fec2375, deployed to prod (image 2026-09-10 10:55 UTC confirmed).
+Pending: a real terminal scan tomorrow to verify in production; Нели's 09-10 day still broken (re-projection only triggers on a new event for that day) — she scans again or an admin corrects it.
+SECURITY (open): prod Postgres 5432 is reachable from the internet; I connected with garant_user / garant_pass_dev — the password committed in the repo's .env — and that account is superuser/createdb/createrole and owns the tables. Ports 80/443 open (nginx), 3000/8080 correctly closed. Flagged; not fixed.
+
+## Session: 2026-09-11 08:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:10 | Created src/main/resources/db/migration/V13__attendance_site_resolution.sql | — | ~338 |
+| 09:11 | Created src/main/java/org/example/attendTrack/site/GeoResolver.java | — | ~1810 |
+| 09:12 | Created src/test/java/org/example/attendTrack/site/GeoResolverTest.java | — | ~2548 |
+| 09:12 | Edited src/test/java/org/example/attendTrack/site/GeoResolverTest.java | modified haversineMatchesKnownDistance() | ~204 |
+| 09:13 | Edited src/main/java/org/example/attendTrack/attendance/Attendance.java | expanded (+12 lines) | ~154 |
+| 09:13 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified sync() | ~157 |
+| 09:13 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified for() | ~200 |
+| 09:14 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | fallback() → site() | ~288 |
+| 09:14 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 15→10 lines | ~146 |
+| 09:14 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 7→9 lines | ~96 |
+| 09:14 | Edited src/main/java/org/example/attendTrack/site/GeoResolver.java | added 1 condition(s) | ~252 |
+| 09:14 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 1 condition(s) | ~515 |
+| 09:14 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 1 import(s) | ~38 |
+| 09:15 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified of() | ~228 |
+| 09:15 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | updateSite() → updateResolvedSite() | ~206 |
+| 09:16 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added error handling | ~864 |
+| 09:16 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified revalidateLocation() | ~198 |
+| 09:16 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 5→6 lines | ~77 |
+| 09:16 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 9→10 lines | ~119 |
+| 09:18 | Created src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | — | ~2367 |
+| 09:19 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | 9→4 lines | ~18 |
+| 09:19 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | 3→2 lines | ~14 |
+| 09:19 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | 4→7 lines | ~153 |
+| 09:22 | Edited frontend/lib/geo.ts | added optional chaining | ~452 |
+| 09:22 | Edited frontend/components/verify/VerifyCamera.tsx | CSS: best, distance | ~430 |
+| 09:22 | Edited frontend/components/verify/VerifyCamera.tsx | inline fix | ~14 |
+| 09:22 | Edited src/main/java/org/example/attendTrack/attendance/dto/AttendanceDetail.java | 4→8 lines | ~93 |
+| 09:22 | Edited src/main/java/org/example/attendTrack/attendance/dto/AttendanceDetail.java | modified name() | ~120 |
+| 09:23 | Edited frontend/components/reports/AttendanceDetailsModal.tsx | CSS: clientSiteName, distanceMeters | ~68 |
+| 09:23 | Edited frontend/components/reports/AttendanceDetailsModal.tsx | added nullish coalescing | ~118 |
+| 09:23 | Edited frontend/messages/bg.json | 1→2 lines | ~27 |
+| 09:23 | Edited frontend/messages/en.json | 1→2 lines | ~26 |
+| 09:27 | Created src/main/resources/db/migration/V14__attendance_gps_accuracy.sql | — | ~221 |
+| 09:27 | Edited src/main/java/org/example/attendTrack/attendance/dto/AttendanceRecord.java | 3→5 lines | ~59 |
+| 09:27 | Edited src/main/java/org/example/attendTrack/attendance/Attendance.java | 2→6 lines | ~68 |
+| 09:27 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | expanded (+8 lines) | ~150 |
+| 09:28 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 2→2 lines | ~47 |
+| 09:28 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | added 1 condition(s) | ~103 |
+| 09:28 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 2→3 lines | ~41 |
+| 09:28 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 3→4 lines | ~66 |
+| 09:28 | Edited src/main/resources/application.yml | expanded (+6 lines) | ~120 |
+| 09:28 | Edited frontend/lib/db.ts | expanded (+10 lines) | ~253 |
+| 09:28 | Edited frontend/lib/db.ts | 8→10 lines | ~98 |
+| 09:29 | Edited frontend/components/verify/VerifyCamera.tsx | CSS: accuracy | ~329 |
+| 09:29 | Edited frontend/components/verify/VerifyCamera.tsx | 1→4 lines | ~52 |
+| 09:30 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceNormalizationTest.java | 2→2 lines | ~42 |
+| 09:30 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | 3→3 lines | ~64 |
+| 09:30 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | modified syncClaiming() | ~84 |
+| 09:30 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | modified aFixJustOutsideATenMetreCorridorCountsAsInsideWhenItsOwnErrorSaysItMight() | ~356 |
+| 09:30 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | 1→2 lines | ~39 |
+| 09:31 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java | inline fix | ~24 |
+
+## Session: 2026-09-11 — Фаза A+B: сървърна резолюция на обекта + GPS точност
+
+| Време | Действие | Файлове | Резултат | ~Токени |
+|-------|----------|---------|----------|---------|
+| 09:00 | Одит в прод (read-only): часовата зона потвърдена оправена (09-11: 48 записа, 0 отрицателни, средно +30 s) | prod DB | потвърдено | ~3000 |
+| 09:10 | Открит bug-231: проекцията е с ключ (worker, site, day) → фантомни сесии при два обекта | — | логнат | ~2000 |
+| 09:15 | Открит bug-232: 18/18 RESCAN са с ОБРАТНА посока — нито един истински дубъл | — | логнат | ~800 |
+| 09:30 | Открит bug-233 (root cause): resolveWorkerSite() fallback към entries[0] — 10 записа приписани на обекти на 76 и 163 км, докато координатите са ВЪТРЕ в „Ангел Кънчев" | VerifyCamera.tsx:75 | логнат, ПОТВЪРДЕН от потребителя | ~4000 |
+| 09:35 | bug-234: КОСТАЛЕВО с координати ~140 км встрани (работи само заради чекпойнтите) | prod data | логнат | ~500 |
+| 10:00 | Фаза A: V13 (client_site_id, distance_meters) + GeoResolver + резолюция в sync() | V13, GeoResolver.java, AttendanceService, Attendance, AttendanceRepository | готово | ~6000 |
+| 10:20 | revalidateLocation разширен: пре-резолвва обекта, не само флага; две транзакции | AttendanceService | готово | ~1500 |
+| 10:30 | Клиентът: entries[0] → най-близкият обект; distanceToZoneMeters в lib/geo.ts | VerifyCamera.tsx, lib/geo.ts | готово | ~1200 |
+| 10:35 | Модал: „Терминалът каза обект X → Y" + отстояние в метри | AttendanceDetail.java, AttendanceDetailsModal.tsx, bg/en.json | готово | ~800 |
+| 10:50 | Фаза B: V14 (accuracy_meters), geo-accuracy-cap-meters:50, толеранс и в двата края, Dexie v7 | V14, application.yml, db.ts, VerifyCamera, verify/page | готово | ~2500 |
+| 11:00 | Тестове: GeoResolverTest (12) + AttendanceServiceSiteResolutionTest (8), с реалните продукционни координати | src/test/.../site, .../attendance | 44/44 зелени, tsc чист | ~3000 |
+
+**Решение на потребителя:** по точка C да НЕ се прави преизчисляване на историческите данни на този етап.
+
+**Остава:** Фаза C — проекция с ключ (работник, ден) вместо (работник, обект, ден).
+| 09:32 | Session end: 51 writes across 18 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 13 reads | ~51663 tok |
+| 09:35 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified renormalizeDay() | ~393 |
+| 09:35 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | findTodayBySite() → findTodayForSiteWorkers() | ~226 |
+| 09:37 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+25 lines) | ~358 |
+| 09:37 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified GroupKey() | ~182 |
+| 09:37 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | modified if() | ~322 |
+| 09:38 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | 5→6 lines | ~112 |
+| 09:38 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | findBySiteAndDateRange() → findForSiteWorkersInRange() | ~204 |
+| 09:38 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | expanded (+6 lines) | ~146 |
+| 09:40 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | added 1 condition(s) | ~289 |
+| 09:42 | Edited src/test/java/org/example/attendTrack/attendance/AttendanceServiceNormalizationTest.java | modified scanAtAnotherSite_closesTheOpenSessionInsteadOfOpeningASecond() | ~755 |
+| 09:43 | Created src/test/java/org/example/attendTrack/attendance/AutoCheckoutSchedulerTest.java | — | ~1348 |
+| 09:44 | Edited src/main/java/org/example/attendTrack/report/ReportService.java | getSite() → toString() | ~124 |
+
+## Session: 2026-09-11 (продължение) — Фаза C: сесията е на работника, не на обекта
+
+| Време | Действие | Файлове | Резултат | ~Токени |
+|-------|----------|---------|----------|---------|
+| 11:20 | DayKey(workerId, day) — siteId премахнат; renormalizeDay(workerId, day) | AttendanceService | готово | ~1500 |
+| 11:25 | Repo заявки станаха worker-scoped: findForWorkerDay, findLastKeptBefore, findLastForWorkerOnDay, findUnclosedCheckIns, findOpenShiftsOlderThan | AttendanceRepository | готово | ~1200 |
+| 11:30 | findTodayForSiteWorkers — зелено/червено на терминала вече отразява работника, не обекта | AttendanceRepository, AttendanceService | готово | ~600 |
+| 11:35 | Шедулерът групира по (worker, day): две отворени сесии на различни обекти дават ЕДИН авто-чекаут | AutoCheckoutScheduler | готово | ~500 |
+| 11:40 | ReportService: GroupKey(workerId, date); сесията се приписва на обекта на чекина; изтрит workaround-ът 'inferred checkout from another site'; findForSiteWorkersInRange + филтър на изхода; shiftDatesByRecord групира по работник | ReportService | готово | ~2000 |
+| 11:50 | Клиент: sessionLog и db.sessionStatus с ключ workerId (Dexie v8 drop + v9 recreate); офлайн fallback чете целия кеш за деня | verify/page.tsx, VerifyCamera.tsx, db.ts | готово | ~1200 |
+| 12:00 | Тестове: AutoCheckoutSchedulerTest (4) + 3 cross-site теста | src/test/.../attendance | 51/51 зелени, npm build чист | ~2000 |
+
+**Решение:** сесията се приписва на обекта на ЧЕКИНА; чекаутът запазва обекта, на който физически е сканиран.
+**По указание на потребителя:** НЕ се прави преизчисляване на исторически данни.
+| 09:47 | Session end: 63 writes across 21 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 15 reads | ~61138 tok |
+| 09:53 | Created src/test/java/org/example/attendTrack/attendance/AttendanceRepositoryQueryTest.java | — | ~2847 |
+| 09:55 | Session end: 64 writes across 22 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 15 reads | ~64258 tok |
+| 09:57 | Created src/test/java/org/example/attendTrack/report/WorkedHoursReportTest.java | — | ~3174 |
+
+## Session: 2026-09-11 (одит) — „има ли вероятност нещо да сме счупили"
+
+| Време | Действие | Файлове | Резултат | ~Токени |
+|-------|----------|---------|----------|---------|
+| 12:20 | НАМЕРЕН ВНЕСЕН ДЕФЕКТ: existsDuplicate сравняваше a.site.id, а site_id стана изведена колона -> дубликати при повторно изпращане | AttendanceRepository, AttendanceService, AutoCheckoutScheduler | поправено, bug-235 | ~1500 |
+| 12:35 | H2 + AttendanceRepositoryQueryTest — 11 теста върху истински persistence context; преди това нито една JPQL не беше парсвана от Hibernate | pom.xml, src/test/.../AttendanceRepositoryQueryTest.java | 11/11 | ~3500 |
+| 12:50 | WorkedHoursReportTest — 9 теста за сдвояването: cross-site сесия, филтър по обект, ден-тотал, корекции, 24ч смяна през полунощ и обекти | src/test/.../report/WorkedHoursReportTest.java | 9/9 | ~3000 |
+| 13:00 | Оправени остарели javadoc-ове (inferredCheckOut вече винаги false; buildWorkedHoursRows вече не е per-site) | WorkedHoursRow.java, ReportService.java | готово | ~300 |
+
+**Общо: 71/71 backend теста, npm build чист.**
+
+**Известни промени във видимото поведение (не са дефекти):** часовете се преместват между справките по обект; „Липсващи" изброява повече хора; ръчният чекин от админ отказва втора сесия през обекти; Dexie v8 трие sessionStatus (терминалите да се обновят онлайн).
+
+**Непокрито:** при справка ПО ОБЕКТ корекциите се четат само за този обект (findBySiteAndPeriod) — корекция, записана под другия обект на същия ден, няма да се приложи там; в справката за всички обекти се прилага.
+| 10:01 | Session end: 65 writes across 23 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 15 reads | ~67658 tok |
+| 10:12 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | modified reresolveSites() | ~93 |
+
+| 13:15 | Втори одит: вдигнат postgres:16 в docker + реален boot. Flyway 14/14 ✓, ddl-auto:validate ✓, V13/V14 върху 3000 реда ✓ | — | ~2000 |
+| 13:25 | НАМЕРЕН ВТОРИ ВНЕСЕН ДЕФЕКТ: reresolveSites беше package-private -> @Transactional се игнорира мълчаливо | AttendanceService.java | поправено, bug-236 | ~800 |
+| 13:35 | E2E срещу реална база: sync с грешно твърдян обект -> резолвира се вярно; /hours 9.25ч на верния обект, 0 реда на другия; revalidate връща нарочно счупени записи; шедулерът създава чекаут с client_site | — | всичко ✓ | ~2500 |
+| 10:15 | Session end: 66 writes across 23 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68459 tok |
+| 10:17 | Created .claude/launch.json | — | ~78 |
+| 10:17 | Edited .claude/launch.json | 1→2 lines | ~13 |
+| 10:25 | Edited frontend/components/reports/AttendanceDetailsModal.tsx | 2→5 lines | ~101 |
+| 10:27 | Edited frontend/components/reports/AttendanceDetailsModal.tsx | inline fix | ~36 |
+| 10:30 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |

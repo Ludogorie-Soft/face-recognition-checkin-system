@@ -28,6 +28,9 @@ interface AttendanceDetail {
   manualOverride: boolean
   managerName: string | null
   clientType: string | null
+  /** Set only when the terminal claimed a different site than the one the server resolved. */
+  clientSiteName: string | null
+  distanceMeters: number | null
   ignored: boolean
   ignoredReason: string | null
 }
@@ -75,7 +78,16 @@ export function AttendanceDetailsModal({ open, onClose, checkInId, checkOutId, t
       [t('offline'), d.createdOffline ? t('yes') : t('no')],
       [t('detailReported'), d.clientType && d.clientType !== d.type
         ? `${d.clientType} → ${d.type}` : '—'],
-      [t('locationValid'), d.locationValid ? t('inZone') : t('outOfZone')],
+      // Site names are long sentences, so this one wraps on spaces — the column's default
+      // break-all is there for device ids and would otherwise split road numbers mid-digit.
+      [t('detailReportedSite'), d.clientSiteName
+        ? <span key="site" className="[word-break:normal] break-words">{`${d.clientSiteName} → ${d.siteName ?? '—'}`}</span>
+        : '—'],
+      [t('locationValid'), d.locationValid
+        ? t('inZone')
+        : d.distanceMeters != null
+          ? `${t('outOfZone')} (${d.distanceMeters} m)`
+          : t('outOfZone')],
       [t('faceConfidence'), d.faceConfidence != null ? `${Math.round(d.faceConfidence)}%` : '—'],
       [t('manager'), d.managerName ?? '—'],
       [t('detailUserAgent'), <span key="ua" className="break-all text-[11px] leading-snug">{d.userAgent ?? '—'}</span>],

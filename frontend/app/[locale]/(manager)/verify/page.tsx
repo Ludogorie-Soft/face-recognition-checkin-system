@@ -16,9 +16,8 @@ import type { SiteInfo, WorkerRecord, LocalSessionStatus } from '@/lib/db'
 
 type Phase = 'syncing' | 'camera' | 'error'
 
-// sessionLog is keyed by `${workerId}:${siteId}` so a worker assigned to multiple
-// sites keeps an independent status per site.
-const statusKey = (workerId: string, siteId: string) => `${workerId}:${siteId}`
+// sessionLog is keyed by workerId alone. A worker has one open session at a time, wherever it was
+// opened: a terminal at another site must offer to close it rather than start a second one.
 
 export default function VerifyPage() {
   const t = useTranslations('verify')
@@ -66,23 +65,24 @@ export default function VerifyPage() {
       ),
     )
 
+    // Offline: fall back to every locally persisted status from today, not just this site's. The
+    // status belongs to the worker, and the session may well have been opened at another site.
+    if (todayResults.some((r) => r.status === 'rejected')) {
+      const cached = await db.sessionStatus.toArray()
+      cached
+        .filter((s) => s.date === today)
+        .forEach((s) => next.set(s.workerId, { type: s.type, serverConfirmed: s.serverConfirmed }))
+    }
+
     const confirmedRows: LocalSessionStatus[] = []
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i]
       const r = todayResults[i]
-      if (r.status === 'fulfilled') {
-        Object.entries(r.value.data).forEach(([wId, type]) => {
-          const t = type as 'CHECK_IN' | 'CHECK_OUT'
-          next.set(statusKey(wId, id), { type: t, serverConfirmed: true })
-          confirmedRows.push({ workerId: wId, siteId: id, type: t, date: today, serverConfirmed: true })
-        })
-      } else {
-        // Offline: fall back to the last locally persisted status for this site.
-        const cached = await db.sessionStatus.where('siteId').equals(id).toArray()
-        cached
-          .filter((s) => s.date === today)
-          .forEach((s) => next.set(statusKey(s.workerId, s.siteId), { type: s.type, serverConfirmed: s.serverConfirmed }))
-      }
+      if (r.status !== 'fulfilled') continue
+      Object.entries(r.value.data).forEach(([wId, type]) => {
+        const t = type as 'CHECK_IN' | 'CHECK_OUT'
+        next.set(wId, { type: t, serverConfirmed: true })
+        confirmedRows.push({ workerId: wId, siteId: ids[i], type: t, date: today, serverConfirmed: true })
+      })
     }
     if (confirmedRows.length) await db.sessionStatus.bulkPut(confirmedRows)
 
@@ -92,7 +92,7 @@ export default function VerifyPage() {
       .filter((r) => r.recordedAt.startsWith(today))
       .toArray()
     pending.sort((a, b) => a.recordedAt.localeCompare(b.recordedAt))
-    pending.forEach((r) => next.set(statusKey(r.workerId, r.siteId), { type: r.type, serverConfirmed: false }))
+    pending.forEach((r) => next.set(r.workerId, { type: r.type, serverConfirmed: false }))
     setSessionLog(next)
   }, [])
 
@@ -171,6 +171,7 @@ export default function VerifyPage() {
       type: 'CHECK_IN' | 'CHECK_OUT'
       lat: number
       lng: number
+      accuracyMeters: number
       locationValid: boolean
       faceConfidence: number | null
       manualOverride: boolean
@@ -186,6 +187,7 @@ export default function VerifyPage() {
         type: params.type,
         lat: params.lat,
         lng: params.lng,
+        accuracyMeters: params.accuracyMeters,
         locationValid: params.locationValid,
         faceConfidence: params.faceConfidence,
         manualOverride: params.manualOverride,
@@ -203,7 +205,7 @@ export default function VerifyPage() {
       })
 
       setSessionLog((prev) =>
-        new Map(prev).set(statusKey(params.workerId, params.siteId), {
+        new Map(prev).set(params.workerId, {
           type: params.type,
           serverConfirmed: false,
         }),

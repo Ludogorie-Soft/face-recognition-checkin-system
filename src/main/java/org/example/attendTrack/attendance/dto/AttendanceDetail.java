@@ -26,6 +26,10 @@ public record AttendanceDetail(
         boolean manualOverride,
         String managerName,
         String clientType,
+        /** Site the terminal claimed — null unless it differs from the one the server resolved. */
+        String clientSiteName,
+        /** Metres from the recorded position to the resolved site's zone; null when unmeasured. */
+        Integer distanceMeters,
         boolean ignored,
         String ignoredReason
 ) {
@@ -50,6 +54,11 @@ public record AttendanceDetail(
                 a.isManualOverride(),
                 a.getManager() != null ? a.getManager().getName() : null,
                 a.getClientType() != null ? a.getClientType().name() : null,
+                // Only worth showing when the terminal got it wrong — otherwise it is noise.
+                a.getClientSite() != null && a.getSite() != null
+                        && !a.getClientSite().getId().equals(a.getSite().getId())
+                        ? a.getClientSite().getName() : null,
+                a.getDistanceMeters(),
                 a.isIgnored(),
                 a.getIgnoredReason() != null ? a.getIgnoredReason().name() : null
         );

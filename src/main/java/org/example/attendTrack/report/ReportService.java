@@ -128,8 +128,11 @@ public class ReportService {
 
         LocalDateTime windowStart = shiftWindowStart(from);
         LocalDateTime windowEnd = shiftWindowEnd(to);
+        // Fetch these workers' whole day, other sites included. A session that opens here and closes
+        // elsewhere would otherwise read as never closed; the sessions are filtered back to this
+        // site after pairing.
         List<Attendance> allRecords = siteId != null
-                ? attendanceRepository.findBySiteAndDateRange(siteId, windowStart, windowEnd)
+                ? attendanceRepository.findForSiteWorkersInRange(siteId, windowStart, windowEnd)
                 : attendanceRepository.findAllInDateRange(windowStart, windowEnd);
 
         List<Attendance> records = allRecords.stream()
@@ -149,7 +152,13 @@ public class ReportService {
         Map<UUID, String> companyNames = workerCompanyNames(
                 records.stream().map(a -> a.getWorker().getId()).distinct().toList());
 
-        return trimToRange(buildWorkedHoursRows(records, corrections, companyNames), from, to);
+        List<WorkedHoursRow> rows = trimToRange(
+                buildWorkedHoursRows(records, corrections, companyNames), from, to);
+
+        // Sessions are filed under the site they opened at, so this keeps exactly the shifts that
+        // started here — the cross-site closing scans came along only to complete them.
+        return siteId == null ? rows
+                : rows.stream().filter(r -> siteId.equals(r.siteId())).toList();
     }
 
     @Transactional(readOnly = true)
@@ -500,10 +509,11 @@ public class ReportService {
     }
 
     /**
-     * Pairs CHECK_IN / CHECK_OUT records per (worker, site, date) and builds WorkedHoursRow list.
+     * Pairs CHECK_IN / CHECK_OUT records per (worker, date) — across sites — and builds the
+     * WorkedHoursRow list. Each session is filed under the site its CHECK_IN happened at.
      *
      * Each sequential IN/OUT pair within a shift-day becomes its own session row (pairIndex ≥ 0).
-     * When a worker has more than one session on the same day at the same site, an extra
+     * When a worker has more than one session on the same day, an extra
      * day-total row (pairIndex = -1) is appended that holds the sum of all session hours
      * and any day-level correction. Session rows in a multi-session day have effectiveHours = null
      * so that summary totals (which sum effectiveHours) do not double-count.
@@ -515,7 +525,9 @@ public class ReportService {
             Map<CorrectionKey, HoursCorrection> corrections,
             Map<UUID, String> companyNames) {
 
-        record GroupKey(UUID workerId, UUID siteId, LocalDate date) {}
+        // Grouped per worker and day, NOT per site: a session can open at one site and close at
+        // another, and pairing those separately is what used to invent a second session.
+        record GroupKey(UUID workerId, LocalDate date) {}
 
         // A 12/24h shift crosses midnight, so its records are dated by the session they belong to
         // rather than by the calendar day they fall in.
@@ -523,8 +535,7 @@ public class ReportService {
 
         Map<GroupKey, List<Attendance>> grouped = records.stream()
                 .collect(Collectors.groupingBy(a ->
-                        new GroupKey(a.getWorker().getId(), a.getSite().getId(),
-                                shiftDates.get(a.getId()))));
+                        new GroupKey(a.getWorker().getId(), shiftDates.get(a.getId()))));
 
         List<WorkedHoursRow> rows = new ArrayList<>();
 
@@ -560,47 +571,25 @@ public class ReportService {
                 }
             }
 
-            // Handle the last open CHECK_IN: try inferred checkout from another site, else open shift
+            // A genuinely unclosed shift. The old code guessed a check-out here from the worker's
+            // next check-in at a DIFFERENT site — a workaround for the per-site pairing that the
+            // per-worker projection makes unnecessary: a scan at another site is now a real
+            // CHECK_OUT in the sequence and pairs above like any other.
             if (openIn != null) {
-                final Attendance finalOpenIn = openIn;
-                Optional<LocalDateTime> nextSiteIn = records.stream()
-                        .filter(a -> a.getWorker().getId().equals(key.workerId())
-                                && !a.getSite().getId().equals(key.siteId())
-                                && key.date().equals(shiftDates.get(a.getId()))
-                                && a.getType() == AttendanceType.CHECK_IN
-                                && a.getRecordedAt().isAfter(finalOpenIn.getRecordedAt()))
-                        .map(Attendance::getRecordedAt)
-                        .min(Comparator.naturalOrder());
-
-                if (nextSiteIn.isPresent()) {
-                    long minutes = Duration.between(openIn.getRecordedAt(), nextSiteIn.get()).toMinutes();
-                    boolean hasRealCheckInCoords = openIn.getLat() != 0.0 || openIn.getLng() != 0.0;
-                    sessionRows.add(new WorkedHoursRow(
-                            openIn.getId(), null,  // inferred checkout — no real CHECK_OUT record
-                            openIn.getWorker().getId(), openIn.getWorker().getName(), companyName,
-                            openIn.getSite().getId(), openIn.getSite().getName(),
-                            key.date(), sessionRows.size(),
-                            openIn.getRecordedAt().toLocalTime(),
-                            nextSiteIn.get().toLocalTime(),
-                            true, false, roundToQuarter(minutes), null, null, null,
-                            null, null,  // inferred checkout — no real CHECK_OUT coords
-                            hasRealCheckInCoords ? openIn.getLat() : null,
-                            hasRealCheckInCoords ? openIn.getLng() : null,
-                            hasRealCheckInCoords ? openIn.isLocationValid() : null,
-                            null,  // inferred checkout — no locationValid
-                            openIn.isManualOverride() && openIn.getManager() != null,
-                            offlineOf(openIn),
-                            shiftTypeOf(openIn)));
-                } else {
-                    sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size(), companyName));
-                }
+                sessionRows.add(sessionRow(key.date(), openIn, null, false, false, null, sessionRows.size(), companyName));
             }
 
             if (sessionRows.isEmpty()) continue;
 
             // ── Apply day-level correction ────────────────────────────────────
-            CorrectionKey corrKey = new CorrectionKey(key.workerId(), key.siteId(), key.date());
-            HoursCorrection correction = corrections.get(corrKey);
+            // Corrections are stored per (worker, site, day) while a day now spans sites. Look under
+            // the site the day opened at first, then any other site it touched, so a correction
+            // entered before this change is still found.
+            HoursCorrection correction = sessionRows.stream()
+                    .map(r -> corrections.get(new CorrectionKey(key.workerId(), r.siteId(), key.date())))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
             Double correctedHours = correction != null ? correction.getCorrectedHours() : null;
             String corrNote = correction != null ? correction.getNote() : null;
 
@@ -633,7 +622,8 @@ public class ReportService {
                 rows.add(new WorkedHoursRow(
                         null, null,  // day-total row — no individual record IDs
                         key.workerId(), sessionRows.get(0).workerName(), companyName,
-                        key.siteId(), sessionRows.get(0).siteName(),
+                        // A multi-session day is filed under the site it opened at.
+                        sessionRows.get(0).siteId(), sessionRows.get(0).siteName(),
                         key.date(), -1,
                         null, null, false, false,
                         daySum == 0 ? null : daySum, effectiveDay,
@@ -747,8 +737,10 @@ public class ReportService {
 
         for (Attendance a : records) {
             if (a.getWorker().getShiftType() == ShiftType.SHIFT_24H) {
+                // Grouped by worker, not worker+site: a shift that opens at one site and closes at
+                // another is still one session and must share one date.
                 shiftGroups.computeIfAbsent(
-                        a.getWorker().getId() + ":" + a.getSite().getId(),
+                        a.getWorker().getId().toString(),
                         k -> new ArrayList<>()).add(a);
             } else {
                 out.put(a.getId(), normalizeShiftDate(a.getRecordedAt()));

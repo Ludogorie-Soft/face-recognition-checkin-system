@@ -3748,6 +3748,399 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-09-09T07:21:16.392Z"
+    },
+    {
+      "id": "bug-231",
+      "timestamp": "2026-09-11T09:30:00.000Z",
+      "error_message": "Работник сканира на втори обект вечерта -> вместо чекаут се отваря нова сесия. Часовете се раздробяват (НЕЛИ 09-10: 0.05ч + 0.48ч вместо ~8ч; БОЯН/МИТКО/РУМЕН/ВЛАДИМИР: 9.1ч вместо 8.7ч)",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Проекцията на сесиите е с ключ (worker, site, day). Отвореното състояние е ПО ОБЕКТ, не по работник. Първото сканиране на нов обект винаги се тълкува като CHECK_IN, дори когато работникът има отворена сесия на друг обект. Шедулерът после затваря и двете сесии в 18:00 -> фантомна втора сесия.",
+      "fix": "ОПРАВЕНО (Фаза C, 2026-09-11): проекцията минава на ключ (работник, ден) — findForWorkerDay през всички обекти; DayKey без siteId; ReportService GroupKey(workerId, date) със сесия, приписана на обекта на чекина; findUnclosedCheckIns вече не сравнява co.site.id = a.site.id; шедулерът групира по (worker, day). Премахнат workaround-ът 'inferred checkout from another site' в ReportService.",
+      "tags": [
+        "attendance",
+        "projection",
+        "multi-site",
+        "cross-site",
+        "open",
+        "hours-inflation"
+      ],
+      "related_bugs": [],
+      "occurrences": 18,
+      "last_seen": "2026-09-11T12:00:00.000Z"
+    },
+    {
+      "id": "bug-232",
+      "timestamp": "2026-09-11T09:30:00.000Z",
+      "error_message": "18 от 18 RESCAN-игнорирани записа са с ОБРАТНА посока спрямо предходния — нито един не е истински дубъл (една и съща посока)",
+      "file": "src/main/java/org/example/attendTrack/attendance/SessionProjector.java",
+      "root_cause": "minGap правилото изхвърля всяко сканиране в рамките на 60 с, без да гледа client_type. Терминалът обаче праща ОБРАТНАТА посока при второто натискане (локалното състояние вече е обърнато) — това е корекция от оператора, не случаен дубъл.",
+      "fix": "СМЕКЧЕНО от Фаза C (не оправено директно): 1-секундните двойки с обратна посока вече нямат практически ефект — първото сканиране коректно ЗАТВАРЯ отворената сесия, вместо да отваря втора, така че изхвърленото второ сканиране не променя резултата. Самото правило (RESCAN само при съвпадаща посока) остава нереализирано.",
+      "tags": [
+        "attendance",
+        "projection",
+        "rescan",
+        "dedup",
+        "open"
+      ],
+      "related_bugs": [
+        "bug-231"
+      ],
+      "occurrences": 18,
+      "last_seen": "2026-09-11T12:00:00.000Z"
+    },
+    {
+      "id": "bug-233",
+      "timestamp": "2026-09-11T10:15:00.000Z",
+      "error_message": "При чекиране се записва грешен обект и 'извън зона'; при ръчна смяна на обекта записът става 'в зона' | ПОТВЪРДЕНО ОТ ПОТРЕБИТЕЛЯ 2026-09-11: 'Всички от обект Осн.ремонт Анг. бяха отразени в обект Асф.база и локацията беше в червено. Сменихме обекта и локацията вече е в зона. Обекта не се определя от локацията, а взема първия назначен обект на работника.'",
+      "file": "frontend/components/verify/VerifyCamera.tsx",
+      "root_cause": "resolveWorkerSite(): когато нито една зона не съвпадне, връща entries[0].siteId — ПЪРВОТО назначение на работника по ред на синхронизация, без връзка с реалното местоположение. Сървърът после валидира спрямо този грешен обект -> location_valid=false. Доказано: 10 записа от таблета във Враца са приписани на обекти на 76 км и 163 км, докато координатите са ВЪТРЕ в коридорите на 'Ангел Кънчев' (3-9 м навътре).",
+      "fix": "ОПРАВЕНО (Фаза A, 2026-09-11): GeoResolver.resolve() — сървърът избира обекта по координати измежду назначенията на работника; V13 добавя client_site_id + distance_meters; клиентът ползва най-близкия обект вместо entries[0]; revalidateLocation пре-резолвва и историята.",
+      "tags": [
+        "geo",
+        "location-valid",
+        "site-resolution",
+        "verify",
+        "open",
+        "critical",
+        "user-confirmed"
+      ],
+      "related_bugs": [
+        "bug-231"
+      ],
+      "occurrences": 42,
+      "last_seen": "2026-09-11T12:00:00.000Z"
+    },
+    {
+      "id": "bug-234",
+      "timestamp": "2026-09-11T10:15:00.000Z",
+      "error_message": "АСФАЛТОВА БАЗА КОСТАЛЕВО има координати на ~140 км от реалното място (42.7689, 25.4615 = Габровско, вместо Врачанско)",
+      "file": "sites (production data)",
+      "root_cause": "Центърът на обекта е останал от тестови данни. Работи, защото има 7 чекпойнта и кодът ползва тях. Но всеки fallback към центъра (клиент без кеширани чекпойнти) дава разстояния от 140-163 км.",
+      "fix": "НЕ Е ОПРАВЕНО. Да се коригират координатите на обекта; също 'офис' и 'Обект 2' (неактивни) са в същия район.",
+      "tags": [
+        "data",
+        "sites",
+        "coordinates",
+        "open"
+      ],
+      "related_bugs": [
+        "bug-233"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T10:15:00.000Z"
+    },
+    {
+      "id": "bug-235",
+      "timestamp": "2026-09-11T06:13:43.356Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→9 lines (2 removed) | Also: if (self.processOne(record, site, admin, checkpoin; touchedDays.add(new DayKey(record.workerId(), site | Also: public int processOne(AttendanceRecord record, Sit; List<SiteCheckpoint> checkpoints, Set<UUID> notifi",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-09-11T06:14:02.702Z"
+    },
+    {
+      "id": "bug-236",
+      "timestamp": "2026-09-11T06:14:38.891Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/site/GeoResolver.java",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 12→21 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:14:38.891Z"
+    },
+    {
+      "id": "bug-237",
+      "timestamp": "2026-09-11T06:15:26.264Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→13 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:15:26.264Z"
+    },
+    {
+      "id": "bug-238",
+      "timestamp": "2026-09-11T06:16:13.951Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:16:13.951Z"
+    },
+    {
+      "id": "bug-239",
+      "timestamp": "2026-09-11T06:16:31.449Z",
+      "error_message": "Wrong return value",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "Was returning: List.of();",
+      "fix": "Now returns: new Reresolution(0, Set.of());",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:16:31.449Z"
+    },
+    {
+      "id": "bug-240",
+      "timestamp": "2026-09-11T06:19:06.205Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/test/java/org/example/attendTrack/attendance/AttendanceServiceSiteResolutionTest.java",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 9→4 lines (3 removed) | Also: when(siteWorkerRepository.findByUserIdWithSite(wor; new SiteWorker(angelKanchev, worker)));",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-09-11T06:19:47.259Z"
+    },
+    {
+      "id": "bug-241",
+      "timestamp": "2026-09-11T06:22:02.708Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/lib/geo.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:22:02.708Z"
+    },
+    {
+      "id": "bug-242",
+      "timestamp": "2026-09-11T06:22:16.202Z",
+      "error_message": "Type error",
+      "file": "frontend/components/verify/VerifyCamera.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:22:16.202Z"
+    },
+    {
+      "id": "bug-243",
+      "timestamp": "2026-09-11T06:23:09.655Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/components/reports/AttendanceDetailsModal.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:23:09.655Z"
+    },
+    {
+      "id": "bug-244",
+      "timestamp": "2026-09-11T06:28:10.896Z",
+      "error_message": "Missing guard clause",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "No early return/throw for edge case: accuracyMeters == null || accuracyMeters <= 0",
+      "fix": "Added guard clause: if (accuracyMeters == null || accuracyMeters)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:28:10.896Z"
+    },
+    {
+      "id": "bug-245",
+      "timestamp": "2026-09-11T06:30:04.918Z",
+      "error_message": "Wrong return value",
+      "file": "src/test/java/org/example/attendTrack/attendance/AttendanceServiceNormalizationTest.java",
+      "root_cause": "Was returning: new AttendanceRecord(workerId, type, 43.0, 23.0, t",
+      "fix": "Now returns: new AttendanceRecord(workerId, type, 43.0, 23.0, 8",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:30:04.918Z"
+    },
+    {
+      "id": "bug-246",
+      "timestamp": "2026-09-11T06:35:13.124Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 17→23 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:35:13.124Z"
+    },
+    {
+      "id": "bug-247",
+      "timestamp": "2026-09-11T06:35:22.668Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 10→19 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:35:22.668Z"
+    },
+    {
+      "id": "bug-248",
+      "timestamp": "2026-09-11T06:37:54.839Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "32 lines replaced/restructured",
+      "fix": "Rewrote 41→19 lines (32 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:37:54.839Z"
+    },
+    {
+      "id": "bug-249",
+      "timestamp": "2026-09-11T06:38:21.058Z",
+      "error_message": "Wrong return value",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "Was returning: trimToRange(buildWorkedHoursRows(records, correcti",
+      "fix": "Now returns: siteId == null ? rows",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:38:21.058Z"
+    },
+    {
+      "id": "bug-250",
+      "timestamp": "2026-09-11T06:40:36.991Z",
+      "error_message": "Missing guard clause",
+      "file": "frontend/app/[locale]/(manager)/verify/page.tsx",
+      "root_cause": "No early return/throw for edge case: todayResults.some((r",
+      "fix": "Added guard clause: if (todayResults.some((r)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T06:40:36.991Z"
+    },
+    {
+      "id": "bug-235",
+      "timestamp": "2026-09-11T12:30:00.000Z",
+      "error_message": "Внесен по време на Фаза A: existsDuplicate сравняваше a.site.id, докато processOne вече подаваше ЗАЯВЕНИЯ обект, а съхраняваше РЕШЕНИЯ -> повторно изпратен запис без clientEventId нямаше да бъде разпознат и щеше да се вмъкне дубликат",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java",
+      "root_cause": "site_id стана ИЗВЕДЕНА колона (резолюцията я презаписва), а дедупът продължи да сравнява по нея. Точно същият клас грешка като при client_type през септември — виж Do-Not-Repeat 'Never match on a derived column'.",
+      "fix": "existsDuplicate сравнява a.clientSite.id; AutoCheckoutScheduler и storeManualRecord вече попълват clientSite, както вече попълваха clientType. Покрито с AttendanceRepositoryQueryTest.existsDuplicate_recognisesAResentRecordEvenAfterTheServerMovedIt.",
+      "tags": [
+        "attendance",
+        "dedup",
+        "derived-column",
+        "self-inflicted",
+        "fixed"
+      ],
+      "related_bugs": [
+        "bug-233"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T12:30:00.000Z"
+    },
+    {
+      "id": "bug-236",
+      "timestamp": "2026-09-11T13:30:00.000Z",
+      "error_message": "reresolveSites() беше package-private с @Transactional — Spring прилага @Transactional САМО върху public методи, така че анотацията се игнорираше мълчаливо и поправката на историята вървеше без транзакция",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "AnnotationTransactionAttributeSource има publicMethodsOnly=true. Package-private @Transactional метод компилира, изглежда правилно и работи (всеки ъпдейт се комитва сам), но прекъсване по средата оставя поправката наполовина.",
+      "fix": "Методът стана public + коментар защо ТРЯБВА да остане такъв. Проверено на живо: revalidate върху нарочно счупени записи ги връща на верния обект, в зона, и преизчислява посоките.",
+      "tags": [
+        "spring",
+        "transactional",
+        "proxy",
+        "visibility",
+        "self-inflicted",
+        "fixed"
+      ],
+      "related_bugs": [
+        "bug-233"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T13:30:00.000Z"
+    },
+    {
+      "id": "bug-253",
+      "timestamp": "2026-09-11T07:27:35.767Z",
+      "error_message": "Incorrect value in code",
+      "file": "frontend/components/reports/AttendanceDetailsModal.tsx",
+      "root_cause": "Had \"break-words\"",
+      "fix": "Changed to \"[word-break:normal] break-words\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-09-11T07:27:35.767Z"
     }
   ]
 }
