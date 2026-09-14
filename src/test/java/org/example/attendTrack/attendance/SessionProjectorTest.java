@@ -19,21 +19,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SessionProjectorTest {
 
     private static final Duration GAP = Duration.ofSeconds(60);
+    private static final Duration SAME_DIR_GAP = Duration.ofMinutes(5);
     private static final LocalDate DAY = LocalDate.of(2026, 9, 8);
 
     private static SessionProjector.Event terminal(String time) {
         return event(time, AttendanceSource.TERMINAL_FACE, null);
     }
 
+    /** A scan whose reported direction matters — the terminal said {@code claimed}. */
+    private static SessionProjector.Event claiming(String time, AttendanceType claimed) {
+        return at(time, AttendanceSource.TERMINAL_FACE, null, claimed);
+    }
+
     private static SessionProjector.Event event(String time, AttendanceSource src, AttendanceType stored) {
+        return at(time, src, stored, null);
+    }
+
+    private static SessionProjector.Event at(String time, AttendanceSource src,
+                                             AttendanceType stored, AttendanceType claimed) {
         String[] p = time.split(":");
         LocalDateTime at = DAY.atTime(Integer.parseInt(p[0]), Integer.parseInt(p[1]),
                 p.length > 2 ? Integer.parseInt(p[2]) : 0);
-        return new SessionProjector.Event(UUID.randomUUID(), at, src, stored);
+        return new SessionProjector.Event(UUID.randomUUID(), at, src, stored, claimed);
     }
 
     private static List<SessionProjector.Resolution> project(List<SessionProjector.Event> events) {
-        return SessionProjector.project(events, GAP);
+        return SessionProjector.project(events, GAP, SAME_DIR_GAP);
     }
 
     /**
@@ -143,7 +154,7 @@ class SessionProjectorTest {
         Map<UUID, SessionProjector.Resolution> byId = first.stream()
                 .collect(Collectors.toMap(SessionProjector.Resolution::id, Function.identity()));
         var reFed = events.stream()
-                .map(e -> new SessionProjector.Event(e.id(), e.at(), e.source(), byId.get(e.id()).type()))
+                .map(e -> new SessionProjector.Event(e.id(), e.at(), e.source(), byId.get(e.id()).type(), e.clientType()))
                 .toList();
         assertThat(project(reFed)).containsExactlyInAnyOrderElementsOf(first);
     }
@@ -153,7 +164,7 @@ class SessionProjectorTest {
         // Guard checked in 19:00 yesterday; today's first scan must CLOSE that session,
         // not open a new one.
         var events = List.of(terminal("07:00"));
-        var res = SessionProjector.project(events, GAP, AttendanceType.CHECK_OUT);
+        var res = SessionProjector.project(events, GAP, SAME_DIR_GAP, AttendanceType.CHECK_OUT);
         assertThat(res).singleElement()
                 .satisfies(r -> {
                     assertThat(r.type()).isEqualTo(AttendanceType.CHECK_OUT);
@@ -165,7 +176,7 @@ class SessionProjectorTest {
     void overnightShift_seededDayThenAlternatesNormally() {
         // 07:00 closes yesterday's shift, 19:00 opens tonight's.
         var events = List.of(terminal("07:00"), terminal("19:00"));
-        var res = SessionProjector.project(events, GAP, AttendanceType.CHECK_OUT);
+        var res = SessionProjector.project(events, GAP, SAME_DIR_GAP, AttendanceType.CHECK_OUT);
         assertThat(res.stream().map(SessionProjector.Resolution::type))
                 .containsExactly(AttendanceType.CHECK_OUT, AttendanceType.CHECK_IN);
     }
@@ -186,5 +197,72 @@ class SessionProjectorTest {
         return project(events).stream().collect(Collectors.toMap(
                 SessionProjector.Resolution::id,
                 r -> r.ignored() ? "IGNORED:" + r.ignoreReason() : r.type().toString()));
+    }
+
+    // ── The terminal repeating itself ───────────────────────────────────────────
+
+    @Test
+    void sameDirectionTwiceWithinMinutes_isOneButtonPressedTwice_iliyaCase() {
+        // ИЛИЯ ПЕТРОВ ДИМОВ, 11.09: checked out 17:01:36, scanned again 17:03:09. The terminal
+        // reported CHECK_OUT both times, but 93 seconds cleared the 60-second window, so the second
+        // became a check-IN, stayed open, and handed him 1.8 hours an admin had to remove.
+        assertThat(render(List.of(
+                claiming("07:47", AttendanceType.CHECK_IN),
+                claiming("17:01:36", AttendanceType.CHECK_OUT),
+                claiming("17:03:09", AttendanceType.CHECK_OUT))))
+                .containsExactly("CHECK_IN", "CHECK_OUT", "IGNORED:RESCAN");
+    }
+
+    @Test
+    void sameDirectionHoursApart_isKept_becauseItIsTheRealCheckOut() {
+        // The common shape by far: a terminal working from stale local state reports CHECK_IN again
+        // in the evening. Across one production week, 23 of 24 same-direction pairs looked like
+        // this. Suppressing them would delete a real check-out and halve everyone's day.
+        assertThat(render(List.of(
+                claiming("07:47", AttendanceType.CHECK_IN),
+                claiming("17:02", AttendanceType.CHECK_IN))))
+                .containsExactly("CHECK_IN", "CHECK_OUT");
+    }
+
+    @Test
+    void oppositeDirectionAfterTheWindow_opensTheNextSession() {
+        // A genuine second session: out at 11:30, back in at 13:00. Nothing here repeats itself.
+        assertThat(render(List.of(
+                claiming("07:00", AttendanceType.CHECK_IN),
+                claiming("11:30", AttendanceType.CHECK_OUT),
+                claiming("13:00", AttendanceType.CHECK_IN),
+                claiming("17:00", AttendanceType.CHECK_OUT))))
+                .containsExactly("CHECK_IN", "CHECK_OUT", "CHECK_IN", "CHECK_OUT");
+    }
+
+    @Test
+    void aScanWithNoReportedDirection_fallsBackToTheTimeWindowAlone() {
+        // Rows predating the client_type column carry null; they must not be suppressed by a
+        // comparison that cannot be made.
+        assertThat(render(List.of(terminal("17:01:36"), terminal("17:03:09"))))
+                .containsExactly("CHECK_IN", "CHECK_OUT");
+    }
+
+    @Test
+    void repeatIsMeasuredFromTheLastKEPTScan_notTheLastSuppressedOne() {
+        // Three CHECK_OUTs in a row: the second and third are both the same button, and the third
+        // must not escape because it is more than a window away from the second (ignored) one.
+        assertThat(render(List.of(
+                claiming("07:00", AttendanceType.CHECK_IN),
+                claiming("17:00", AttendanceType.CHECK_OUT),
+                claiming("17:02", AttendanceType.CHECK_OUT),
+                claiming("17:04:30", AttendanceType.CHECK_OUT))))
+                .containsExactly("CHECK_IN", "CHECK_OUT", "IGNORED:RESCAN", "IGNORED:RESCAN");
+    }
+
+    @Test
+    void anAdminEntryBetweenScans_clearsTheComparison() {
+        // An admin correction is not a button anyone pressed, so the next scan has nothing to
+        // repeat — it must be judged on its own.
+        assertThat(render(List.of(
+                claiming("07:00", AttendanceType.CHECK_IN),
+                event("16:00", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_OUT),
+                claiming("16:02", AttendanceType.CHECK_OUT))))
+                .containsExactly("CHECK_IN", "CHECK_OUT", "CHECK_IN");
     }
 }
