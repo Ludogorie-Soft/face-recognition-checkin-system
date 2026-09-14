@@ -131,6 +131,16 @@ public class AttendanceService {
     private int minGapSeconds;
 
     /**
+     * How long the terminal repeating its own last direction still counts as one button pressed
+     * twice. Wider than {@link #minGapSeconds} because the operator has to see the screen change
+     * before pressing again — but deliberately minutes, not hours: the same pair eight hours apart
+     * is a morning check-in and an evening scan the terminal mislabelled, and discarding that would
+     * delete a real check-out.
+     */
+    @org.springframework.beans.factory.annotation.Value("${attendance.same-direction-gap-seconds:300}")
+    private int sameDirectionGapSeconds;
+
+    /**
      * Upper bound on how much a device's own GPS accuracy may widen a site's zone. The allowance is
      * real — a 10 m corridor and a ±15 m fix cannot both be taken literally — but an unbounded one
      * would let a 5 km "accuracy" reading validate a scan from the next town.
@@ -238,13 +248,19 @@ public class AttendanceService {
         }
 
         List<SessionProjector.Event> events = records.stream()
-                .map(a -> new SessionProjector.Event(a.getId(), a.getRecordedAt(), a.getSource(), a.getType()))
+                .map(a -> new SessionProjector.Event(a.getId(), a.getRecordedAt(), a.getSource(),
+                        a.getType(), a.getClientType()))
                 .toList();
 
         Map<UUID, Attendance> byId = new HashMap<>();
         records.forEach(a -> byId.put(a.getId(), a));
 
-        for (SessionProjector.Resolution r : SessionProjector.project(events, Duration.ofSeconds(minGapSeconds), initialExpected)) {
+        List<SessionProjector.Resolution> projection = SessionProjector.project(events,
+                Duration.ofSeconds(minGapSeconds),
+                Duration.ofSeconds(sameDirectionGapSeconds),
+                initialExpected);
+
+        for (SessionProjector.Resolution r : projection) {
             Attendance a = byId.get(r.id());
             if (a == null) continue;
             boolean changed = a.getType() != r.type()

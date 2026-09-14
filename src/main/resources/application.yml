@@ -56,6 +56,13 @@ attendance:
   # must survive. Observed accidental re-scans in production: 1-18 seconds.
   min-gap-seconds: ${ATTENDANCE_MIN_GAP_SECONDS:60}
 
+  # A scan repeating the direction the terminal just reported is the same button pressed twice, and
+  # counts as a re-scan within this wider window. Keep it in MINUTES. Observed in production: two
+  # CHECK_OUTs 93 seconds apart, where the second was read as a check-IN and invented 1.8 hours.
+  # Hours would be wrong in the other direction — the same pair 8 hours apart is a morning check-in
+  # plus an evening scan the terminal mislabelled, and suppressing it would delete a real check-out.
+  same-direction-gap-seconds: ${ATTENDANCE_SAME_DIRECTION_GAP_SECONDS:300}
+
   # A site zone is widened by the device's own reported GPS accuracy, capped here. Site corridors
   # can be as narrow as 10 m while a phone fix is routinely ±10-20 m, so without an allowance
   # in-zone becomes a coin toss. Without a cap, a bad fix reporting kilometres would validate
@@ -77,3 +84,5 @@ vapid:
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
+
+

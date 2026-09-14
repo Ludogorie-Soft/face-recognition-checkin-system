@@ -1955,3 +1955,65 @@ SECURITY (open): prod Postgres 5432 is reachable from the internet; I connected 
 | 10:25 | Edited frontend/components/reports/AttendanceDetailsModal.tsx | 2→5 lines | ~101 |
 | 10:27 | Edited frontend/components/reports/AttendanceDetailsModal.tsx | inline fix | ~36 |
 | 10:30 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+| 10:37 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+| 10:48 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+| 10:54 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+| 11:10 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+
+| 14:10 | PR #7 мърджнат в main (78afce3, squash). .claude/launch.json добавен в .gitignore по искане на потребителя | — | 71/71 на main | ~800 |
+| 14:30 | Проверка на смесени версии: нов backend + СТАР payload (без accuracyMeters; и без clientEventId/clientDeviceId/appVersion). Приема се, резолвира се вярно, дедупът хваща ресинхронизация. Два стари терминала на различни обекти → един ред, 9.0 ч | — | съвместимо | ~2000 |
+
+### Край на сесията 2026-09-11
+
+**Свършено:** Фази A, B и C — сървърна резолюция на обекта, GPS точност, сесия по работник вместо по обект. PR #7 в main.
+**Тестове:** 24 → 71. Добавени H2 + @DataJpaTest (всяка JPQL се парсва), тестове за ReportService, за шедулера и за геометрията с реални продукционни координати.
+**Три дефекта, внесени по пътя и хванати:** existsDuplicate по изведена колона (bug-235), package-private @Transactional (bug-236), break-all чупеше номера на пътя в модала.
+
+**Чака:**
+1. Деплой (build + push на образите, после `docker compose pull && up -d` на хоста). V13/V14 се прилагат сами.
+2. Терминалите да се обновят ДОКАТО СА ОНЛАЙН (Dexie v8 трие sessionStatus). Работят коректно и със стар фронтенд — проверено.
+3. По желание: `POST /api/attendance/revalidate?from=2026-09-08&to=2026-09-11` за изчистване на историята.
+4. Утре: проверка в прод по реални чекирания — резолвира ли се обектът вярно, има ли сесии през два обекта.
+5. Данни от админ панела: коридорите на „Ангел Кънчев" и ОБЩИНСКИ ПЪТ са 10 м (нереалистично тясно); координатите на КОСТАЛЕВО са на ~140 км встрани; АТАНАС е системно на ~585 м извън покритието в БАТАК.
+6. Сигурност, неотваряна: порт 5432 е публичен, паролата е в git историята, 28 dependabot уязвимости на main (4 критични).
+| 11:16 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+| 11:24 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+| 11:25 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+
+| 11:25 | Деплой потвърден в прод: V13+V14 приложени 11:19 BG (08:19 UTC — ВНИМАНИЕ: flyway_schema_history.installed_on е по часовника на Postgres контейнера/UTC, а synced_at е по JVM/Europe-Sofia; не се сравняват директно). Всичките 55 записа за деня са от стария билд, 0 писани от новия код | — | ~1200 |
+| 11:40 | Решение на потребителя: НЕ се пуска revalidate. Чакаме довечерашните чекирания и утре проверяваме върху непипани данни | — | — |
+| 11:26 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+| 11:41 | Session end: 70 writes across 24 files (V13__attendance_site_resolution.sql, GeoResolver.java, GeoResolverTest.java, Attendance.java, AttendanceService.java) | 16 reads | ~68742 tok |
+
+## Session: 2026-09-14 09:57
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-14 09:57
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-14 — проверка в прод 3 дни след деплоя
+
+| Време | Действие | Резултат |
+|-------|----------|----------|
+| 10:00 | Одит на прод базата (read-only) за 09-08 → 09-14 | виж по-долу |
+
+**Работи:**
+- Извън зона: 14.3% / 11.6% / 12.1% / 11.3% (стар код) → **3.7%** на 09-14 (първи пълен ден изцяло на новия код)
+- Сесии под 1 час: 8 (09-10) → 2 (09-11)
+- Средни часове/сесия: 8.27 → 8.84; затваряния от шедулера: 14 → 8
+- Счупено редуване: **0**. Разцепени сесии през два обекта: **0**
+- Резолюцията поправя реални случаи: 09-14 АНТОН и ПЕТЪР, терминалът каза КОСТАЛЕВО, сървърът ги върна на „Ангел Кънчев", 0 м, в зона
+- Смесен режим потвърден в прод: 8 от 54 записа на 09-14 са без accuracy_meters (стар фронтенд) и работят коректно
+
+**Открито, НЕ са регресии от кода:**
+1. `bug-237` — ИЛИЯ, 93 с между два CHECK_OUT-а → фантомни 1.8 ч. Материализация на bug-232 с важно уточнение за обхвата на поправката.
+2. ОБЩИНСКИ ПЪТ: чекпойнтите покриват 43.6751-43.6895 / 24.2427-24.2760, а екипът се сканира на 43.6692 / 24.1530 — **7.2 км западно**, при GPS точност 2 м. Липсва покритие на реалния участък.
+3. НЕЛИ: на 09-11 15:35 е на 1365 м от „Ангел Кънчев", но е назначена само на ОБЩИНСКИ ПЪТ и КОСТАЛЕВО → резолюцията стига до 76 км. Липсващо назначение; `distance_meters` го прави видимо.
+4. НИКОЛАЙ ВЕСКОВ ВЕЛЧЕВ (пазач): сесия отворена от 09-11 17:12, **65 часа**. По дизайн (MAX_OPEN_SHIFT_HOURS=26) не се затваря автоматично — чака админ.
+
+| 11:00 | Поправка на bug-237: второ RESCAN правило в SessionProjector (съвпадаща посока + прозорец в минути). Нов конфиг attendance.same-direction-gap-seconds:300. 6 нови теста | SessionProjector.java, AttendanceService.java, application.yml, SessionProjectorTest.java | 77/77 | ~3000 |
+| 11:15 | Реплей на живо срещу postgres:16: ИЛИЯ 11.09 → 9.25 ч в един ред (беше 11.04 ч в две). Контролен случай на 9 часа със същата посока → запазен | — | потвърдено | ~1500 |
