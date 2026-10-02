@@ -13,6 +13,9 @@ public interface SiteWorkerRepository extends JpaRepository<SiteWorker, SiteWork
     @Query("SELECT sw FROM SiteWorker sw JOIN FETCH sw.user WHERE sw.site.id = :siteId")
     List<SiteWorker> findBySiteId(@Param("siteId") UUID siteId);
 
+    @Query("SELECT sw FROM SiteWorker sw JOIN FETCH sw.user")
+    List<SiteWorker> findAllWithUser();
+
     @Query("SELECT sw FROM SiteWorker sw JOIN FETCH sw.user WHERE sw.site.id IN :siteIds")
     List<SiteWorker> findBySiteIdIn(@Param("siteIds") List<UUID> siteIds);
 

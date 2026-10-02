@@ -201,9 +201,9 @@ export default function ReportsPage() {
     queryKey: ['reports', 'missing', siteId, companyId, date, queryKey],
     queryFn: () =>
       api.get('/api/reports/missing', {
-        params: { siteId, companyId: companyId || undefined, date },
+        params: { siteId: siteId || undefined, companyId: companyId || undefined, date },
       }).then((r) => r.data),
-    enabled: tab === 'missing' && !!siteId && queryKey > 0,
+    enabled: tab === 'missing' && queryKey > 0,
   })
 
   const hoursQuery = useQuery<WorkedHoursRow[]>({
@@ -279,7 +279,6 @@ export default function ReportsPage() {
   // ── Actions ────────────────────────────────────────────────────────────────
 
   const handleSearch = () => {
-    if (tab === 'missing' && !siteId) { toast.warning(t('site')); return }
     setQueryKey((k) => k + 1)
   }
 

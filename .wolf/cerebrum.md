@@ -2,13 +2,14 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-06-17
+> Last updated: 2026-10-02
 
 ## User Preferences
 
 - Communication in Bulgarian; code comments and documentation in English
 - Always produce a written plan and wait for user approval before implementing
 - Clean, professional code — no speculative features, no unnecessary abstractions
+- When proposing an optional extra (e.g. a report column), the user asks "does it make sense?" — give an honest yes/no with reasons; they prefer to leave it out unless the need is concrete
 - "Индексирай промените" = обнови само OpenWolf файловете (.wolf/anatomy.md, memory.md, cerebrum.md). НЕ прави git commit и НЕ push-вай към GitHub.
 
 ## Key Learnings
@@ -28,6 +29,8 @@
 - **Deriving on the server makes a client fix backward-compatible (2026-09-11).** Because the site, the direction and the in-zone flag are all re-derived from the raw scan, a terminal running the OLD frontend keeps working correctly against the new backend — it sends the same payload it always did and the server ignores its guesses. Verified with the oldest payload shape (no `accuracyMeters`, no `clientEventId`, no device fields): accepted, resolved correctly, and recognised as a duplicate on re-sync. The only stale thing is the "outside zone" warning drawn on the terminal's own screen. This is the practical argument for fixing data-quality problems server-side rather than in the client: rollout stops being a prerequisite.
 
 - **Size a suppression rule from the distribution, not from the one case in front of you (2026-09-14).** `bug-232` looked like "same reported direction twice = re-scan". Counting a week of production data killed that: 23 of 24 same-direction pairs were 8-11 HOURS apart — a morning check-in plus an evening scan the terminal mislabelled from stale local state — and suppressing those would have deleted 23 real check-outs to catch one 93-second double press. The rule that shipped is same direction AND within minutes, compared only against the previous kept TERMINAL scan. Before writing a rule that discards data, run the query that shows what it would discard.
+
+- **`distance_meters` turns an assignment mistake into a visible number (2026-09-16).** Three "out of zone" records five days after the fix were not geometry at all: the workers' assignment to „Ангел Кънчев" had been removed while at least one of them kept scanning there, so the resolver could only pick the nearest site they WERE assigned to — КОСТАЛЕВО, 5 km away. Mechanically correct, and the 5031 m is the system saying "this person scanned somewhere they are not assigned". Resolution is computed at sync time and stored; it does not follow later assignment changes. When auditing out-of-zone records, check `site_workers` before suspecting the geometry.
 
 - **Request/IP chain:** browser → nginx → Next.js API proxy (`frontend/app/api/[...path]/route.ts`, forwards all headers except host/origin/referer/connection) → Spring backend. So Spring's `getRemoteAddr()` is the Next container, NOT the client. To capture the real client IP, nginx must set `X-Real-IP $remote_addr` + `X-Forwarded-For $proxy_add_x_forwarded_for` (both nginx.conf and nginx.prod.conf), the Next proxy forwards them (already does), and the backend reads `X-Forwarded-For` first hop / `X-Real-IP`. There is NO nginx `/api` route — everything goes through Next.
 
@@ -75,7 +78,7 @@
 
 <!-- [2026-07-31] When location permission is PERMISSION_DENIED (GeolocationPositionError.code === 1), show a full-screen overlay in VerifyCamera (not just the top bar text). The overlay includes numbered steps for enabling location in device settings. navigator.permissions.query({name:'geolocation'}) pre-detects the denied state before watchPosition fires its error. -->
 
-<!-- [2026-07-31] Reports: siteId is optional for /api/reports/attendance and /api/reports/hours (required=false in controller, service branches on null → findAllInDateRange). The 'missing' tab still requires a specific siteId (logic depends on site worker list). The 'summary' tab never needed siteId. Frontend Select adds "Всички обекти" as first option (value="_all" → siteId='') mirroring the company filter pattern. -->
+<!-- [2026-07-31] Reports: siteId is optional for /api/reports/attendance and /api/reports/hours (required=false in controller, service branches on null → findAllInDateRange). The 'missing' tab also takes an optional siteId since 2026-10-02 (see Decision Log). The 'summary' tab never needed siteId. Frontend Select adds "Всички обекти" as first option (value="_all" → siteId='') mirroring the company filter pattern. -->
 
 <!-- [2026-07-31] Reports: companyName is fetched via CompanyRepository.findWorkerCompanyPairs(workerIds) — a bulk query returning [workerId, companyId, companyName]. Use putIfAbsent to keep the first (alphabetically first) company per worker. Pass as Map<UUID,String> into buildWorkedHoursRows() and toRow(). AttendanceReportRow and WorkedHoursRow records both have companyName as second field after workerName. -->
 
@@ -98,6 +101,10 @@
 <!-- [2026-09-08] Running mvn on this machine needs TWO things or it fails: (1) Lombok must be declared under maven-compiler-plugin <annotationProcessorPaths> (added to pom.xml, lombok 1.18.42) — without it javac either can't find Lombok symbols or crashes with `TypeTag :: UNKNOWN`; (2) JAVA_HOME must point to JDK 21, NOT the machine-default JDK 25 — on JDK 25 the project's Mockito (5.x via Spring Boot 3.3.5) cannot create inline mocks ("Mockito cannot mock this class"). Working command: `JAVA_HOME=/usr/local/Cellar/openjdk@21/21.0.12/libexec/openjdk.jdk/Contents/Home mvn -o test`. Frontend: `npx tsc --noEmit` in frontend/. -->
 
 ## Decision Log
+
+- **Missing workers without a site = absent from EVERY site (2026-10-02):** `/api/reports/missing` takes an optional `siteId`. Without it a worker is missing only if assigned to at least one site (`site_workers`) and has no CHECK_IN anywhere that day; each worker is listed once. Deliberately NOT the union of the per-site lists — a worker on sites A and B who came to A is at work, yet the per-site view of B still reports them. A „Обект“ column was considered and dropped by the user: the question is *who* is absent, and the site filter still answers *where*. Add it only if they ask.
+
+- **Three cases in two weeks is not worth a third heuristic (2026-09-21, bug-238):** the projector already carries two interacting re-scan rules (60 s any direction, 5 min same direction). A third — cancelling a check-out that closes an implausibly short session and is immediately contradicted — would have corrected 3 sessions out of ~700, in a population of 45 fast opposite-direction pairs where the existing behaviour is right 42 times. The user chose to leave it. The reasoning that decided it: the gain is bounded and already visible to an admin who makes 14-22 manual corrections a day anyway, while every added rule makes the projection harder to predict and adds a failure mode (a genuinely short job whose check-out gets cancelled inflates to hours). Default to surfacing rare anomalies rather than encoding another heuristic — and always bring the count of what a rule would change, not just the case that prompted it.
 
 - **Biometric — face recognition v2:** MediaPipe FaceLandmarker (478-landmark detection) + MobileFaceNet ONNX (InsightFace w600k_mbf, 512-dim ArcFace embeddings) via onnxruntime-web. Replaced face-api.js. Module-level singletons with reference counting (consumerCount). GPU delegate with CPU fallback. All ONNX output tensors must be disposed explicitly.
 

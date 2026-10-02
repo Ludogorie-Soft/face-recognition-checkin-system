@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-09-11T07:27:35.747Z
-> Files: 181 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-02T08:33:04.433Z
+> Files: 182 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -248,8 +248,8 @@
 
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
-- `ReportController.java` — RestController: ReportController (9 endpoints) (~1518 tok)
-- `ReportService.java` — Service: ReportService (~10716 tok)
+- `ReportController.java` — RestController: ReportController (9 endpoints) (~1522 tok)
+- `ReportService.java` — Service: ReportService — attendance, missing workers (siteId optional), worked hours, summary, Excel export (~10940 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/
 
@@ -265,7 +265,7 @@
 - `SiteCheckpointRepository.java` — Class: SiteCheckpointRepository (~217 tok)
 - `SiteController.java` — RestController: SiteController (11 endpoints) (~892 tok)
 - `SiteService.java` — Service: SiteService (~3025 tok)
-- `SiteWorkerRepository.java` — Class: SiteWorkerRepository (~464 tok)
+- `SiteWorkerRepository.java` — Class: SiteWorkerRepository; findAllWithUser() feeds the all-sites missing report (~520 tok)
 
 ## src/main/java/org/example/attendTrack/site/dto/
 
@@ -361,6 +361,7 @@
 
 ## src/test/java/org/example/attendTrack/report/
 
+- `MissingWorkersReportTest.java` — Missing workers: assigned, but no check-in on the day. (~1670 tok)
 - `WorkedHoursReportTest.java` — Worked-hours pairing: the layer that turns a day's scans into sessions and hours. (~3174 tok)
 
 ## src/test/java/org/example/attendTrack/site/
