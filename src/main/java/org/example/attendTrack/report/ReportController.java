@@ -39,7 +39,7 @@ public class ReportController {
 
     @GetMapping("/missing")
     public ResponseEntity<List<MissingWorkerReport>> getMissingWorkers(
-            @RequestParam UUID siteId,
+            @RequestParam(required = false) UUID siteId,
             @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(reportService.getMissingWorkers(siteId, companyId, date));

@@ -16,6 +16,7 @@ import org.example.attendTrack.report.dto.WorkedHoursRow;
 import org.example.attendTrack.report.dto.WorkedHoursSummaryRow;
 import org.example.attendTrack.site.Site;
 import org.example.attendTrack.site.SiteRepository;
+import org.example.attendTrack.site.SiteWorker;
 import org.example.attendTrack.site.SiteWorkerRepository;
 import org.example.attendTrack.user.ShiftType;
 import org.example.attendTrack.user.User;
@@ -72,22 +73,36 @@ public class ReportService {
                 .toList();
     }
 
+    /**
+     * Workers with no check-in on {@code date}. With a site: those assigned to it who did not check
+     * in there. Without one: those assigned to any site who did not check in anywhere — a worker on
+     * two sites who came to one of them is at work, not missing. Each worker is listed once.
+     */
     @Transactional(readOnly = true)
     public List<MissingWorkerReport> getMissingWorkers(UUID siteId, UUID companyId, LocalDate date) {
-        validateSiteExists(siteId);
+        if (siteId != null) validateSiteExists(siteId);
 
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.plusDays(1).atStartOfDay();
         Set<UUID> companyWorkers = workerIdsForCompany(companyId);
 
-        Set<UUID> checkedIn = attendanceRepository
-                .findBySiteAndDateRange(siteId, start, end).stream()
+        List<Attendance> records = siteId != null
+                ? attendanceRepository.findBySiteAndDateRange(siteId, start, end)
+                : attendanceRepository.findAllInDateRange(start, end);
+
+        Set<UUID> checkedIn = records.stream()
                 .filter(a -> a.getType() == AttendanceType.CHECK_IN)
                 .map(a -> a.getWorker().getId())
                 .collect(Collectors.toSet());
 
-        return siteWorkerRepository.findBySiteId(siteId).stream()
-                .map(sw -> sw.getUser())
+        List<SiteWorker> assignments = siteId != null
+                ? siteWorkerRepository.findBySiteId(siteId)
+                : siteWorkerRepository.findAllWithUser();
+
+        Map<UUID, User> assigned = new LinkedHashMap<>();
+        assignments.forEach(sw -> assigned.putIfAbsent(sw.getUser().getId(), sw.getUser()));
+
+        return assigned.values().stream()
                 .filter(w -> !checkedIn.contains(w.getId()))
                 .filter(w -> companyWorkers == null || companyWorkers.contains(w.getId()))
                 .map(w -> new MissingWorkerReport(w.getId(), w.getName()))
