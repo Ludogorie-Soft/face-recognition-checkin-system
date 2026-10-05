@@ -289,14 +289,14 @@ export default function ReportsPage() {
       let filename = ''
       if (tab === 'attendance') {
         const response = await api.get('/api/reports/attendance/export', {
-          params: { siteId: siteId || undefined, from: dateFrom, to: dateTo },
+          params: { siteId: siteId || undefined, companyId: companyId || undefined, from: dateFrom, to: dateTo },
           responseType: 'blob',
         })
         url = URL.createObjectURL(response.data)
         filename = `attendance_${dateFrom}_${dateTo}.xlsx`
       } else if (tab === 'hours') {
         const response = await api.get('/api/reports/hours/export', {
-          params: { siteId: siteId || undefined, from: dateFrom, to: dateTo },
+          params: { siteId: siteId || undefined, companyId: companyId || undefined, from: dateFrom, to: dateTo },
           responseType: 'blob',
         })
         url = URL.createObjectURL(response.data)
@@ -308,6 +308,13 @@ export default function ReportsPage() {
         })
         url = URL.createObjectURL(response.data)
         filename = `worked_hours_summary_${dateFrom}_${dateTo}.xlsx`
+      } else if (tab === 'missing') {
+        const response = await api.get('/api/reports/missing/export', {
+          params: { siteId: siteId || undefined, companyId: companyId || undefined, date },
+          responseType: 'blob',
+        })
+        url = URL.createObjectURL(response.data)
+        filename = `missing_workers_${date}.xlsx`
       }
       const a = document.createElement('a')
       a.href = url
@@ -362,7 +369,7 @@ export default function ReportsPage() {
 
   const isLoading = activeQuery.isLoading
   const rows = activeQuery.data ?? []
-  const showExport = tab === 'attendance' || tab === 'hours' || tab === 'summary'
+  const showExport = tab === 'attendance' || tab === 'hours' || tab === 'summary' || tab === 'missing'
 
   // ── Render ─────────────────────────────────────────────────────────────────
 

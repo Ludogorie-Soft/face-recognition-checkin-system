@@ -8,6 +8,7 @@ import org.example.attendTrack.attendance.AttendanceRepository;
 import org.example.attendTrack.attendance.AttendanceType;
 import org.example.attendTrack.common.exception.ApiException;
 import org.example.attendTrack.common.exception.ErrorCode;
+import org.example.attendTrack.company.Company;
 import org.example.attendTrack.company.CompanyRepository;
 import org.example.attendTrack.report.dto.AttendanceReportRow;
 import org.example.attendTrack.report.dto.HoursCorrectionRequest;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 public class ReportService {
 
     private static final DateTimeFormatter DT_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     private final AttendanceRepository attendanceRepository;
@@ -111,8 +113,58 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportAttendanceToExcel(UUID siteId, LocalDate from, LocalDate to) {
-        List<AttendanceReportRow> rows = getAttendance(siteId, null, from, to);
+    public byte[] exportMissingWorkersToExcel(UUID siteId, UUID companyId, LocalDate date) {
+        List<MissingWorkerReport> rows = getMissingWorkers(siteId, companyId, date);
+
+        String siteName = siteId == null ? "Всички обекти" : siteRepository.findById(siteId)
+                .map(Site::getName)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.SITE_NOT_FOUND,
+                        "Site not found: " + siteId));
+        String companyName = companyId == null ? "Всички фирми" : companyRepository.findById(companyId)
+                .map(Company::getName)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.COMPANY_NOT_FOUND,
+                        "Company not found: " + companyId));
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            Sheet sheet = workbook.createSheet("Липсващи работници");
+            CellStyle headerStyle = buildHeaderStyle(workbook);
+
+            // The filters, so a forwarded file still says which day and site the list is for.
+            sheet.createRow(0).createCell(0).setCellValue("Дата: %s · Обект: %s · Фирма: %s"
+                    .formatted(date.format(DATE_FORMAT), siteName, companyName));
+
+            String[] headers = {"№", "Работник"};
+            Row headerRow = sheet.createRow(2);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            for (int i = 0; i < rows.size(); i++) {
+                Row row = sheet.createRow(i + 3);
+                row.createCell(0).setCellValue(i + 1);
+                row.createCell(1).setCellValue(rows.get(i).workerName());
+            }
+
+            // Fixed rather than auto-sized: auto-sizing would stretch the № column to fit the
+            // filter line, which is meant to overflow into the empty cells beside it.
+            sheet.setColumnWidth(0, 6 * 256);
+            sheet.autoSizeColumn(1);
+
+            workbook.write(out);
+            return out.toByteArray();
+
+        } catch (IOException e) {
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR, "Failed to generate Excel file");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] exportAttendanceToExcel(UUID siteId, UUID companyId, LocalDate from, LocalDate to) {
+        List<AttendanceReportRow> rows = getAttendance(siteId, companyId, from, to);
 
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -246,8 +298,8 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportWorkedHoursToExcel(UUID siteId, LocalDate from, LocalDate to) {
-        List<WorkedHoursRow> rows = getWorkedHours(siteId, null, from, to);
+    public byte[] exportWorkedHoursToExcel(UUID siteId, UUID companyId, LocalDate from, LocalDate to) {
+        List<WorkedHoursRow> rows = getWorkedHours(siteId, companyId, from, to);
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
@@ -326,8 +378,8 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportWorkedHoursSummaryToExcel(LocalDate from, LocalDate to) {
-        List<WorkedHoursSummaryRow> rows = getWorkedHoursSummary(null, from, to);
+    public byte[] exportWorkedHoursSummaryToExcel(UUID companyId, LocalDate from, LocalDate to) {
+        List<WorkedHoursSummaryRow> rows = getWorkedHoursSummary(companyId, from, to);
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 

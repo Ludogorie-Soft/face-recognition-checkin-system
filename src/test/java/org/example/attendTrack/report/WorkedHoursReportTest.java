@@ -12,13 +12,17 @@ import org.example.attendTrack.site.SiteWorkerRepository;
 import org.example.attendTrack.user.ShiftType;
 import org.example.attendTrack.user.User;
 import org.example.attendTrack.user.UserRepository;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +43,7 @@ class WorkedHoursReportTest {
 
     private AttendanceRepository attendanceRepository;
     private HoursCorrectionRepository hoursCorrectionRepository;
+    private CompanyRepository companyRepository;
     private ReportService service;
 
     private User worker;
@@ -54,7 +59,7 @@ class WorkedHoursReportTest {
         SiteWorkerRepository siteWorkerRepository = mock(SiteWorkerRepository.class);
         hoursCorrectionRepository = mock(HoursCorrectionRepository.class);
         UserRepository userRepository = mock(UserRepository.class);
-        CompanyRepository companyRepository = mock(CompanyRepository.class);
+        companyRepository = mock(CompanyRepository.class);
 
         service = new ReportService(attendanceRepository, siteRepository, siteWorkerRepository,
                 hoursCorrectionRepository, userRepository, companyRepository);
@@ -214,7 +219,38 @@ class WorkedHoursReportTest {
         assertThat(rows.get(0).shiftType()).isEqualTo("SHIFT_24H");
     }
 
+    // ── Excel exports ────────────────────────────────────────────────────────────
+
+    @Test
+    void everyExportHonoursTheCompanyFilter_likeTheScreenDoes() throws IOException {
+        // The exports used to drop the company filter: a screen showing one company produced a
+        // file with all of them.
+        given(scan(siteA, day.atTime(7, 47), AttendanceType.CHECK_IN),
+              scan(siteA, day.atTime(17, 2), AttendanceType.CHECK_OUT));
+        UUID herCompany = UUID.randomUUID();
+        UUID otherCompany = UUID.randomUUID();
+        Set<UUID> herCompanyWorkers = Set.of(worker.getId());
+        when(companyRepository.findWorkerIdsByCompanyId(herCompany)).thenReturn(herCompanyWorkers);
+        when(companyRepository.findWorkerIdsByCompanyId(otherCompany)).thenReturn(Set.of());
+
+        assertThat(dataRows(service.exportAttendanceToExcel(null, herCompany, day, day))).isEqualTo(2);
+        assertThat(dataRows(service.exportAttendanceToExcel(null, otherCompany, day, day))).isZero();
+
+        assertThat(dataRows(service.exportWorkedHoursToExcel(null, herCompany, day, day))).isPositive();
+        assertThat(dataRows(service.exportWorkedHoursToExcel(null, otherCompany, day, day))).isZero();
+
+        assertThat(dataRows(service.exportWorkedHoursSummaryToExcel(herCompany, day, day))).isPositive();
+        assertThat(dataRows(service.exportWorkedHoursSummaryToExcel(otherCompany, day, day))).isZero();
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────────
+
+    /** Rows below the header row of the workbook's only sheet. */
+    private static int dataRows(byte[] xlsx) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(xlsx))) {
+            return workbook.getSheetAt(0).getPhysicalNumberOfRows() - 1;
+        }
+    }
 
     /** Feeds the same records to both the all-sites and the per-site query paths. */
     private void given(Attendance... records) {

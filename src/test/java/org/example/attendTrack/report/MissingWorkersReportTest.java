@@ -4,6 +4,7 @@ import org.example.attendTrack.attendance.Attendance;
 import org.example.attendTrack.attendance.AttendanceRepository;
 import org.example.attendTrack.attendance.AttendanceSource;
 import org.example.attendTrack.attendance.AttendanceType;
+import org.example.attendTrack.company.Company;
 import org.example.attendTrack.company.CompanyRepository;
 import org.example.attendTrack.report.dto.MissingWorkerReport;
 import org.example.attendTrack.site.Site;
@@ -12,12 +13,17 @@ import org.example.attendTrack.site.SiteWorker;
 import org.example.attendTrack.site.SiteWorkerRepository;
 import org.example.attendTrack.user.User;
 import org.example.attendTrack.user.UserRepository;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,6 +41,7 @@ import static org.mockito.Mockito.when;
 class MissingWorkersReportTest {
 
     private AttendanceRepository attendanceRepository;
+    private SiteRepository siteRepository;
     private SiteWorkerRepository siteWorkerRepository;
     private CompanyRepository companyRepository;
     private ReportService service;
@@ -50,7 +57,7 @@ class MissingWorkersReportTest {
     @BeforeEach
     void setUp() {
         attendanceRepository = mock(AttendanceRepository.class);
-        SiteRepository siteRepository = mock(SiteRepository.class);
+        siteRepository = mock(SiteRepository.class);
         siteWorkerRepository = mock(SiteWorkerRepository.class);
         companyRepository = mock(CompanyRepository.class);
 
@@ -119,7 +126,50 @@ class MissingWorkersReportTest {
                 .containsExactly("Иван", "Мария", "Петър");
     }
 
+    // ── Excel export ─────────────────────────────────────────────────────────────
+
+    @Test
+    void theExportListsTheSameWorkers_underALineNamingTheFilters() throws IOException {
+        try (XSSFWorkbook workbook = open(service.exportMissingWorkersToExcel(null, null, day))) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            assertThat(sheet.getSheetName()).isEqualTo("Липсващи работници");
+            assertThat(sheet.getRow(0).getCell(0).getStringCellValue())
+                    .isEqualTo("Дата: 01.10.2026 · Обект: Всички обекти · Фирма: Всички фирми");
+            assertThat(sheet.getRow(2).getCell(0).getStringCellValue()).isEqualTo("№");
+            assertThat(sheet.getRow(2).getCell(1).getStringCellValue()).isEqualTo("Работник");
+            assertThat(sheet.getRow(3).getCell(0).getNumericCellValue()).isEqualTo(1);
+            assertThat(sheet.getRow(3).getCell(1).getStringCellValue()).isEqualTo("Мария");
+            assertThat(sheet.getRow(4).getCell(0).getNumericCellValue()).isEqualTo(2);
+            assertThat(sheet.getRow(4).getCell(1).getStringCellValue()).isEqualTo("Петър");
+            assertThat(sheet.getLastRowNum()).isEqualTo(4);
+        }
+    }
+
+    @Test
+    void theExportNamesTheSelectedSiteAndCompany_andAppliesBoth() throws IOException {
+        UUID companyId = UUID.randomUUID();
+        Set<UUID> companyWorkers = Set.of(petar.getId());
+        when(companyRepository.findWorkerIdsByCompanyId(companyId)).thenReturn(companyWorkers);
+        when(companyRepository.findById(companyId))
+                .thenReturn(Optional.of(Company.builder().id(companyId).name("Гарант 90").build()));
+        when(siteRepository.findById(siteA.getId())).thenReturn(Optional.of(siteA));
+
+        try (XSSFWorkbook workbook = open(service.exportMissingWorkersToExcel(siteA.getId(), companyId, day))) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            assertThat(sheet.getRow(0).getCell(0).getStringCellValue())
+                    .isEqualTo("Дата: 01.10.2026 · Обект: Ангел Кънчев · Фирма: Гарант 90");
+            assertThat(sheet.getRow(3).getCell(1).getStringCellValue()).isEqualTo("Петър");
+            assertThat(sheet.getLastRowNum()).isEqualTo(3);
+        }
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────────
+
+    private static XSSFWorkbook open(byte[] xlsx) throws IOException {
+        return new XSSFWorkbook(new ByteArrayInputStream(xlsx));
+    }
 
     private static List<String> names(List<MissingWorkerReport> rows) {
         return rows.stream().map(MissingWorkerReport::workerName).toList();

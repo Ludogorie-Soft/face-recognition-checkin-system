@@ -2120,3 +2120,12 @@ SECURITY (open): prod Postgres 5432 is reachable from the internet; I connected 
 | 11:33 | Edited src/test/java/org/example/attendTrack/report/MissingWorkersReportTest.java | 2→3 lines | ~53 |
 | 11:45 | Missing-workers report: siteId optional (backend + frontend), all-sites = no check-in anywhere, deduped; 4 new tests, 81/81 green, tsc clean; verified against throwaway postgres:16 + browser | ReportController, ReportService, SiteWorkerRepository, reports/page.tsx, MissingWorkersReportTest | done | ~6000 |
 | 11:36 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
+| 11:38 | Committed, pushed, opened and squash-merged PR #9 (missing-workers report without a site); local main fast-forwarded to 7e123d1 | feat/missing-workers-all-sites | merged | ~2000 |
+| 11:38 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
+| 11:51 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
+| 13:37 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
+| 13:39 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
+| 14:59 | Client keeps per-site missing semantics; requested Excel export of the missing-workers report — planning | ReportService, ReportController, reports/page.tsx | planned | ~3000 |
+| 14:59 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
+| 15:08 | Excel export for missing workers (filter line on top) + company filter fixed in all 3 existing exports (bug-259); 84/84 green, tsc clean; verified on postgres:16 + browser | ReportController, ReportService, reports/page.tsx, MissingWorkersReportTest, WorkedHoursReportTest | done | ~9000 |
+| 15:08 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |

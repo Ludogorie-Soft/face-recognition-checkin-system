@@ -4237,6 +4237,23 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-02T08:31:54.771Z"
+    },
+    {
+      "id": "bug-259",
+      "timestamp": "2026-10-05T12:20:00.000Z",
+      "error_message": "Excel exports ignore the company filter: with a company selected on screen, the downloaded file still contains every company",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "exportAttendanceToExcel / exportWorkedHoursToExcel / exportWorkedHoursSummaryToExcel called the query methods with companyId = null, the export endpoints had no companyId param, and the frontend sent companyId only for the summary export (which the backend then dropped).",
+      "fix": "companyId (optional) added to all three export endpoints and service methods and passed through to the query; frontend handleExport now sends companyId for attendance and hours too. Regression test: WorkedHoursReportTest.everyExportHonoursTheCompanyFilter_likeTheScreenDoes. Verified against postgres:16 with two companies.",
+      "tags": [
+        "reports",
+        "excel",
+        "export",
+        "company-filter"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-05T12:20:00.000Z"
     }
   ]
 }
