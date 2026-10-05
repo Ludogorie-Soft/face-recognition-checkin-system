@@ -248,7 +248,7 @@
 
 - `HoursCorrection.java` — Entity: HoursCorrection (~403 tok)
 - `HoursCorrectionRepository.java` — Class: HoursCorrectionRepository (~296 tok)
-- `ReportController.java` — RestController: ReportController (9 endpoints) (~1522 tok)
+- `ReportController.java` — RestController: ReportController (10 endpoints; every /export mirrors its query's filters incl. companyId) (~1750 tok)
 - `ReportService.java` — Service: ReportService — attendance, missing workers (siteId optional), worked hours, summary, Excel export (~10940 tok)
 
 ## src/main/java/org/example/attendTrack/report/dto/

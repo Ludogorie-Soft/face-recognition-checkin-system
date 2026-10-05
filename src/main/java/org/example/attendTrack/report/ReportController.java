@@ -45,13 +45,30 @@ public class ReportController {
         return ResponseEntity.ok(reportService.getMissingWorkers(siteId, companyId, date));
     }
 
+    @GetMapping("/missing/export")
+    public ResponseEntity<byte[]> exportMissingWorkers(
+            @RequestParam(required = false) UUID siteId,
+            @RequestParam(required = false) UUID companyId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        byte[] excel = reportService.exportMissingWorkersToExcel(siteId, companyId, date);
+        String filename = "missing_workers_%s.xlsx".formatted(date);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excel);
+    }
+
     @GetMapping("/attendance/export")
     public ResponseEntity<byte[]> exportAttendance(
             @RequestParam(required = false) UUID siteId,
+            @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
-        byte[] excel = reportService.exportAttendanceToExcel(siteId, from, to);
+        byte[] excel = reportService.exportAttendanceToExcel(siteId, companyId, from, to);
         String filename = "attendance_%s_%s.xlsx".formatted(from, to);
 
         return ResponseEntity.ok()
@@ -91,10 +108,11 @@ public class ReportController {
     @GetMapping("/hours/export")
     public ResponseEntity<byte[]> exportWorkedHours(
             @RequestParam(required = false) UUID siteId,
+            @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
-        byte[] excel = reportService.exportWorkedHoursToExcel(siteId, from, to);
+        byte[] excel = reportService.exportWorkedHoursToExcel(siteId, companyId, from, to);
         String filename = "worked_hours_%s_%s.xlsx".formatted(from, to);
 
         return ResponseEntity.ok()
@@ -106,10 +124,11 @@ public class ReportController {
 
     @GetMapping("/hours/summary/export")
     public ResponseEntity<byte[]> exportWorkedHoursSummary(
+            @RequestParam(required = false) UUID companyId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
-        byte[] excel = reportService.exportWorkedHoursSummaryToExcel(from, to);
+        byte[] excel = reportService.exportWorkedHoursSummaryToExcel(companyId, from, to);
         String filename = "worked_hours_summary_%s_%s.xlsx".formatted(from, to);
 
         return ResponseEntity.ok()
