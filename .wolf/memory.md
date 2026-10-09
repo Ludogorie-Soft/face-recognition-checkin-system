@@ -2129,3 +2129,23 @@ SECURITY (open): prod Postgres 5432 is reachable from the internet; I connected 
 | 14:59 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
 | 15:08 | Excel export for missing workers (filter line on top) + company filter fixed in all 3 existing exports (bug-259); 84/84 green, tsc clean; verified on postgres:16 + browser | ReportController, ReportService, reports/page.tsx, MissingWorkersReportTest, WorkedHoursReportTest | done | ~9000 |
 | 15:08 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
+| 15:09 | Committed, pushed, opened and squash-merged PR #10 (missing-workers Excel export + company filter in all exports); local main fast-forwarded | feat/missing-workers-excel-export | merged | ~2000 |
+| 15:09 | Session end: 6 writes across 4 files (SiteWorkerRepository.java, ReportService.java, ReportController.java, MissingWorkersReportTest.java) | 0 reads | ~2496 tok |
+
+## Session: 2026-10-09 13:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:40 | Прод одит (read-only): ВЕНЕЛИН — излизането се качва на сутринта (30 s poll в SyncBanner + заключен телефон), часовете са верни; НЕЛИ 08.10 — остаряла GPS позиция след отключване (25.9 км за 28 с). bug-260, bug-261; план чака одобрение | prod DB, SyncBanner.tsx, useGeoLocation.ts | диагностицирано | ~8000 |
+| 13:35 | Edited frontend/components/offline/SyncBanner.tsx | CSS: attendtrack, scan | ~138 |
+| 13:35 | Edited frontend/components/offline/SyncBanner.tsx | added 1 condition(s) | ~177 |
+| 13:35 | Edited frontend/components/offline/SyncBanner.tsx | added 1 condition(s) | ~50 |
+| 13:35 | Edited frontend/components/offline/SyncBanner.tsx | expanded (+7 lines) | ~93 |
+| 13:36 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | 4→5 lines | ~22 |
+| 13:36 | Edited frontend/app/[locale]/(manager)/verify/page.tsx | added 1 import(s) | ~35 |
+| 13:36 | Edited frontend/hooks/useGeoLocation.ts | added 3 condition(s) | ~508 |
+| 13:50 | bug-260: upload right after each scan (requestSync + rerun-on-overlap in SyncBanner); bug-261: drop GPS fix while hidden, fresh watch on visible. tsc clean, eslint no new errors (3 pre-existing). Verified on postgres:16 + browser with mocked geolocation/camera: upload 124 ms after confirm; stale pickup fix not reused after unlock (sent 0/0); timeout re-enables buttons | SyncBanner.tsx, verify/page.tsx, useGeoLocation.ts | done, uncommitted on fix/terminal-upload-and-stale-gps | ~12000 |
+| 13:47 | Session end: 7 writes across 3 files (SyncBanner.tsx, page.tsx, useGeoLocation.ts) | 4 reads | ~13114 tok |
+| 13:49 | Created ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/prod-db-readonly-audit.md | — | ~248 |
+| 13:49 | Created ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/public-repo-no-prod-details.md | — | ~246 |
+| 13:49 | Created ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/MEMORY.md | — | ~77 |

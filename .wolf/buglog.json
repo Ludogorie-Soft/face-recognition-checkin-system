@@ -4254,6 +4254,77 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-05T12:20:00.000Z"
+    },
+    {
+      "id": "bug-260",
+      "timestamp": "2026-10-09T10:40:00.000Z",
+      "error_message": "ВЕНЕЛИН: the check-out shows up the next day, seconds before the next check-in (\"Синхронизирано в\" = next morning)",
+      "file": "frontend/components/offline/SyncBanner.tsx",
+      "root_cause": "The terminal only writes a scan to IndexedDB (verify/page.tsx handleRecord); the upload is triggered by SyncBanner's pendingCount effect, and pendingCount is refreshed only by a 30-second setInterval. So every upload waits 0-30 s after the scan (prod lag distribution is uniform 0-30 s). If the phone is locked or the app left inside that window the JS timers are suspended and the record waits until the app is next opened — typically the next morning. recorded_at is correct (real evening time); only synced_at is late. Device b89e046b (Venelin is always scanned last in the evening): 48 late records since 09-15, none created offline. Side effects: overnight the report shows the scheduler's 18:00 auto check-out until the morning sync supersedes it; late morning check-ins make workers look absent and lead to admin manual check-ins (Venelin 10-02: admin CHECK_IN 09:59 while the terminal's 07:55 one arrived at 17:00 -> report splits the day).",
+      "fix": "verify/page.tsx handleRecord calls requestSync() right after db.pending.add; SyncBanner exports requestSync (window event 'attendtrack:sync-requested') and uploads on it. A request arriving while an upload is in flight sets rerunRef and the sync goes again when it finishes, so back-to-back scans are not left for the 30 s poll. Verified on postgres:16 + browser: upload starts 124 ms after confirm; with the first upload held 2 s, the second scan went out the moment the first finished.",
+      "tags": [
+        "terminal",
+        "offline-sync",
+        "pending",
+        "synced_at",
+        "indexeddb",
+        "mobile-suspend"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-09T10:40:00.000Z"
+    },
+    {
+      "id": "bug-261",
+      "timestamp": "2026-10-09T10:40:00.000Z",
+      "error_message": "НЕЛИ 08.10 09:07:19 check-in recorded 25.9 km from the site (accuracy 7 m) although the crew was on site",
+      "file": "frontend/hooks/useGeoLocation.ts",
+      "root_cause": "useGeoLocation keeps the last watchPosition fix in React state; while the page is hidden (phone locked) no callbacks arrive, and on unlock the old position is used until a fresh fix comes in. Device b6229d6d: 08:18 at the pickup point (NIXON got the previous evening's site fix, identical latitude to 7 decimals), locked, driven to site, unlocked 09:07:12, Neli scanned 09:07:19 with the pickup-point fix, ANDREY 09:07:47 at the site with a fresh fix. 25.9 km in 28 s is impossible. Hours unaffected (server filed it under her nearest assigned site, the right one); only distance/location_valid are wrong.",
+      "fix": "useGeoLocation stops the watch and drops the fix (0/0, loading) on visibilitychange->hidden and starts a fresh watch on visible. The face confirm buttons were already disabled while geo.loading, so they wait for the new fix; the watch's 15 s timeout ends the wait (error -> loading false) and the scan is recorded as 0/0, which the server already treats as unlocated. Verified with a mocked geolocation: pickup-point fix -> lock -> unlock shows 'Определяне на локация...', a manual record in that window is sent as 0/0 (stored with no distance), the next fix is used normally, timeout re-enables the buttons. Manual-override records do not wait (unchanged) — after unlock they go as 0/0 instead of the stale fix.",
+      "tags": [
+        "terminal",
+        "geolocation",
+        "stale-position",
+        "watchPosition",
+        "visibilitychange"
+      ],
+      "related_bugs": [
+        "bug-260"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-09T10:40:00.000Z"
+    },
+    {
+      "id": "bug-262",
+      "timestamp": "2026-10-09T10:35:34.984Z",
+      "error_message": "Type error",
+      "file": "frontend/components/offline/SyncBanner.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-09T10:35:34.984Z"
+    },
+    {
+      "id": "bug-263",
+      "timestamp": "2026-10-09T10:36:24.682Z",
+      "error_message": "Null/undefined access in ",
+      "file": "frontend/hooks/useGeoLocation.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-09T10:36:24.682Z"
     }
   ]
 }
