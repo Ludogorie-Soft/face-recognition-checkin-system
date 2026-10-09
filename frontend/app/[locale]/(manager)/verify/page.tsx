@@ -8,6 +8,7 @@ import { useSites } from '@/hooks/useSites'
 import { useSiteSync } from '@/hooks/useSiteSync'
 import { VerifyCamera, type SessionEntry } from '@/components/verify/VerifyCamera'
 import { SyncLoader } from '@/components/verify/SyncLoader'
+import { requestSync } from '@/components/offline/SyncBanner'
 import { db } from '@/lib/db'
 import { getDeviceId, APP_VERSION } from '@/lib/deviceId'
 import { toLocalISOString } from '@/lib/utils'
@@ -194,6 +195,7 @@ export default function VerifyPage() {
         recordedAt,
         status: 'pending',
       })
+      requestSync()
 
       // Persist locally so the decision survives a reload while offline.
       await db.sessionStatus.put({

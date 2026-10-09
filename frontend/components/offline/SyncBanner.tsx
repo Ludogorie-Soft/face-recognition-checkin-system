@@ -6,6 +6,17 @@ import { useTranslations } from 'next-intl'
 import { db } from '@/lib/db'
 import api from '@/lib/axios'
 
+const SYNC_REQUESTED = 'attendtrack:sync-requested'
+
+/**
+ * Asks the mounted SyncBanner to upload pending records now. Call it right after queueing a scan:
+ * otherwise the upload waits for the next 30 s count refresh, and a phone locked in the meantime
+ * keeps the record until the app is opened again — usually the next morning.
+ */
+export function requestSync() {
+  window.dispatchEvent(new Event(SYNC_REQUESTED))
+}
+
 export function SyncBanner() {
   const t = useTranslations('common')
   const [isOnline, setIsOnline] = useState(true)
@@ -14,6 +25,9 @@ export function SyncBanner() {
   // Ref-based guard so event handlers always see the current value without
   // re-registering listeners on every render.
   const syncingRef = useRef(false)
+  // Set when a sync is requested while one is in flight, e.g. a second scan seconds after the first.
+  // The running sync has already picked its records, so it goes again once it finishes.
+  const rerunRef = useRef(false)
 
   const refreshCount = useCallback(async () => {
     const count = await db.pending.where('status').anyOf('pending', 'syncing').count()
@@ -21,7 +35,11 @@ export function SyncBanner() {
   }, [])
 
   const syncNow = useCallback(async () => {
-    if (syncingRef.current || !navigator.onLine) return
+    if (!navigator.onLine) return
+    if (syncingRef.current) {
+      rerunRef.current = true
+      return
+    }
     syncingRef.current = true
     setSyncing(true)
 
@@ -63,6 +81,10 @@ export function SyncBanner() {
       await refreshCount()
       syncingRef.current = false
       setSyncing(false)
+      if (rerunRef.current) {
+        rerunRef.current = false
+        syncNow()
+      }
     }
   }, [refreshCount])
 
@@ -93,6 +115,13 @@ export function SyncBanner() {
     }
     document.addEventListener('visibilitychange', onVisible)
     return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [syncNow])
+
+  // ── Sync as soon as a scan is queued ─────────────────────────────────────────
+
+  useEffect(() => {
+    window.addEventListener(SYNC_REQUESTED, syncNow)
+    return () => window.removeEventListener(SYNC_REQUESTED, syncNow)
   }, [syncNow])
 
   // ── Initial count + 30 s fallback interval (count-only, no upload) ───────────

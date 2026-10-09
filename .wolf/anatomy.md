@@ -1,7 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-02T08:33:04.433Z
-> Files: 182 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-09T10:49:22.593Z
+> Files: 185 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/
+
+- `MEMORY.md` (~72 tok)
+- `prod-db-readonly-audit.md` (~261 tok)
+- `public-repo-no-prod-details.md` (~260 tok)
 
 ## ./
 
@@ -85,7 +91,7 @@
 
 ## frontend/app/[locale]/(manager)/verify/
 
-- `page.tsx` — VerifyPage (~3305 tok)
+- `page.tsx` — VerifyPage (~3329 tok)
 
 ## frontend/app/[locale]/admin/
 
@@ -116,7 +122,7 @@
 
 ## frontend/components/offline/
 
-- `SyncBanner.tsx` — SyncBanner (~1336 tok)
+- `SyncBanner.tsx` — Uploads db.pending to /api/attendance/sync (on online, tab visible, pendingCount change, and requestSync() fired right after each scan; reruns if a request arrives mid-upload). Exports requestSync, SyncBanner (~1631 tok)
 
 ## frontend/components/reports/
 
@@ -151,7 +157,7 @@
 - `useCompanies.ts` — API routes: GET, DELETE, POST (6 endpoints) (~693 tok)
 - `useDashboard.ts` — API routes: GET (2 endpoints) (~369 tok)
 - `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
-- `useGeoLocation.ts` — Exports GeoState (no site param), useGeoLocation(); tracks raw position + permissionDenied flag (~684 tok)
+- `useGeoLocation.ts` — watchPosition hook; stops the watch and drops the fix while the page is hidden (a locked phone keeps a stale position), restarts on visible. Exports GeoState, useGeoLocation (~1300 tok)
 - `useSites.ts` — API routes: GET, DELETE, POST (7 endpoints) (~772 tok)
 - `useSiteSync.ts` — Exports SyncResult, SyncAllResult, SyncStatus, useSiteSync (~1146 tok)
 - `useWorkers.ts` — API routes: GET, DELETE, POST (4 endpoints) (~574 tok)
