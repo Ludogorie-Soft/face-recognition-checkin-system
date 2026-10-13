@@ -1,13 +1,17 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-13T15:38:14.994Z
-> Files: 185 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-13T16:10:47.873Z
+> Files: 186 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/
 
 - `MEMORY.md` (~72 tok)
 - `prod-db-readonly-audit.md` (~261 tok)
 - `public-repo-no-prod-details.md` (~260 tok)
+
+## ../AttendTrack-ci/frontend/
+
+- `eslint.config.mjs` — Declares eslintConfig (~284 tok)
 
 ## ./
 
@@ -373,3 +377,7 @@
 ## src/test/java/org/example/attendTrack/site/
 
 - `GeoResolverTest.java` — Geometry and site-resolution tests. (~2562 tok)
+
+## .github/workflows/
+
+- `ci.yml` — CI on PRs to main and pushes to main: backend tests (mvn, Java 21), frontend tsc + lint + next build (Node 20), and a boot of the jar against postgres:16-alpine ending in an admin login (~900 tok)

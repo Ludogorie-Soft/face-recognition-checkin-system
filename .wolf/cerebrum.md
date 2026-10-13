@@ -53,6 +53,9 @@
 
 - **Production topology:** `docker-compose.prod.yml` runs ONLY postgres + backend + frontend (frontend publishes :3000); there is NO nginx container. Nginx is installed ON THE HOST and reverse-proxies `https://tracker.garant-90.com` → `http://localhost:3000` using **`nginx.prod.conf`** (with the letsencrypt cert paths + the X-Real-IP/X-Forwarded-For headers). `nginx.conf` (proxy to `frontend:3000`, `*.sslip.io`) is the containerized/dev variant, NOT current prod. Backend reads env from `.env` (compose `env_file: .env`), not `.env.prod`. Reload prod nginx with `nginx -t && systemctl reload nginx` (NOT `docker compose restart nginx`). DEPLOY.md was rewritten 2026-09-08 to reflect this (previously described a stale sslip.io + containerized-nginx setup).
 
+- **CI (2026-10-13, PR #13):** `.github/workflows/ci.yml` — jobs "Backend tests" (`mvn -B test`, Java 21), "Frontend typecheck, lint, build" (Node 20 = frontend/Dockerfile; npm ci, tsc, lint, next build) and "Boot against PostgreSQL 16" (jar on empty postgres:16-alpine, waits for admin login 200; catches Flyway/ddl-validate breakage the mocked tests miss). Lint baseline: public/mediapipe/** and public/ort-wasm*.mjs ignored (copied from node_modules), require() allowed in scripts/*.js, `react-hooks/set-state-in-effect` downgraded to warn (11 existing effects to rework later) → 0 errors / 18 warnings. GitHub has no CI checks on PRs opened before the workflow existed until their branch is updated with main.
+- **The gh account (ignatIgnatov) has the MAINTAIN role, not admin (2026-10-13):** branch protection / rulesets on main cannot be set from here — the org owner must add them (require the three CI check names above).
+
 - **Project:** garant
 - **Stack:** Spring Boot (backend) + Next.js (frontend) + PostgreSQL
 - **Auth:** JWT + Spring Security, stateless login-based authentication
@@ -87,6 +90,8 @@
 <!-- [2026-10-13] Never truncate site names in audit queries (left(s.name,20)). Two sites share the prefix "Основен ремонт на ул." (Vratsa and Chelopek), so a truncated column filed a worker's September under the wrong site and the UI check then came back "no results". Select the full name or the site id, and confirm the site before quoting it to the user. -->
 
 <!-- [2026-10-13] frontend lib/axios has baseURL '/': every api call must pass the full '/api/...' path. The settings auto-checkout button used '/attendance/...' and was silently broken for two months (bug-266). Copying an existing call is not proof it works — exercise it. -->
+
+<!-- [2026-10-13] Lock-file changes in frontend/ must be made with npm 10 (Node 20, as in CI and the Dockerfile), e.g. `docker run --rm -v $PWD:/app -w /app node:20 npm install --package-lock-only --ignore-scripts`. The local machine runs Node 24 / npm 11, whose lock may not satisfy `npm ci` on npm 10. Replicate the CI frontend job in a clean node:20 container before pushing. Do NOT rely on GitHub auto-merge while main has no branch protection: with no required checks it merges immediately, without waiting for CI. -->
 
 <!-- Mistakes made and corrected. Each entry prevents the same mistake recurring. -->
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->
