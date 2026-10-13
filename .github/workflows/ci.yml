@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - run: mvn -B test
+
+  frontend:
+    name: Frontend typecheck, lint, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20'   # same as frontend/Dockerfile
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm run build
+
+  # The unit tests mock the repositories, so they never run the Flyway migrations or Hibernate's
+  # schema validation against PostgreSQL. Booting the real jar on an empty database does.
+  boot:
+    name: Boot against PostgreSQL 16
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine   # same as docker-compose.prod.yml
+        env:
+          POSTGRES_DB: garant
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_URL: jdbc:postgresql://localhost:5432/garant
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      ADMIN_EMAIL: ci-admin@example.test
+      ADMIN_PASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - run: mvn -B -DskipTests package
+      - name: Start the backend and log in as the seeded admin
+        run: |
+          java -jar target/AttendTrack-1.0-SNAPSHOT.jar > backend.log 2>&1 &
+          pid=$!
+          for i in $(seq 1 60); do
+            if ! kill -0 "$pid" 2>/dev/null; then
+              echo "The backend exited during startup"; exit 1
+            fi
+            status=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8080/api/auth/login \
+              -H 'Content-Type: application/json' \
+              -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}" || true)
+            if [ "$status" = "200" ]; then echo "Login OK after ${i} attempt(s)"; exit 0; fi
+            sleep 2
+          done
+          echo "No successful login within 120 s (last status: $status)"; exit 1
+      - name: Backend log
+        if: always()
+        run: cat backend.log
