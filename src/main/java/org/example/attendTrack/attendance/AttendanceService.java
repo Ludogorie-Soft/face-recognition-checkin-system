@@ -249,7 +249,7 @@ public class AttendanceService {
 
         List<SessionProjector.Event> events = records.stream()
                 .map(a -> new SessionProjector.Event(a.getId(), a.getRecordedAt(), a.getSource(),
-                        a.getType(), a.getClientType()))
+                        a.getType(), a.getClientType(), a.getCreatedAt()))
                 .toList();
 
         Map<UUID, Attendance> byId = new HashMap<>();

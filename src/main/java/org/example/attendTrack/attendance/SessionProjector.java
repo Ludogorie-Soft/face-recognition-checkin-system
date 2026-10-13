@@ -4,8 +4,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Pure projection of one worker's raw scan events (for a single site and day) into the correct
@@ -27,6 +32,10 @@ import java.util.UUID;
  *       changed, and they reset the expected next direction.</li>
  *   <li>A {@link AttendanceSource#SCHEDULER_AUTO} check-out only survives while a session is
  *       actually open; if a real check-out already closed it, the auto guess is superseded.</li>
+ *   <li>The one exception to admin authority: an entry made while a scan was still held on the
+ *       phone — the scan had happened but had not reached the server — stood in for that scan if
+ *       the two take the same place in the sequence. The scan is kept and the entry superseded,
+ *       just as a real check-out supersedes the scheduler's guess.</li>
  * </ol>
  *
  * <p>This class has no dependencies on Spring or JPA so it can be tested exhaustively in isolation.
@@ -37,7 +46,10 @@ public final class SessionProjector {
     public enum IgnoreReason {
         /** Too close to the previous kept event — an accidental double scan. */
         RESCAN,
-        /** A scheduler auto-checkout that a real check-out has replaced. */
+        /**
+         * A guess that a real scan has replaced: the scheduler's auto check-out, or an admin entry
+         * made while that scan was still held on the phone.
+         */
         SUPERSEDED
     }
 
@@ -47,9 +59,12 @@ public final class SessionProjector {
      * @param clientType direction the terminal reported, or null for rows that predate the column.
      *                   Used only to recognise the same button being pressed twice — the authoritative
      *                   direction is always derived here, never taken from this field.
+     * @param receivedAt when the row reached the server. For a scan that is the upload, hours after
+     *                   {@code at} when a locked phone held it; for an admin entry, when it was made.
      */
     public record Event(UUID id, LocalDateTime at, AttendanceSource source,
-                        AttendanceType storedType, AttendanceType clientType) {}
+                        AttendanceType storedType, AttendanceType clientType,
+                        LocalDateTime receivedAt) {}
 
     /** What the event's type / ignored flag should be after projection. */
     public record Resolution(UUID id, AttendanceType type, boolean ignored, IgnoreReason ignoreReason) {}
@@ -78,6 +93,70 @@ public final class SessionProjector {
                         .thenComparing(e -> e.id().toString()))
                 .toList();
 
+        // Admin entries that only stood in for a held scan (rule 5). Settled earliest first, each
+        // against the day without the stand-ins already found, so two of them on one day are both seen.
+        Set<UUID> standIns = new HashSet<>();
+        for (Event admin : ordered) {
+            if (admin.source() != AttendanceSource.ADMIN_MANUAL || admin.storedType() == null) continue;
+            if (ordered.stream().noneMatch(e -> heldWhenEntered(e, admin))) continue;
+
+            List<Event> without = ordered.stream()
+                    .filter(e -> e != admin && !standIns.contains(e.id()))
+                    .toList();
+            if (fillsTheSlotOfAHeldScan(admin, without,
+                    sequence(without, minGap, sameDirectionGap, initialExpected))) {
+                standIns.add(admin.id());
+            }
+        }
+
+        List<Resolution> out = sequence(
+                ordered.stream().filter(e -> !standIns.contains(e.id())).toList(),
+                minGap, sameDirectionGap, initialExpected);
+        ordered.stream()
+                .filter(e -> standIns.contains(e.id()))
+                .forEach(e -> out.add(new Resolution(e.id(), e.storedType(), true, IgnoreReason.SUPERSEDED)));
+        return out;
+    }
+
+    /**
+     * True when the terminal scan {@code scan} had already happened, but had not reached the server,
+     * at the moment {@code admin} was entered — so the admin could not have seen it.
+     */
+    private static boolean heldWhenEntered(Event scan, Event admin) {
+        boolean isScan = scan.source() == AttendanceSource.TERMINAL_FACE
+                || scan.source() == AttendanceSource.TERMINAL_MANUAL;
+        return isScan
+                && scan.at().isBefore(admin.receivedAt())
+                && scan.receivedAt().isAfter(admin.receivedAt());
+    }
+
+    /**
+     * True when, in the day without {@code admin}, a scan held when it was entered is kept with the
+     * entry's direction and nothing kept lies between the two. Two events of the same direction with
+     * nothing in between cannot both be real; the entry stood in for the scan.
+     */
+    private static boolean fillsTheSlotOfAHeldScan(Event admin, List<Event> without,
+                                                   List<Resolution> projection) {
+        Map<UUID, Resolution> byId = projection.stream()
+                .collect(Collectors.toMap(Resolution::id, Function.identity()));
+        List<Event> kept = without.stream().filter(e -> !byId.get(e.id()).ignored()).toList();
+
+        for (Event scan : kept) {
+            if (!heldWhenEntered(scan, admin) || byId.get(scan.id()).type() != admin.storedType()) continue;
+
+            LocalDateTime from = scan.at().isBefore(admin.at()) ? scan.at() : admin.at();
+            LocalDateTime to = scan.at().isBefore(admin.at()) ? admin.at() : scan.at();
+            boolean adjacent = kept.stream()
+                    .noneMatch(e -> e != scan && e.at().isAfter(from) && e.at().isBefore(to));
+            if (adjacent) return true;
+        }
+        return false;
+    }
+
+    /** Rules 1-4 over events already in order. */
+    private static List<Resolution> sequence(List<Event> ordered, Duration minGap,
+                                             Duration sameDirectionGap,
+                                             AttendanceType initialExpected) {
         List<Resolution> out = new ArrayList<>(ordered.size());
         AttendanceType expected = initialExpected;
         LocalDateTime lastKeptAt = null;

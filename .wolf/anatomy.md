@@ -1,13 +1,17 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-09T10:49:22.593Z
-> Files: 185 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-13T16:10:47.873Z
+> Files: 186 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/
 
 - `MEMORY.md` (~72 tok)
 - `prod-db-readonly-audit.md` (~261 tok)
 - `public-repo-no-prod-details.md` (~260 tok)
+
+## ../AttendTrack-ci/frontend/
+
+- `eslint.config.mjs` — Declares eslintConfig (~284 tok)
 
 ## ./
 
@@ -91,7 +95,7 @@
 
 ## frontend/app/[locale]/(manager)/verify/
 
-- `page.tsx` — VerifyPage (~3329 tok)
+- `page.tsx` — VerifyPage: terminal shell — syncs all assigned sites, rebuilds sessionLog (server status + today's db.pending), handleRecord queues a scan in db.pending and calls requestSync() so it uploads at once (~3329 tok)
 
 ## frontend/app/[locale]/admin/
 
@@ -122,7 +126,7 @@
 
 ## frontend/components/offline/
 
-- `SyncBanner.tsx` — Uploads db.pending to /api/attendance/sync (on online, tab visible, pendingCount change, and requestSync() fired right after each scan; reruns if a request arrives mid-upload). Exports requestSync, SyncBanner (~1631 tok)
+- `SyncBanner.tsx` — Uploads db.pending to /api/attendance/sync (on online, tab visible, pendingCount change, and requestSync() fired right after each scan; reruns if a request arrives mid-upload). Exports requestSync, SyncBanner (~1550 tok)
 
 ## frontend/components/reports/
 
@@ -143,7 +147,7 @@
 
 - `ManualOverrideModal.tsx` — ManualOverrideModal — renders modal; workers sorted A-Z; search input filters by name; selected worker highlighted with checkmark (~1316 tok)
 - `SyncLoader.tsx` — SVG comet-arc loader; indeterminate: pure CSS spin + feGaussianBlur glow; determinate: smooth strokeDashoffset fill. No JS state. (~620 tok)
-- `VerifyCamera.tsx` — Called when a new worker is recognised, so the page can refresh the server status. (~6766 tok)
+- `VerifyCamera.tsx` — Camera + face match + confirm UI; resolveWorkerSite picks the nearest assigned site from the GPS fix. Face-confirm buttons are disabled while geo.loading (manual override is not). (~6766 tok)
 
 ## frontend/components/workers/
 
@@ -157,7 +161,7 @@
 - `useCompanies.ts` — API routes: GET, DELETE, POST (6 endpoints) (~693 tok)
 - `useDashboard.ts` — API routes: GET (2 endpoints) (~369 tok)
 - `useFaceApi.ts` — useFaceApi — MediaPipe FaceLandmarker + MobileFaceNet ONNX (~2359 tok)
-- `useGeoLocation.ts` — watchPosition hook; stops the watch and drops the fix while the page is hidden (a locked phone keeps a stale position), restarts on visible. Exports GeoState, useGeoLocation (~1300 tok)
+- `useGeoLocation.ts` — watchPosition hook; stops the watch and drops the fix while the page is hidden (a locked phone keeps a stale position), restarts on visible. Exports GeoState, useGeoLocation (~860 tok)
 - `useSites.ts` — API routes: GET, DELETE, POST (7 endpoints) (~772 tok)
 - `useSiteSync.ts` — Exports SyncResult, SyncAllResult, SyncStatus, useSiteSync (~1146 tok)
 - `useWorkers.ts` — API routes: GET, DELETE, POST (4 endpoints) (~574 tok)
@@ -197,13 +201,13 @@
 
 - `AnomalyReason.java` — Why the sync reconciliation flagged an attendance record as anomalous. (~154 tok)
 - `Attendance.java` — Site the terminal claimed. {@link #site} is the server-resolved value; the two differ (~1231 tok)
-- `AttendanceController.java` — Real client IP behind the nginx → Next.js proxy chain. (~1572 tok)
-- `AttendanceRepository.java` — Fallback dedup for terminals that predate client event ids. Matches on {@code clientType} — (~3417 tok)
-- `AttendanceService.java` — Identifies one (worker, day) whose session sequence must be re-projected. Deliberately not (~8004 tok)
+- `AttendanceController.java` — Real client IP behind the nginx → Next.js proxy chain. (~1692 tok)
+- `AttendanceRepository.java` — Fallback dedup for terminals that predate client event ids. (~3612 tok)
+- `AttendanceService.java` — Identifies one (worker, day) whose session sequence must be re-projected. Deliberately not (~8220 tok)
 - `AttendanceSource.java` — Where an attendance record originated. Replaces the fragile (~182 tok)
 - `AutoCheckoutScheduler.java` — Runs at 00:01 every day. Searches the last 7 days for workers who checked in (~1459 tok)
 - `GuardShiftMonitor.java` — Daily 09:00 alert for 12/24h shifts open past 26h. Deliberately does NOT close them — an invented end time would look like real payroll data. (~430 tok)
-- `SessionProjector.java` — Pure projection of one worker's raw scan events (for a single site and day) into the correct (~1279 tok)
+- `SessionProjector.java` — Pure projection of one worker's raw scan events (for a single site and day) into the correct (~3256 tok)
 
 ## src/main/java/org/example/attendTrack/attendance/dto/
 
@@ -363,7 +367,7 @@
 - `AttendanceServiceNormalizationTest.java` — Wiring tests for sync + day re-projection. (~3395 tok)
 - `AttendanceServiceSiteResolutionTest.java` — The terminal's site is a claim, not a fact — these tests pin the server's re-resolution of it. (~2802 tok)
 - `AutoCheckoutSchedulerTest.java` — The nightly auto-checkout, which invents the hours nobody scanned — so what it declines to create (~1348 tok)
-- `SessionProjectorTest.java` — Exhaustive tests for the pure session projection — the core of server-side normalization. (~1779 tok)
+- `SessionProjectorTest.java` — Exhaustive tests for the pure session projection — the core of server-side normalization. (~4604 tok)
 
 ## src/test/java/org/example/attendTrack/report/
 
@@ -373,3 +377,7 @@
 ## src/test/java/org/example/attendTrack/site/
 
 - `GeoResolverTest.java` — Geometry and site-resolution tests. (~2562 tok)
+
+## .github/workflows/
+
+- `ci.yml` — CI on PRs to main and pushes to main: backend tests (mvn, Java 21), frontend tsc + lint + next build (Node 20), and a boot of the jar against postgres:16-alpine ending in an admin login (~900 tok)

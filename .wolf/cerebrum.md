@@ -2,7 +2,7 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-10-02
+> Last updated: 2026-10-09
 
 ## User Preferences
 
@@ -10,6 +10,9 @@
 - Always produce a written plan and wait for user approval before implementing
 - Clean, professional code — no speculative features, no unnecessary abstractions
 - When proposing an optional extra (e.g. a report column), the user asks "does it make sense?" — give an honest yes/no with reasons; they prefer to leave it out unless the need is concrete
+- Git flow the user drives step by step (2026-10-09): "направи двете промени" → implement + verify only; "направи къмит и ПР" → commit + push + open PR, do NOT merge; "мърджни ПР-а" → squash-merge, delete the branch, fast-forward local main. Never jump ahead a step.
+- Case analysis of a named worker (2026-10-13, "Виктор не ме интересува"): keep the whole analysis on THAT worker — their records, their days, their hours. Do not build the argument on other workers' scans or drift into side findings about other terminals/sites.
+- Fix forward unless asked (2026-10-13): when a bug is understood, the user cares about preventing FUTURE occurrences, not repairing past data. Do not build data-repair tooling (re-projection endpoints, repair buttons) unless they ask for it.
 - "Индексирай промените" = обнови само OpenWolf файловете (.wolf/anatomy.md, memory.md, cerebrum.md). НЕ прави git commit и НЕ push-вай към GitHub.
 
 ## Key Learnings
@@ -34,9 +37,24 @@
 
 - **A phone terminal lives in a locked pocket between scans (2026-10-09, bug-260/261).** Anything the terminal does "a bit later" — the 30 s `pendingCount` poll that triggers the upload, the next `watchPosition` callback — is suspended the moment the operator locks the phone, and resumes only at the next unlock, often the next morning or 25 km away. Two symptoms from the same cause: the last scan of the day uploads next morning (`synced_at` ≫ `recorded_at`, hours still correct), and the first scan after unlock carries the position from where the phone was locked. Diagnose with `synced_at - recorded_at` per `client_device_id` and with impossible jumps between adjacent scans of the same device.
 
+- **Late upload vs. no internet — how to tell them apart in prod data (2026-10-13).** A suspended upload (bug-260) has a precise signature: the stuck record is always the LAST scan of a burst, scans by other workers seconds earlier synced fine, and it reaches the server 10-20 s BEFORE the device's next scan (the visibilitychange upload on unlock). A real outage looks different: every scan in the window is late, and they all sync together at a random time. `ip_address` is captured at upload, so the evening record carries the morning IP — it proves nothing. `app_version` is always 1.0.0; to see whether a terminal runs the PR #11 frontend, look at its lag distribution instead: |synced_at - recorded_at| ≤ 2 s for nearly every scan = new upload-on-scan; uniform 0-30 s (median ~15 s) = still the old poll.
+
+- **Reports pair by the STORED `type`, and days are only re-projected on a write (2026-10-13, bug-264).** Consecutive CHECK_IN -> the first becomes an open shift with no hours; an orphan CHECK_OUT is dropped. So (a) days projected before PR #7 (2026-09-11) can still carry per-site types and under-report hours, and (b) a late real scan that arrives after an admin already entered a manual check-out is projected as a new CHECK_IN -> an extra open-shift row. Morning variant (bug-265): admin enters a manual CHECK_IN for a worker whose real check-in is still stuck in the phone -> two consecutive CHECK_INs -> the earlier (real) one shows as an open shift and hours count from the admin's time. AutoCheckoutScheduler never touches such a day — `findUnclosedCheckIns` skips every CHECK_IN that has any later CHECK_OUT — so an 'open shift without auto check-out' in the report means two INs in a row, not a scheduler failure. When auditing a worker's hours, simulate the pairing over `ignored = false` rows instead of trusting the raw scan times. `created_offline = false` on a stuck record means the phone itself reported being online at scan time.
+
+- **Never re-project old days blindly — simulate with the compiled projector first (2026-10-13).** Re-running today's rules over 08-11.09 would have re-typed 31 days, and at least one got WORSE (a 1 s OUT/IN double scan mid-morning closes the session at 09:21 under the 60 s rule, ~8.25 h -> ~0.5 h). From 12.09 on the rules are stable (only the intended changes appear). Harness: export rows read-only with psql, then `java -cp target/classes Sim.java rows.txt` calling `SessionProjector.project` and diffing against the stored type/ignored — the real code, not a port. Delete the exported prod rows afterwards.
+
+- **The face-confirm buttons are ALREADY gated on GPS (2026-10-09).** `VerifyCamera` disables both confirm buttons while `geo.loading` and labels them „Определяне на локация..." — despite the older comment above `detectedWorkerGeo` claiming the button is never blocked by a slow fix. The manual-override path is NOT gated. The watch's `timeout: 15000` is what bounds the wait: the error callback sets `loading: false` and the scan proceeds as 0/0. Any GPS change must keep that bound or the terminal can lock up.
+
+- **0/0 means "no fix" end to end (2026-10-09).** The server's `SiteResolver.resolve` treats lat=lng=0 as unlocated: keeps the terminal's claimed site, stores no `distance_meters`. But the terminal's claim for 0/0 is `entries[0]` (first assignment), so more 0/0 scans = more scans of multi-site workers filed under an arbitrary site. That is why bug-261 waits for a fresh fix instead of merely dropping the stale one.
+
+- **The GitHub repo is PUBLIC and `.wolf/` is committed with every PR (2026-10-09).** Committed OpenWolf entries use first names only, no GPS coordinates, no prod hosts or credentials.
+
 - **Request/IP chain:** browser → nginx → Next.js API proxy (`frontend/app/api/[...path]/route.ts`, forwards all headers except host/origin/referer/connection) → Spring backend. So Spring's `getRemoteAddr()` is the Next container, NOT the client. To capture the real client IP, nginx must set `X-Real-IP $remote_addr` + `X-Forwarded-For $proxy_add_x_forwarded_for` (both nginx.conf and nginx.prod.conf), the Next proxy forwards them (already does), and the backend reads `X-Forwarded-For` first hop / `X-Real-IP`. There is NO nginx `/api` route — everything goes through Next.
 
 - **Production topology:** `docker-compose.prod.yml` runs ONLY postgres + backend + frontend (frontend publishes :3000); there is NO nginx container. Nginx is installed ON THE HOST and reverse-proxies `https://tracker.garant-90.com` → `http://localhost:3000` using **`nginx.prod.conf`** (with the letsencrypt cert paths + the X-Real-IP/X-Forwarded-For headers). `nginx.conf` (proxy to `frontend:3000`, `*.sslip.io`) is the containerized/dev variant, NOT current prod. Backend reads env from `.env` (compose `env_file: .env`), not `.env.prod`. Reload prod nginx with `nginx -t && systemctl reload nginx` (NOT `docker compose restart nginx`). DEPLOY.md was rewritten 2026-09-08 to reflect this (previously described a stale sslip.io + containerized-nginx setup).
+
+- **CI (2026-10-13, PR #13):** `.github/workflows/ci.yml` — jobs "Backend tests" (`mvn -B test`, Java 21), "Frontend typecheck, lint, build" (Node 20 = frontend/Dockerfile; npm ci, tsc, lint, next build) and "Boot against PostgreSQL 16" (jar on empty postgres:16-alpine, waits for admin login 200; catches Flyway/ddl-validate breakage the mocked tests miss). Lint baseline: public/mediapipe/** and public/ort-wasm*.mjs ignored (copied from node_modules), require() allowed in scripts/*.js, `react-hooks/set-state-in-effect` downgraded to warn (11 existing effects to rework later) → 0 errors / 18 warnings. GitHub has no CI checks on PRs opened before the workflow existed until their branch is updated with main.
+- **The gh account (ignatIgnatov) has the MAINTAIN role, not admin (2026-10-13):** branch protection / rulesets on main cannot be set from here — the org owner must add them (require the three CI check names above).
 
 - **Project:** garant
 - **Stack:** Spring Boot (backend) + Next.js (frontend) + PostgreSQL
@@ -66,6 +84,14 @@
 <!-- [2026-06-21] Detection while-loops: always wrap the async inference call in try/catch. Without it, any ORT/MediaPipe internal error causes an unhandled rejection and silently kills the loop. -->
 
 <!-- [2026-06-21] setInterval-based detection (FaceRegisterModal): guard with a ref (detectingRef) and try/catch/finally to prevent concurrent inference calls if inference takes longer than the interval. -->
+
+<!-- [2026-10-09] `gh pr merge --squash --delete-branch` merges on GitHub but then FAILS the local checkout of main when .wolf/memory.md (or other tracked .wolf files) are dirty — the OpenWolf hooks keep them dirty all session. Stash the .wolf files first (or merge, then `git stash push -- .wolf/...`, checkout main, `pull --ff-only`, pop, `branch -D`, delete the remote branch by hand). Never stage .wolf/hooks/_session.json or .wolf/token-ledger.json. -->
+
+<!-- [2026-10-13] Never truncate site names in audit queries (left(s.name,20)). Two sites share the prefix "Основен ремонт на ул." (Vratsa and Chelopek), so a truncated column filed a worker's September under the wrong site and the UI check then came back "no results". Select the full name or the site id, and confirm the site before quoting it to the user. -->
+
+<!-- [2026-10-13] frontend lib/axios has baseURL '/': every api call must pass the full '/api/...' path. The settings auto-checkout button used '/attendance/...' and was silently broken for two months (bug-266). Copying an existing call is not proof it works — exercise it. -->
+
+<!-- [2026-10-13] Lock-file changes in frontend/ must be made with npm 10 (Node 20, as in CI and the Dockerfile), e.g. `docker run --rm -v $PWD:/app -w /app node:20 npm install --package-lock-only --ignore-scripts`. The local machine runs Node 24 / npm 11, whose lock may not satisfy `npm ci` on npm 10. Replicate the CI frontend job in a clean node:20 container before pushing. Do NOT rely on GitHub auto-merge while main has no branch protection: with no required checks it merges immediately, without waiting for CI. -->
 
 <!-- Mistakes made and corrected. Each entry prevents the same mistake recurring. -->
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->
@@ -103,6 +129,10 @@
 <!-- [2026-09-08] Running mvn on this machine needs TWO things or it fails: (1) Lombok must be declared under maven-compiler-plugin <annotationProcessorPaths> (added to pom.xml, lombok 1.18.42) — without it javac either can't find Lombok symbols or crashes with `TypeTag :: UNKNOWN`; (2) JAVA_HOME must point to JDK 21, NOT the machine-default JDK 25 — on JDK 25 the project's Mockito (5.x via Spring Boot 3.3.5) cannot create inline mocks ("Mockito cannot mock this class"). Working command: `JAVA_HOME=/usr/local/Cellar/openjdk@21/21.0.12/libexec/openjdk.jdk/Contents/Home mvn -o test`. Frontend: `npx tsc --noEmit` in frontend/. -->
 
 ## Decision Log
+
+- **A late scan beats an admin stand-in (2026-10-13, user decision):** when an admin enters a record while a same-day scan is still held in the phone (scan.recorded < admin.created < scan.received) and the two take the same slot (same direction, nothing between), the SCAN stays and the admin record is ignored as SUPERSEDED — the same treatment a real check-out gives the scheduler's 18:00. Chosen over 'admin wins' because the scan is physical evidence and the admin's time is usually just the moment they noticed (09:59/10:02/09:47/09:27 = entry time). Scope at decision time: 9 of 220 admin records since 11.09. An admin record entered AFTER the scan reached the server is still authoritative. Past days were deliberately NOT re-projected — the user wants only future cases handled ("изминалите събития не ме интересуват"); a range re-projection endpoint + settings button were built and then dropped for that reason.
+
+- **Terminal upload + stale GPS fixes (2026-10-09, PR #11, bug-260/261):** (1) upload right after each scan via `requestSync()` (window event to the mounted `SyncBanner`) plus a rerun flag for scans that arrive mid-upload — chosen over moving the upload into a shared module because SyncBanner already owns the in-flight guard and retry. (2) stale position: stop the watch and drop the fix on `visibilitychange`→hidden, fresh watch on visible. Rejected: only dropping the fix without waiting (more 0/0 scans → `entries[0]` site claim for multi-site workers); checking `pos.timestamp` age (a stationary phone may not emit updates, so a time threshold would discard good fixes). Frequency that justified (2) despite rarity (1 detectable jump in ~2000 scans): unlike bug-238 it adds no rule that discards data — it stops presenting an old fix as current.
 
 - **Per-site missing view stays as it is — client's decision (2026-10-05):** a worker can be assigned to MANY sites (`site_workers` is many-to-many; a scan is always filed under one of the worker's assigned sites). So the per-site missing view reports someone on sites A+B who came to A as missing at B. Proposed instead: "missing" = absent from every site, with the site filter only narrowing whose crew is shown, and the same rule for `AttendanceScheduler`'s missing-workers notification. The client chose to keep the current behaviour for now and asked for an Excel export instead. Do not re-propose unprompted; if they raise the confusion again, this is the ready answer.
 

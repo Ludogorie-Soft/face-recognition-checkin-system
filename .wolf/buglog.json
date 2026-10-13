@@ -4271,8 +4271,9 @@
         "mobile-suspend"
       ],
       "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-09T10:40:00.000Z"
+      "occurrences": 2,
+      "last_seen": "2026-10-13T14:30:00.000Z",
+      "recurrence_note": "2026-10-13: the client re-reported it for Venelin (overnight 18:00 auto check-out, real check-out arriving next morning) and suspected the terminal had no internet overnight. Prod data rules that out: on 10-07 Viktor's check-out at 17:10:28 synced at 17:10:37, Venelin's at 17:10:38 waited until 08:00:57 next day - the phone was online one second earlier. The late record always syncs 10-20 s before the device's first morning scan (visibilitychange upload on unlock). Fix confirmed live on device b89e046b since 2026-10-12 08:02: every scan since then synced within 2 s, including Venelin's 10-12 check-out, and no auto check-out for him on 10-12."
     },
     {
       "id": "bug-261",
@@ -4325,6 +4326,115 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-09T10:36:24.682Z"
+    },
+    {
+      "id": "bug-264",
+      "timestamp": "2026-10-13T15:00:00.000Z",
+      "error_message": "Venelin 08-10.09: worked-hours report shows an open shift from the morning plus a 0-1 h session (17:0x -> 17:03 / 18:00 service) instead of ~9 h; no hours correction exists",
+      "file": "src/main/java/org/example/attendTrack/attendance/AttendanceService.java",
+      "root_cause": "The report pairs records by their STORED type. These days were projected before PR #7 (2026-09-11) by the old per-site logic: the late evening scan had been filed under another site and typed CHECK_IN there, so the day reads IN (site A) / IN+OUT 1 s apart (site B) / service OUT 18:00. renormalizeDay only runs when something writes to the day, and PR #7 did not re-project historical days, so the stale types stay. Re-projected today the days would read 07:4x -> 17:0x (~9 h) and the service 18:00 would be superseded.",
+      "fix": "NOT FIXED (read-only audit). Needs a re-projection of the affected days (any admin write to the day, e.g. deleting the stale SCHEDULER_AUTO row, triggers renormalizeDay) or a one-off renormalize run. Scope across other workers not measured yet. 2026-10-13: user decided past days stay as they are. Note: re-projecting 08-11.09 under current rules would re-type 31 days and make at least one worse (Andrey 10.09: ~8.25 h -> ~0.5 h, a 1 s OUT/IN double scan at 09:21).",
+      "tags": [
+        "report",
+        "projection",
+        "stale-type",
+        "renormalize",
+        "historical-data"
+      ],
+      "related_bugs": [
+        "bug-260"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-13T15:00:00.000Z"
+    },
+    {
+      "id": "bug-265",
+      "timestamp": "2026-10-13T15:30:00.000Z",
+      "error_message": "Daniel 06.10 (Chelopek): 'the system did not auto-check him out' — report shows an open shift from 08:32 with no check-out",
+      "file": "src/main/java/org/example/attendTrack/report/ReportService.java",
+      "root_cause": "His morning terminal check-in (08:32:52) was the last scan of the morning burst; the phone was locked within the old 30 s upload window and not opened again until 17:02:59, so the scan reached the server 8.5 h late (bug-260 mechanism). At 10:02 an admin, seeing no check-in, entered a manual CHECK_IN. When the real scan arrived, the projection typed it CHECK_IN (day start) and never re-types ADMIN_MANUAL rows, so the day has two consecutive CHECK_INs before the 17:03:36 CHECK_OUT. The report pairs sequentially: the first IN becomes an open shift with no hours, 10:02->17:03 = 7 h (real 08:32->17:03 = 8.5 h). AutoCheckoutScheduler correctly does nothing: findUnclosedCheckIns skips any CHECK_IN followed by a CHECK_OUT, and both are.",
+      "fix": "FIXED forward (2026-10-13, branch late-scan-supersedes-admin-stand-in): SessionProjector rule 5 — an ADMIN_MANUAL entry made while a same-day terminal scan was held on the phone (scan.at < admin.receivedAt < scan.receivedAt, receivedAt = created_at) that takes the same slot (same direction in the day without the entry, nothing kept between) is ignored as SUPERSEDED and the scan is kept. Applied by renormalizeDay on every sync, so it heals the day the moment the held scan arrives. Past days deliberately NOT re-projected (user: only future cases matter).",
+      "tags": [
+        "report",
+        "open-shift",
+        "admin-manual",
+        "late-sync",
+        "auto-checkout"
+      ],
+      "related_bugs": [
+        "bug-260",
+        "bug-264"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-13T16:30:00.000Z"
+    },
+    {
+      "id": "bug-266",
+      "timestamp": "2026-10-13T15:35:27.652Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/main/java/org/example/attendTrack/attendance/SessionProjector.java",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 13→19 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-13T15:35:27.652Z"
+    },
+    {
+      "id": "bug-267",
+      "timestamp": "2026-10-13T15:35:42.193Z",
+      "error_message": "Missing guard clause",
+      "file": "src/main/java/org/example/attendTrack/attendance/SessionProjector.java",
+      "root_cause": "No early return/throw for edge case: admin.source(",
+      "fix": "Added guard clause: if (admin.source()",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "java"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-13T15:35:42.193Z"
+    },
+    {
+      "id": "bug-266",
+      "timestamp": "2026-10-13T16:30:00.000Z",
+      "error_message": "Settings > 'Ръчно задействане на авто-чекаут' always fails with 'Грешка при задействане' (POST /bg/attendance/auto-checkout -> 404)",
+      "file": "frontend/app/[locale]/(admin)/settings/page.tsx",
+      "root_cause": "lib/axios has baseURL '/', and every other call passes the full '/api/...' path; the settings page posted to '/attendance/auto-checkout' without the '/api' prefix, so the request hit the Next.js page router. Broken since commit 4d0d306 (2026-08-07, 'refactoring').",
+      "fix": "Prefix the path with /api. Verified locally: the button now returns 200 and shows the result message.",
+      "tags": [
+        "frontend",
+        "axios",
+        "api-prefix",
+        "settings",
+        "auto-checkout"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-13T16:30:00.000Z"
+    },
+    {
+      "id": "bug-267",
+      "timestamp": "2026-10-13T16:40:00.000Z",
+      "error_message": "CI 'Frontend typecheck, lint, build' failed at npm ci: `npm ci` can only install packages when your package.json and package-lock.json are in sync. Missing: @swc/helpers@0.5.23 from lock file",
+      "file": "frontend/package-lock.json",
+      "root_cause": "next-intl needs @swc/helpers 0.5.23 while the lock only had the hoisted 0.5.15 used by next. frontend/Dockerfile runs `npm install`, which silently resolves the drift, so it never surfaced until CI used `npm ci`.",
+      "fix": "Regenerated the lock with npm 10 (node:20 container, `npm install --package-lock-only --ignore-scripts`): one nested node_modules/next-intl/node_modules/@swc/helpers entry. Verified npm ci + tsc + lint + next build in a clean node:20 container; npm 11 also accepts it. Commit 73ee936 on PR #13.",
+      "tags": [
+        "ci",
+        "npm",
+        "package-lock",
+        "npm-ci",
+        "node20"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-13T16:40:00.000Z"
     }
   ]
 }
