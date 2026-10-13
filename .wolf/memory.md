@@ -2149,3 +2149,44 @@ SECURITY (open): prod Postgres 5432 is reachable from the internet; I connected 
 | 13:49 | Created ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/prod-db-readonly-audit.md | — | ~248 |
 | 13:49 | Created ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/public-repo-no-prod-details.md | — | ~246 |
 | 13:49 | Created ../../../.claude/projects/-Users-user-Documents-projects-AttendTrack/memory/MEMORY.md | — | ~77 |
+| 14:05 | Commit 4662e47 + PR #11 (fix/terminal-upload-and-stale-gps). Repo е ПУБЛИЧНО — от .wolf махнати прод хост/достъп и пълни имена; рецептата за прод достъп е в личната памет. Без CI проверки в репото | — | PR отворен | ~2000 |
+| 13:50 | Session end: 10 writes across 6 files (SyncBanner.tsx, page.tsx, useGeoLocation.ts, prod-db-readonly-audit.md, public-repo-no-prod-details.md) | 4 reads | ~13726 tok |
+| 14:10 | PR #11 squash-merged (01b049e); local main fast-forwarded, branch deleted locally and on origin. Pending on the user: frontend deploy + reload on the terminal phones | — | merged | ~500 |
+| 13:55 | Session end: 10 writes across 6 files (SyncBanner.tsx, page.tsx, useGeoLocation.ts, prod-db-readonly-audit.md, public-repo-no-prod-details.md) | 4 reads | ~13726 tok |
+
+### Край на сесията 2026-10-09
+
+**Задача:** клиентът сигнализира два проблема в прод: при ВЕНЕЛИН излизането „се отразява на следващия ден, секунди преди влизане"; при НЕЛИ влизането на 08.10 е с грешна локация. Даден е достъп само за четене до базата.
+
+**Диагноза (прод, read-only):**
+- bug-260 — качването чакаше 30-секундния цикъл на SyncBanner; заключен телефон задържа последния запис до сутринта. Часовете са верни (recorded_at), късен е само synced_at. 48 такива записа от устройството на екипа на Венелин от 15.09, 18 от това на Нели.
+- bug-261 — първото сканиране след отключване ползва позицията отпреди заключването (сборен пункт на ~26 км; 28 с по-късно същият телефон е на обекта). Часовете и обектът са верни, грешни са само разстоянието и „извън зона".
+
+**Направено:** PR #11 (squash 01b049e) — незабавно качване след сканиране + повторен опит при застъпване; GPS позицията се изчиства при скрита страница и се пуска нов watch при връщане. Проверено на postgres:16 + браузър с подменени камера/GPS.
+
+**Чака потребителя:**
+1. Деплой на frontend образа и презареждане на приложението по телефоните.
+2. Венелин 02.10 — двойно влизане (терминално 07:55 пристигнало в 17:00 + ръчно от админ 09:59): в отчета незатворена смяна + 7 ч вместо ~9 ч. Ръчна корекция.
+3. По избор: отделен текст за изтекъл GPS таймаут (сега показва „Няма достъп до местоположение — разреши в настройките").
+| 13:57 | Session end: 10 writes across 6 files (SyncBanner.tsx, page.tsx, useGeoLocation.ts, prod-db-readonly-audit.md, public-repo-no-prod-details.md) | 4 reads | ~13726 tok |
+
+## Session: 2026-10-13 17:00
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:30 | Prod read-only audit: client re-reported Venelin's next-morning check-outs (Chelopek). Same cause as bug-260 (upload waited for 30 s poll, phone locked after the last scan), not missing internet; PR #11 fix confirmed live on that terminal since 2026-10-12. One terminal (Kostalevo) still syncs on the old 0-30 s poll -> app not reloaded yet | .wolf/buglog.json | diagnosed, no code change | ~25k |
+| 18:00 | Venelin-only deep dive (prod read-only): 14 of 17 pre-fix evenings his check-out (always the last scan of the day on the crew phone) arrived 8-21 s before his own next-morning check-in; all with created_offline=false. Before 08.09 others were scanned last and theirs got stuck instead. Fix live since 12.10 (12.10 and 13.10 check-outs arrived in <=1 s). Found bug-264: 08-10.09 still typed by the pre-PR #7 projection -> report shows open shift + 0-1 h. Also 16/17.09 extra open shift (late real scan after admin manual check-out), 02.10 morning scan held 9 h -> admin 09:59 check-in, 7 h instead of ~9 h | .wolf/buglog.json | diagnosed, no code change | ~40k |
+| 18:30 | Daniel 06.10 (Chelopek) "no auto check-out": not a scheduler miss — morning scan 08:32 held in the phone until 17:02 (bug-260), admin entered manual check-in 10:02 meanwhile -> two INs, report shows 08:32 open + 10:02-17:03 = 7 h instead of 8.5 h. Logged bug-265 | .wolf/buglog.json, .wolf/cerebrum.md | diagnosed, no code change | ~10k |
+| 19:00 | Verified in the prod UI (read-only, user logged in): Worked-hours report shows exactly the simulated rows — Venelin 08-10.09 open shift + total 0/1/1 h (site Vratsa, not Chelopek: the crew moved to Chelopek on 02.10), 16/17.09 extra open shift, 02.10 open shift 07:55 under Kostalevo; Daniel 06.10 open 08:32 + 10:02 Admin->17:03 = 7 h. Details modal shows recorded 17:10:38 / synced next day 08:00:57 / Offline: No | — | confirmed | ~30k |
+| 19:30 | Scoped the "late scan vs admin stand-in" conflict (bug-265 family): since 11.09, 9 of 220 admin records were entered while a same-day scan was still held in the phone (scan.recorded < admin.created < scan.arrived); 8 left a visible open shift (5 morning, 3 evening), none since PR #11. Drafted plan: SessionProjector supersedes such admin stand-ins + ADMIN re-projection endpoint for existing days (also fixes bug-264). Awaiting approval | — | plan only | ~15k |
+| 18:35 | Edited src/main/java/org/example/attendTrack/attendance/SessionProjector.java | added 5 import(s) | ~81 |
+| 18:35 | Edited src/main/java/org/example/attendTrack/attendance/SessionProjector.java | 5→9 lines | ~196 |
+| 18:35 | Edited src/main/java/org/example/attendTrack/attendance/SessionProjector.java | modified Event() | ~267 |
+| 18:35 | Edited src/main/java/org/example/attendTrack/attendance/SessionProjector.java | added 5 condition(s) | ~978 |
+| 18:36 | Edited src/main/java/org/example/attendTrack/attendance/SessionProjector.java | 2→2 lines | ~55 |
+| 18:36 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceService.java | 2→2 lines | ~46 |
+| 18:36 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceRepository.java | expanded (+12 lines) | ~142 |
+| 18:37 | Edited src/main/java/org/example/attendTrack/attendance/AttendanceController.java | expanded (+9 lines) | ~158 |
+| 18:38 | Edited src/test/java/org/example/attendTrack/attendance/SessionProjectorTest.java | 1→2 lines | ~44 |
+| 19:50 | Implemented bug-265 forward fix on branch late-scan-supersedes-admin-stand-in: SessionProjector rule 5 (admin stand-in for a held scan is SUPERSEDED, scan kept), Event.receivedAt (= created_at) passed from AttendanceService.renormalizeDay; 7 new SessionProjectorTest cases. Verified: 91 backend tests green; e2e on postgres:16 via real /manual + /sync endpoints (admin 10:00 superseded by the held 08:00 scan); real projector run over prod rows read-only (from 12.09: only the 9 stand-ins + 1 guard day change). Range re-projection endpoint + settings button built, then dropped at user request (future only). Also fixed bug-266 (settings auto-checkout missing /api). Not committed | SessionProjector.java, SessionProjectorTest.java, AttendanceService.java, settings/page.tsx | done, awaiting commit go-ahead | ~120k |
+| 18:48 | Session end: 9 writes across 5 files (SessionProjector.java, AttendanceService.java, AttendanceRepository.java, AttendanceController.java, SessionProjectorTest.java) | 5 reads | ~9854 tok |

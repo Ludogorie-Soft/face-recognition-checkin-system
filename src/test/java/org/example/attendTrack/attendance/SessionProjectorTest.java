@@ -35,12 +35,22 @@ class SessionProjectorTest {
         return at(time, src, stored, null);
     }
 
+    /** Reaches the server the moment it happens — the normal case. */
     private static SessionProjector.Event at(String time, AttendanceSource src,
                                              AttendanceType stored, AttendanceType claimed) {
+        LocalDateTime at = time(time);
+        return new SessionProjector.Event(UUID.randomUUID(), at, src, stored, claimed, at);
+    }
+
+    private static LocalDateTime time(String time) {
         String[] p = time.split(":");
-        LocalDateTime at = DAY.atTime(Integer.parseInt(p[0]), Integer.parseInt(p[1]),
+        return DAY.atTime(Integer.parseInt(p[0]), Integer.parseInt(p[1]),
                 p.length > 2 ? Integer.parseInt(p[2]) : 0);
-        return new SessionProjector.Event(UUID.randomUUID(), at, src, stored, claimed);
+    }
+
+    /** The same row, reaching the server only at {@code received} — a locked phone held it. */
+    private static SessionProjector.Event receivedAt(SessionProjector.Event e, LocalDateTime received) {
+        return new SessionProjector.Event(e.id(), e.at(), e.source(), e.storedType(), e.clientType(), received);
     }
 
     private static List<SessionProjector.Resolution> project(List<SessionProjector.Event> events) {
@@ -154,7 +164,8 @@ class SessionProjectorTest {
         Map<UUID, SessionProjector.Resolution> byId = first.stream()
                 .collect(Collectors.toMap(SessionProjector.Resolution::id, Function.identity()));
         var reFed = events.stream()
-                .map(e -> new SessionProjector.Event(e.id(), e.at(), e.source(), byId.get(e.id()).type(), e.clientType()))
+                .map(e -> new SessionProjector.Event(e.id(), e.at(), e.source(), byId.get(e.id()).type(),
+                        e.clientType(), e.receivedAt()))
                 .toList();
         assertThat(project(reFed)).containsExactlyInAnyOrderElementsOf(first);
     }
@@ -263,6 +274,97 @@ class SessionProjectorTest {
                 claiming("07:00", AttendanceType.CHECK_IN),
                 event("16:00", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_OUT),
                 claiming("16:02", AttendanceType.CHECK_OUT))))
+                .containsExactly("CHECK_IN", "CHECK_OUT", "CHECK_IN");
+    }
+
+    // ── An admin entry standing in for a scan still held on the phone ───────────
+
+    @Test
+    void adminCheckInMadeWhileTheScanWasHeld_isSupersededByTheScan_danielCase() {
+        // ДАНИЕЛ 06.10: scanned in at 08:32:52, but the locked phone held it until 17:02:59. At 10:02
+        // the admin saw no check-in and entered one. Both stayed: two check-ins, and the report
+        // showed 08:32 as an open shift and paid him from 10:02.
+        var admin = receivedAt(event("10:02", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_IN),
+                time("10:02:49"));
+        assertThat(render(List.of(
+                receivedAt(terminal("08:32:52"), time("17:02:59")),
+                admin,
+                receivedAt(terminal("17:03:36"), time("17:27:16")))))
+                .containsExactly("CHECK_IN", "IGNORED:SUPERSEDED", "CHECK_OUT");
+    }
+
+    @Test
+    void adminCheckOutMadeWhileTheScanWasHeld_isSupersededByTheScan_venelinCase() {
+        // ВЕНЕЛИН 17.09: scanned out at 18:09:30, held until 08:09 the next morning. At 19:52 the
+        // admin closed his day at 16:52; the scan then arrived and became an open check-in.
+        var admin = receivedAt(event("16:52", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_OUT),
+                time("19:52"));
+        assertThat(render(List.of(
+                terminal("07:58:48"),
+                admin,
+                receivedAt(terminal("18:09:30"), DAY.plusDays(1).atTime(8, 9, 45)))))
+                .containsExactly("CHECK_IN", "IGNORED:SUPERSEDED", "CHECK_OUT");
+    }
+
+    @Test
+    void adminCheckOutAfterAHeldCheckOut_isSuperseded_insteadOfLeftAsAnOrphan() {
+        // The held check-out lands BEFORE the admin's: the day already reads correctly, and the
+        // entry is a second check-out the report would drop anyway. It is the same stand-in.
+        var admin = receivedAt(event("17:07", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_OUT),
+                time("19:53"));
+        assertThat(render(List.of(
+                terminal("07:00"),
+                receivedAt(terminal("17:03:22"), DAY.plusDays(1).atTime(8, 0)),
+                admin)))
+                .containsExactly("CHECK_IN", "CHECK_OUT", "IGNORED:SUPERSEDED");
+    }
+
+    @Test
+    void adminEntryMadeAfterTheScanArrived_staysAuthoritative() {
+        // The admin could see the scan and entered a check-out anyway: a deliberate decision.
+        var admin = receivedAt(event("17:30", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_OUT),
+                time("17:35"));
+        assertThat(render(List.of(
+                terminal("07:00"),
+                receivedAt(terminal("17:03"), time("17:03:10")),
+                admin)))
+                .containsExactly("CHECK_IN", "CHECK_OUT", "CHECK_OUT");
+    }
+
+    @Test
+    void aScanTakenAfterTheAdminEntry_isANewEvent_evenIfItArrivedLate() {
+        // Closed by the admin at 17:00 (entered 17:05); the worker came back and scanned at 18:00.
+        // That scan did not exist when the admin acted, so it opens the next session.
+        var admin = receivedAt(event("17:00", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_OUT),
+                time("17:05"));
+        assertThat(render(List.of(
+                terminal("07:00"),
+                admin,
+                receivedAt(terminal("18:00"), DAY.plusDays(1).atTime(8, 0)))))
+                .containsExactly("CHECK_IN", "CHECK_OUT", "CHECK_IN");
+    }
+
+    @Test
+    void aHeldScanOfTheOtherDirection_leavesTheAdminEntryAlone() {
+        // The held scan is the check-in, the admin entered the check-out: two different events.
+        var admin = receivedAt(event("12:00", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_OUT),
+                time("12:05"));
+        assertThat(render(List.of(
+                receivedAt(terminal("07:55"), time("17:00")),
+                admin)))
+                .containsExactly("CHECK_IN", "CHECK_OUT");
+    }
+
+    @Test
+    void aKeptEventBetweenThem_meansTwoSessions_notAStandIn() {
+        // Held check-in 08:30, a check-out at 12:00 that arrived on time, admin check-in at 13:00:
+        // the admin opened the afternoon session, not the morning one.
+        var admin = receivedAt(event("13:00", AttendanceSource.ADMIN_MANUAL, AttendanceType.CHECK_IN),
+                time("13:01"));
+        assertThat(render(List.of(
+                receivedAt(terminal("08:30"), time("17:00")),
+                terminal("12:00"),
+                admin)))
                 .containsExactly("CHECK_IN", "CHECK_OUT", "CHECK_IN");
     }
 }

@@ -30,7 +30,7 @@ export default function SettingsPage() {
     setError('')
     try {
       const res = await api.post<{ created: number }>(
-        `/attendance/auto-checkout?from=${from}&to=${to}`
+        `/api/attendance/auto-checkout?from=${from}&to=${to}`
       )
       setResult(res.data.created)
     } catch {
